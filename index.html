@@ -257,6 +257,9 @@ activePair=this.dataset.pair
 activePip=parseFloat(this.dataset.pip)
 activePipVal=this.dataset.pipval==="DYNAMIC"?null:parseFloat(this.dataset.pipval)
 
+document.getElementById("note").textContent =
+activePipVal===null ? "* Pip value зависит от текущей цены" : ""
+
 calc()
 
 })
