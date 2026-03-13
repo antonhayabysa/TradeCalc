@@ -20,9 +20,7 @@
 <meta property="og:image" content="https://trade-calc-gamma.vercel.app/favicon.png">
 
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
-<link rel="apple-touch-icon" href="/favicon.png">
 <link rel="canonical" href="https://trade-calc-gamma.vercel.app">
-<meta name="theme-color" content="#0f0f0f">
 
 <style>
 
@@ -36,15 +34,38 @@ min-height:100vh;
 display:flex;
 align-items:center;
 justify-content:center;
-padding:20px
+padding:20px;
+transition:0.3s;
 }
 
-.wrap{width:100%;max-width:440px}
+.wrap{width:100%;max-width:460px}
+
+.header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:6px
+}
 
 h1{
-font-size:18px;
-font-weight:500;
-margin-bottom:20px
+font-size:20px;
+font-weight:600
+}
+
+.subtitle{
+font-size:12px;
+color:#888;
+margin-bottom:18px
+}
+
+#themeToggle{
+background:#1a1a1a;
+border:1px solid #333;
+border-radius:6px;
+color:#fff;
+font-size:13px;
+padding:6px 10px;
+cursor:pointer
 }
 
 .lang{
@@ -134,23 +155,49 @@ font-weight:500
 .val.green{color:#4ade80}
 .val.red{color:#f87171}
 
-.error{
-font-size:13px;
-color:#f87171;
-margin-top:10px
-}
-
 .note{
 font-size:11px;
 color:#666;
 margin-top:6px
 }
 
+/* LIGHT THEME */
+
+body.light{
+background:#f4f4f4;
+color:#111
+}
+
+body.light .pair-btn{
+background:#fff;
+border:1px solid #ddd;
+color:#333
+}
+
+body.light .pair-btn.active{
+background:#eaeaea
+}
+
+body.light .field input{
+background:#fff;
+border:1px solid #ccc;
+color:#111
+}
+
+body.light .card{
+background:#fff;
+border:1px solid #ddd
+}
+
+body.light #themeToggle{
+background:#fff;
+border:1px solid #ccc;
+color:#111
+}
+
+/* MOBILE */
+
 @media (max-width:768px){
-
-.wrap{max-width:100%}
-
-h1{font-size:20px}
 
 .pair-grid{grid-template-columns:repeat(2,1fr)}
 
@@ -159,24 +206,6 @@ h1{font-size:20px}
 .prices{grid-template-columns:1fr}
 
 .results{grid-template-columns:1fr}
-
-.card .val{font-size:20px}
-
-}
-
-@media (max-width:480px){
-
-body{padding:14px}
-
-.pair-btn{
-font-size:13px;
-padding:10px 6px
-}
-
-.field input{
-font-size:16px;
-padding:12px
-}
 
 }
 
@@ -188,7 +217,14 @@ padding:12px
 
 <div class="wrap">
 
+<div class="header">
 <h1>TradeCalc</h1>
+<button id="themeToggle">☀︎</button>
+</div>
+
+<div class="subtitle">
+Forex Position Size Calculator
+</div>
 
 <div class="lang">
 <div class="pair-btn" onclick="setLang('ru')" id="lang-ru">RU</div>
@@ -225,17 +261,17 @@ padding:12px
 
 <div class="field">
 <label id="lbl-entry">Entry</label>
-<input type="number" id="entry" step="0.00001">
+<input type="number" id="entry">
 </div>
 
 <div class="field">
 <label id="lbl-stop">Stop</label>
-<input type="number" id="stop" step="0.00001">
+<input type="number" id="stop">
 </div>
 
 <div class="field">
 <label id="lbl-tp">Take Profit</label>
-<input type="number" id="tp" step="0.00001">
+<input type="number" id="tp">
 </div>
 
 </div>
@@ -243,51 +279,47 @@ padding:12px
 <div class="results" id="results" style="display:none">
 
 <div class="card">
-<div class="lbl" id="lbl-units">Quantity (TradingView)</div>
+<div class="lbl">Quantity</div>
 <div class="val" id="r-units">—</div>
 </div>
 
 <div class="card">
-<div class="lbl" id="lbl-lots">Lots (MT5)</div>
+<div class="lbl">Lots</div>
 <div class="val" id="r-lots">—</div>
 </div>
 
 <div class="card">
-<div class="lbl" id="lbl-riskMoney">Risk $</div>
+<div class="lbl">Risk $</div>
 <div class="val red" id="r-risk">—</div>
 </div>
 
 <div class="card">
-<div class="lbl" id="lbl-profit">Profit $</div>
+<div class="lbl">Profit $</div>
 <div class="val green" id="r-profit">—</div>
 </div>
 
 <div class="card">
-<div class="lbl" id="lbl-rr">R:R</div>
+<div class="lbl">R:R</div>
 <div class="val" id="r-rr">—</div>
 </div>
 
 <div class="card">
-<div class="lbl" id="lbl-pips">Pips to stop</div>
+<div class="lbl">Pips</div>
 <div class="val" id="r-pips">—</div>
 </div>
 
 </div>
 
-<div class="error" id="error"></div>
 <div class="note" id="note"></div>
 
-<!-- SEO TEXT -->
-
-<div id="seo-text" style="max-width:600px;margin:40px auto 0 auto;color:#888;font-size:14px;line-height:1.6;text-align:left">
+<div id="seo-text" style="margin-top:30px;color:#888;font-size:13px;line-height:1.6">
 
 <p id="seo1">
-TradeCalc is a free Forex position size calculator that helps traders calculate lot size, risk percentage, pips distance and potential profit before opening a trade.
+TradeCalc is a free Forex position size calculator that helps traders calculate lot size, risk percentage and profit before opening a trade.
 </p>
 
 <p id="seo2">
-The calculator supports major currency pairs including EURUSD, GBPUSD, USDJPY, AUDUSD, NZDUSD, USDCHF and more.
-It helps traders manage risk and determine the correct trade size based on account balance and stop-loss distance.
+Supports EURUSD, GBPUSD, USDJPY and other major pairs. Helps manage trading risk and determine the correct trade size.
 </p>
 
 </div>
@@ -296,26 +328,46 @@ It helps traders manage risk and determine the correct trade size based on accou
 
 <script>
 
+/* THEME */
+
+const themeBtn=document.getElementById("themeToggle")
+
+themeBtn.onclick=()=>{
+document.body.classList.toggle("light")
+
+themeBtn.textContent=
+document.body.classList.contains("light")?"🌙":"☀︎"
+}
+
+/* LANGUAGE */
+
 const lang={
 ru:{
-balance:"Счёт ($)",risk:"Риск (%)",entry:"Вход",stop:"Стоп",tp:"Тейк",
-units:"Количество (TradingView)",lots:"Лоты (MT5)",riskMoney:"Риск $",profit:"Прибыль $",rr:"R:R",pips:"Пипсов до стопа",
-seo1:"TradeCalc — это бесплатный калькулятор размера позиции на Forex, который помогает трейдерам рассчитывать размер лота, процент риска, расстояние в пипсах и потенциальную прибыль перед открытием сделки.",
-seo2:"Калькулятор поддерживает основные валютные пары, включая EURUSD, GBPUSD, USDJPY, AUDUSD, NZDUSD, USDCHF и другие. Он помогает трейдерам управлять риском и определять правильный размер позиции на основе баланса счёта и расстояния до стоп-лосса."
+balance:"Счёт ($)",
+risk:"Риск (%)",
+entry:"Вход",
+stop:"Стоп",
+tp:"Тейк",
+seo1:"TradeCalc — бесплатный калькулятор позиции Forex для расчёта размера лота и риска.",
+seo2:"Поддерживает EURUSD, GBPUSD, USDJPY и другие пары."
 },
-
 ua:{
-balance:"Рахунок ($)",risk:"Ризик (%)",entry:"Вхід",stop:"Стоп",tp:"Тейк",
-units:"Кількість (TradingView)",lots:"Лоти (MT5)",riskMoney:"Ризик $",profit:"Прибуток $",rr:"R:R",pips:"Піпсів до стопу",
-seo1:"TradeCalc — це безкоштовний калькулятор розміру позиції на Forex, який допомагає трейдерам розрахувати розмір лота, відсоток ризику, відстань у піпсах та потенційний прибуток перед відкриттям угоди.",
-seo2:"Калькулятор підтримує основні валютні пари, включаючи EURUSD, GBPUSD, USDJPY, AUDUSD, NZDUSD, USDCHF та інші. Він допомагає трейдерам керувати ризиком і визначати правильний розмір позиції на основі балансу рахунку та відстані до стоп-лосу."
+balance:"Рахунок ($)",
+risk:"Ризик (%)",
+entry:"Вхід",
+stop:"Стоп",
+tp:"Тейк",
+seo1:"TradeCalc — безкоштовний калькулятор позиції Forex для розрахунку лота та ризику.",
+seo2:"Підтримує EURUSD, GBPUSD, USDJPY та інші пари."
 },
-
 en:{
-balance:"Account ($)",risk:"Risk (%)",entry:"Entry",stop:"Stop",tp:"Take Profit",
-units:"Quantity (TradingView)",lots:"Lots (MT5)",riskMoney:"Risk $",profit:"Profit $",rr:"R:R",pips:"Pips to Stop",
-seo1:"TradeCalc is a free Forex position size calculator that helps traders calculate lot size, risk percentage, pips distance and potential profit before opening a trade.",
-seo2:"The calculator supports major currency pairs including EURUSD, GBPUSD, USDJPY, AUDUSD, NZDUSD, USDCHF and more. It helps traders manage risk and determine the correct trade size based on account balance and stop-loss distance."
+balance:"Account ($)",
+risk:"Risk (%)",
+entry:"Entry",
+stop:"Stop",
+tp:"Take Profit",
+seo1:"TradeCalc is a free Forex position size calculator that helps traders calculate lot size and risk.",
+seo2:"Supports EURUSD, GBPUSD, USDJPY and other pairs."
 }
 }
 
@@ -329,99 +381,11 @@ document.getElementById("lbl-risk").textContent=lang[l].risk
 document.getElementById("lbl-entry").textContent=lang[l].entry
 document.getElementById("lbl-stop").textContent=lang[l].stop
 document.getElementById("lbl-tp").textContent=lang[l].tp
-document.getElementById("lbl-units").textContent=lang[l].units
-document.getElementById("lbl-lots").textContent=lang[l].lots
-document.getElementById("lbl-riskMoney").textContent=lang[l].riskMoney
-document.getElementById("lbl-profit").textContent=lang[l].profit
-document.getElementById("lbl-rr").textContent=lang[l].rr
-document.getElementById("lbl-pips").textContent=lang[l].pips
 
 document.getElementById("seo1").textContent=lang[l].seo1
 document.getElementById("seo2").textContent=lang[l].seo2
 
 }
-
-let activePip=0.0001
-let activePipVal=10
-let activePair='EURUSD'
-
-document.querySelectorAll('.pair-btn[data-pair]').forEach(btn=>{
-
-btn.addEventListener('click',function(){
-
-document.querySelectorAll('.pair-btn[data-pair]').forEach(b=>b.classList.remove('active'))
-this.classList.add('active')
-
-activePair=this.dataset.pair
-activePip=parseFloat(this.dataset.pip)
-activePipVal=this.dataset.pipval==="DYNAMIC"?null:parseFloat(this.dataset.pipval)
-
-document.getElementById("note").textContent=
-activePipVal===null?"* Pip value зависит от текущей цены":""
-
-calc()
-
-})
-
-})
-
-function getPipValue(pair,entry){
-
-if(activePipVal!==null)return activePipVal
-
-if(pair.includes("JPY")) return 1000/entry
-if(pair.endsWith("USD")) return 10
-if(pair.startsWith("USD")) return 10/entry
-
-return 10
-
-}
-
-function calc(){
-
-const balance=parseFloat(document.getElementById("balance").value)
-const riskPct=parseFloat(document.getElementById("risk").value)
-const entry=parseFloat(document.getElementById("entry").value)
-const stop=parseFloat(document.getElementById("stop").value)
-const tp=parseFloat(document.getElementById("tp").value)
-
-const results=document.getElementById("results")
-
-if(!balance||!riskPct||!entry||!stop||!tp){
-results.style.display="none"
-return
-}
-
-const stopDist=Math.abs(entry-stop)
-const tpDist=Math.abs(tp-entry)
-
-if(stopDist===0)return
-
-const riskMoney=balance*riskPct/100
-const stopPips=stopDist/activePip
-const tpPips=tpDist/activePip
-
-const pipVal=getPipValue(activePair,entry)
-
-const lots=riskMoney/(stopPips*pipVal)
-const units=Math.round(lots*100000)
-const profit=lots*tpPips*pipVal
-const rr=tpDist/stopDist
-
-document.getElementById("r-units").textContent=units.toLocaleString()
-document.getElementById("r-lots").textContent=lots.toFixed(2)
-document.getElementById("r-risk").textContent="$"+Math.round(riskMoney)
-document.getElementById("r-profit").textContent="$"+Math.round(profit)
-document.getElementById("r-rr").textContent="1 : "+rr.toFixed(2)
-document.getElementById("r-pips").textContent=Math.round(stopPips)
-
-results.style.display="grid"
-
-}
-
-["balance","risk","entry","stop","tp"].forEach(id=>{
-document.getElementById(id).addEventListener("input",calc)
-})
 
 setLang("en")
 
