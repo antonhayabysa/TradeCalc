@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
+
 <head>
 
 <meta charset="UTF-8">
@@ -7,33 +8,146 @@
 
 <title>TradeCalc | Forex Position Size Calculator</title>
 
-<meta name="description" content="Free Forex position size calculator. Calculate lot size, risk, pips, R:R and profit for EURUSD, GBPUSD, USDJPY and other pairs. Perfect for TradingView and MT5 traders.">
+<meta name="description" content="Free Forex position size calculator. Calculate lot size, risk, pips, R:R and profit for EURUSD, GBPUSD, USDJPY and other pairs.">
 
-<meta name="keywords" content="forex calculator, position size calculator, lot size calculator, forex risk calculator, tradingview calculator, forex risk management">
+<meta name="keywords" content="forex calculator, position size calculator, lot size calculator, forex risk calculator">
 
 <meta name="robots" content="index, follow">
 
 <meta name="author" content="TradeCalc">
 
-<!-- Google verification -->
 <meta name="google-site-verification" content="tradecalc-verification">
 
-<!-- OpenGraph (когда ссылку кидают в Telegram / Twitter) -->
-
 <meta property="og:title" content="TradeCalc | Forex Risk Calculator">
-<meta property="og:description" content="Simple and fast Forex risk calculator for traders. Calculate lot size, pips, risk and R:R.">
+<meta property="og:description" content="Simple and fast Forex risk calculator for traders.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://trade-calc-gamma.vercel.app">
 <meta property="og:image" content="https://trade-calc-gamma.vercel.app/favicon.png">
 
-<!-- favicon -->
-
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
 <link rel="apple-touch-icon" href="/favicon.png">
 
-<!-- mobile theme -->
-
 <meta name="theme-color" content="#0f0f0f">
+
+<style>
+
+*{box-sizing:border-box;margin:0;padding:0}
+
+body{
+font-family:-apple-system, sans-serif;
+background:#0f0f0f;
+color:#fff;
+min-height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+padding:20px
+}
+
+.wrap{width:100%;max-width:440px}
+
+h1{
+font-size:18px;
+font-weight:500;
+margin-bottom:20px
+}
+
+.lang{display:flex;gap:6px;margin-bottom:16px}
+
+.pair-grid{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:8px;
+margin-bottom:16px
+}
+
+.pair-btn{
+background:#1a1a1a;
+border:1px solid #333;
+border-radius:8px;
+padding:8px 4px;
+color:#888;
+font-size:12px;
+cursor:pointer;
+text-align:center
+}
+
+.pair-btn.active{
+background:#2a2a2a;
+border-color:#666;
+color:#fff
+}
+
+.settings{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:12px;
+margin-bottom:12px
+}
+
+.prices{
+display:grid;
+grid-template-columns:1fr 1fr 1fr;
+gap:12px;
+margin-bottom:20px
+}
+
+.field label{
+display:block;
+font-size:12px;
+color:#888;
+margin-bottom:6px
+}
+
+.field input{
+width:100%;
+background:#1a1a1a;
+border:1px solid #333;
+border-radius:8px;
+padding:10px 12px;
+color:#fff;
+font-size:15px
+}
+
+.results{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px
+}
+
+.card{
+background:#1a1a1a;
+border-radius:8px;
+padding:12px 14px
+}
+
+.card .lbl{
+font-size:11px;
+color:#666;
+margin-bottom:4px
+}
+
+.card .val{
+font-size:22px;
+font-weight:500
+}
+
+.val.green{color:#4ade80}
+.val.red{color:#f87171}
+
+.error{
+font-size:13px;
+color:#f87171;
+margin-top:10px
+}
+
+.note{
+font-size:11px;
+color:#666;
+margin-top:6px
+}
+
+</style>
 
 </head>
 
@@ -41,269 +155,174 @@
 
 <div class="wrap">
 
-  <h1>TradeCalc</h1>
+<h1>TradeCalc</h1>
 
-  <div class="lang">
-    <div class="pair-btn active" onclick="setLang('ru')" id="lang-ru">RU</div>
-    <div class="pair-btn" onclick="setLang('ua')" id="lang-ua">UA</div>
-    <div class="pair-btn" onclick="setLang('en')" id="lang-en">EN</div>
-  </div>
+<div class="pair-grid">
+<div class="pair-btn active" data-pair="EURUSD" data-pip="0.0001" data-pipval="10">EUR/USD</div>
+<div class="pair-btn" data-pair="GBPUSD" data-pip="0.0001" data-pipval="10">GBP/USD</div>
+<div class="pair-btn" data-pair="AUDUSD" data-pip="0.0001" data-pipval="10">AUD/USD</div>
+<div class="pair-btn" data-pair="NZDUSD" data-pip="0.0001" data-pipval="10">NZD/USD</div>
+<div class="pair-btn" data-pair="USDJPY" data-pip="0.01" data-pipval="DYNAMIC">USD/JPY</div>
+<div class="pair-btn" data-pair="USDCHF" data-pip="0.0001" data-pipval="DYNAMIC">USD/CHF</div>
+<div class="pair-btn" data-pair="USDCAD" data-pip="0.0001" data-pipval="DYNAMIC">USD/CAD</div>
+<div class="pair-btn" data-pair="GBPJPY" data-pip="0.01" data-pipval="DYNAMIC">GBP/JPY</div>
+</div>
 
-  <div class="pair-grid">
-    <div class="pair-btn active" data-pair="EURUSD" data-pip="0.0001" data-pipval="10">EUR/USD</div>
-    <div class="pair-btn" data-pair="GBPUSD" data-pip="0.0001" data-pipval="10">GBP/USD</div>
-    <div class="pair-btn" data-pair="AUDUSD" data-pip="0.0001" data-pipval="10">AUD/USD</div>
-    <div class="pair-btn" data-pair="NZDUSD" data-pip="0.0001" data-pipval="10">NZD/USD</div>
-    <div class="pair-btn" data-pair="USDJPY" data-pip="0.01" data-pipval="DYNAMIC">USD/JPY</div>
-    <div class="pair-btn" data-pair="USDCHF" data-pip="0.0001" data-pipval="DYNAMIC">USD/CHF</div>
-    <div class="pair-btn" data-pair="USDCAD" data-pip="0.0001" data-pipval="DYNAMIC">USD/CAD</div>
-    <div class="pair-btn" data-pair="GBPJPY" data-pip="0.01" data-pipval="DYNAMIC">GBP/JPY</div>
-  </div>
+<div class="settings">
 
-  <div class="settings">
+<div class="field">
+<label>Account ($)</label>
+<input type="number" id="balance">
+</div>
 
-    <div class="field">
-      <label id="lbl-balance">Счёт ($)</label>
-      <input type="number" id="balance">
-    </div>
+<div class="field">
+<label>Risk (%)</label>
+<input type="number" id="risk" step="0.1">
+</div>
 
-    <div class="field">
-      <label id="lbl-risk">Риск (%)</label>
-      <input type="number" id="risk" step="0.1">
-    </div>
+</div>
 
-  </div>
+<div class="prices">
 
-  <div class="prices">
+<div class="field">
+<label>Entry</label>
+<input type="number" id="entry" step="0.00001">
+</div>
 
-    <div class="field">
-      <label id="lbl-entry">Вход</label>
-      <input type="number" id="entry" step="0.00001">
-    </div>
+<div class="field">
+<label>Stop</label>
+<input type="number" id="stop" step="0.00001">
+</div>
 
-    <div class="field">
-      <label id="lbl-stop">Стоп</label>
-      <input type="number" id="stop" step="0.00001">
-    </div>
+<div class="field">
+<label>Take Profit</label>
+<input type="number" id="tp" step="0.00001">
+</div>
 
-    <div class="field">
-      <label id="lbl-tp">Тейк</label>
-      <input type="number" id="tp" step="0.00001">
-    </div>
+</div>
 
-  </div>
+<div class="results" id="results" style="display:none">
 
-  <div class="results" id="results" style="display:none;">
+<div class="card">
+<div class="lbl">Quantity (TradingView)</div>
+<div class="val" id="r-units">—</div>
+</div>
 
-    <div class="card">
-      <div class="lbl" id="lbl-units">Количество (TradingView)</div>
-      <div class="val white" id="r-units">—</div>
-    </div>
+<div class="card">
+<div class="lbl">Lots (MT5)</div>
+<div class="val" id="r-lots">—</div>
+</div>
 
-    <div class="card">
-      <div class="lbl" id="lbl-lots">Лоты (MT5)</div>
-      <div class="val white" id="r-lots">—</div>
-    </div>
+<div class="card">
+<div class="lbl">Risk $</div>
+<div class="val red" id="r-risk">—</div>
+</div>
 
-    <div class="card">
-      <div class="lbl" id="lbl-riskMoney">Риск $</div>
-      <div class="val red" id="r-risk">—</div>
-    </div>
+<div class="card">
+<div class="lbl">Profit $</div>
+<div class="val green" id="r-profit">—</div>
+</div>
 
-    <div class="card">
-      <div class="lbl" id="lbl-profit">Прибыль $</div>
-      <div class="val green" id="r-profit">—</div>
-    </div>
+<div class="card">
+<div class="lbl">R:R</div>
+<div class="val" id="r-rr">—</div>
+</div>
 
-    <div class="card">
-      <div class="lbl" id="lbl-rr">R:R</div>
-      <div class="val white" id="r-rr">—</div>
-    </div>
+<div class="card">
+<div class="lbl">Pips to stop</div>
+<div class="val" id="r-pips">—</div>
+</div>
 
-    <div class="card">
-      <div class="lbl" id="lbl-pips">Пипсов до стопа</div>
-      <div class="val white" id="r-pips">—</div>
-    </div>
+</div>
 
-  </div>
-
-  <div class="error" id="error"></div>
-  <div class="note" id="note"></div>
+<div class="error" id="error"></div>
+<div class="note" id="note"></div>
 
 </div>
 
 <script>
 
-  const lang = {
+let activePip=0.0001
+let activePipVal=10
+let activePair='EURUSD'
 
-    ru:{
-      balance:"Счёт ($)",
-      risk:"Риск (%)",
-      entry:"Вход",
-      stop:"Стоп",
-      tp:"Тейк",
-      units:"Количество (TradingView)",
-      lots:"Лоты (MT5)",
-      riskMoney:"Риск $",
-      profit:"Прибыль $",
-      rr:"R:R",
-      pips:"Пипсов до стопа"
-    },
+document.querySelectorAll('.pair-btn').forEach(btn=>{
 
-    ua:{
-      balance:"Рахунок ($)",
-      risk:"Ризик (%)",
-      entry:"Вхід",
-      stop:"Стоп",
-      tp:"Тейк",
-      units:"Кількість (TradingView)",
-      lots:"Лоти (MT5)",
-      riskMoney:"Ризик $",
-      profit:"Прибуток $",
-      rr:"R:R",
-      pips:"Піпсів до стопу"
-    },
+btn.addEventListener('click',function(){
 
-    en:{
-      balance:"Account ($)",
-      risk:"Risk (%)",
-      entry:"Entry",
-      stop:"Stop",
-      tp:"Take Profit",
-      units:"Quantity (TradingView)",
-      lots:"Lots (MT5)",
-      riskMoney:"Risk $",
-      profit:"Profit $",
-      rr:"R:R",
-      pips:"Pips to Stop"
-    }
+document.querySelectorAll('.pair-btn').forEach(b=>b.classList.remove('active'))
+this.classList.add('active')
 
-  }
+activePair=this.dataset.pair
+activePip=parseFloat(this.dataset.pip)
+activePipVal=this.dataset.pipval==="DYNAMIC"?null:parseFloat(this.dataset.pipval)
 
-  function setLang(l){
+calc()
 
-    document.querySelectorAll('[id^="lang-"]').forEach(b=>b.classList.remove('active'))
-    document.getElementById('lang-'+l).classList.add('active')
+})
 
-    document.getElementById('lbl-balance').textContent = lang[l].balance
-    document.getElementById('lbl-risk').textContent = lang[l].risk
-    document.getElementById('lbl-entry').textContent = lang[l].entry
-    document.getElementById('lbl-stop').textContent = lang[l].stop
-    document.getElementById('lbl-tp').textContent = lang[l].tp
+})
 
-    document.getElementById('lbl-units').textContent = lang[l].units
-    document.getElementById('lbl-lots').textContent = lang[l].lots
-    document.getElementById('lbl-riskMoney').textContent = lang[l].riskMoney
-    document.getElementById('lbl-profit').textContent = lang[l].profit
-    document.getElementById('lbl-rr').textContent = lang[l].rr
-    document.getElementById('lbl-pips').textContent = lang[l].pips
+function getPipValue(pair,entry){
 
-  }
+if(activePipVal!==null)return activePipVal
 
-  let activePip = 0.0001
-  let activePipVal = 10
-  let activePair = 'EURUSD'
+if(pair==="USDJPY")return 1000/entry
+if(pair==="USDCHF")return 10/entry
+if(pair==="USDCAD")return 10/entry
+if(pair==="GBPJPY")return entry/100
 
-  document.querySelectorAll('.pair-btn[data-pair]').forEach(btn => {
+return 10
 
-    btn.addEventListener('click', function(){
+}
 
-      document.querySelectorAll('.pair-btn[data-pair]').forEach(b=>b.classList.remove('active'))
-      this.classList.add('active')
+function calc(){
 
-      activePair = this.dataset.pair
-      activePip = parseFloat(this.dataset.pip)
-      activePipVal = this.dataset.pipval === 'DYNAMIC' ? null : parseFloat(this.dataset.pipval)
+const balance=parseFloat(document.getElementById("balance").value)
+const riskPct=parseFloat(document.getElementById("risk").value)
+const entry=parseFloat(document.getElementById("entry").value)
+const stop=parseFloat(document.getElementById("stop").value)
+const tp=parseFloat(document.getElementById("tp").value)
 
-      document.getElementById('note').textContent = activePipVal === null ? '* Pip value зависит от текущей цены' : ''
+const results=document.getElementById("results")
 
-      calc()
+if(!balance||!riskPct||!entry||!stop||!tp){
 
-    })
+results.style.display="none"
+return
 
-  })
+}
 
-  function getPipValue(pair, entry){
+const stopDist=Math.abs(entry-stop)
+const tpDist=Math.abs(tp-entry)
 
-    if(activePipVal !== null) return activePipVal
+if(stopDist===0)return
 
-    if(pair === 'USDJPY') return 1000 / entry
-    if(pair === 'USDCHF') return 10 / entry
-    if(pair === 'USDCAD') return 10 / entry
-    if(pair === 'GBPJPY') return entry / 100
+const riskMoney=balance*riskPct/100
+const stopPips=stopDist/activePip
+const tpPips=tpDist/activePip
 
-    return 10
+const pipVal=getPipValue(activePair,entry)
 
-  }
+const lots=riskMoney/(stopPips*pipVal)
+const units=Math.round(lots*100000)
+const profit=lots*tpPips*pipVal
+const rr=tpDist/stopDist
 
-  function calc(){
+document.getElementById("r-units").textContent=units.toLocaleString()
+document.getElementById("r-lots").textContent=lots.toFixed(2)
+document.getElementById("r-risk").textContent="$"+Math.round(riskMoney)
+document.getElementById("r-profit").textContent="$"+Math.round(profit)
+document.getElementById("r-rr").textContent="1 : "+rr.toFixed(2)
+document.getElementById("r-pips").textContent=Math.round(stopPips)
 
-    const balance = parseFloat(document.getElementById('balance').value)
-    const riskPct = parseFloat(document.getElementById('risk').value)
-    const entry = parseFloat(document.getElementById('entry').value)
-    const stop = parseFloat(document.getElementById('stop').value)
-    const tp = parseFloat(document.getElementById('tp').value)
+results.style.display="grid"
 
-    const err = document.getElementById('error')
-    const results = document.getElementById('results')
+}
 
-    if(!balance || !riskPct || !entry || !stop || !tp){
-
-      results.style.display='none'
-      err.textContent=''
-      return
-
-    }
-
-    const stopDist = Math.abs(entry-stop)
-    const tpDist = Math.abs(tp-entry)
-
-    if(stopDist===0){
-
-      err.textContent='Стоп не может быть равен входу'
-      results.style.display='none'
-      return
-
-    }
-
-    const isLong = tp > entry
-    const validStop = isLong ? stop < entry : stop > entry
-
-    if(!validStop){
-
-      err.textContent = isLong ? 'Лонг: стоп ниже входа' : 'Шорт: стоп выше входа'
-      results.style.display='none'
-      return
-
-    }
-
-    err.textContent=''
-
-    const riskMoney = balance*riskPct/100
-    const stopPips = stopDist/activePip
-    const tpPips = tpDist/activePip
-
-    const pipVal = getPipValue(activePair, entry)
-
-    const lots = riskMoney/(stopPips*pipVal)
-    const units = Math.round(lots*100000)
-    const profit = lots*tpPips*pipVal
-    const rr = tpDist/stopDist
-
-    document.getElementById('r-units').textContent = units.toLocaleString()
-    document.getElementById('r-lots').textContent = lots.toFixed(2)
-    document.getElementById('r-risk').textContent = '$'+Math.round(riskMoney).toLocaleString()
-    document.getElementById('r-profit').textContent = '$'+Math.round(profit).toLocaleString()
-    document.getElementById('r-rr').textContent = '1 : '+rr.toFixed(2)
-    document.getElementById('r-pips').textContent = Math.round(stopPips)
-
-    results.style.display='grid'
-
-  }
-
-  ['balance','risk','entry','stop','tp'].forEach(id=>{
-    document.getElementById(id).addEventListener('input',calc)
-  })
+["balance","risk","entry","stop","tp"].forEach(id=>{
+document.getElementById(id).addEventListener("input",calc)
+})
 
 </script>
 
