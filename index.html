@@ -1,45 +1,40 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TradeCalc</title>
-  <link rel="icon" type="image/png" href="favicon.png">
 
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: -apple-system, sans-serif; background: #0f0f0f; color: #fff; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
-    .wrap { width: 100%; max-width: 440px; }
-    h1 { font-size: 18px; font-weight: 500; margin-bottom: 20px; color: #fff; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    .lang { display:flex; gap:6px; margin-bottom:16px; }
+<title>TradeCalc | Forex Position Size Calculator</title>
 
-    .pair-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px; }
-    .pair-btn { background: #1a1a1a; border: 1px solid #333; border-radius: 8px; padding: 8px 4px; color: #888; font-size: 12px; cursor: pointer; text-align: center; transition: all 0.15s; }
-    .pair-btn:hover { border-color: #555; color: #fff; }
-    .pair-btn.active { background: #2a2a2a; border-color: #666; color: #fff; }
+<meta name="description" content="Free Forex position size calculator. Calculate lot size, risk, pips, R:R and profit for EURUSD, GBPUSD, USDJPY and other pairs. Perfect for TradingView and MT5 traders.">
 
-    .settings { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
-    .prices { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+<meta name="keywords" content="forex calculator, position size calculator, lot size calculator, forex risk calculator, tradingview calculator, forex risk management">
 
-    .field label { display: block; font-size: 12px; color: #888; margin-bottom: 6px; }
-    .field input { width: 100%; background: #1a1a1a; border: 1px solid #333; border-radius: 8px; padding: 10px 12px; color: #fff; font-size: 15px; outline: none; }
-    .field input:focus { border-color: #555; }
+<meta name="robots" content="index, follow">
 
-    .results { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+<meta name="author" content="TradeCalc">
 
-    .card { background: #1a1a1a; border-radius: 8px; padding: 12px 14px; }
-    .card .lbl { font-size: 11px; color: #666; margin-bottom: 4px; }
-    .card .val { font-size: 22px; font-weight: 500; }
+<!-- Google verification -->
+<meta name="google-site-verification" content="tradecalc-verification">
 
-    .val.green { color: #4ade80; }
-    .val.red { color: #f87171; }
-    .val.white { color: #fff; }
+<!-- OpenGraph (когда ссылку кидают в Telegram / Twitter) -->
 
-    .error { font-size: 13px; color: #f87171; margin-top: 10px; min-height: 18px; }
-    .note { font-size: 11px; color: #666; margin-top: 6px; }
+<meta property="og:title" content="TradeCalc | Forex Risk Calculator">
+<meta property="og:description" content="Simple and fast Forex risk calculator for traders. Calculate lot size, pips, risk and R:R.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://trade-calc-gamma.vercel.app">
+<meta property="og:image" content="https://trade-calc-gamma.vercel.app/favicon.png">
 
-  </style>
+<!-- favicon -->
+
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+<link rel="apple-touch-icon" href="/favicon.png">
+
+<!-- mobile theme -->
+
+<meta name="theme-color" content="#0f0f0f">
+
 </head>
 
 <body>
