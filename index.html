@@ -13,7 +13,6 @@
 <meta name="robots" content="index, follow">
 <meta name="author" content="TradeCalc">
 
-
 <meta property="og:title" content="TradeCalc | Forex Risk Calculator">
 <meta property="og:description" content="Simple and fast Forex risk calculator for traders.">
 <meta property="og:type" content="website">
@@ -141,61 +140,42 @@ color:#f87171;
 margin-top:10px
 }
 
-  .note{
+.note{
 font-size:11px;
 color:#666;
 margin-top:6px
 }
 
-
-/* ВСТАВИТЬ ВОТ ЗДЕСЬ */
-
 @media (max-width:768px){
 
-.wrap{
-max-width:100%;
-}
+.wrap{max-width:100%}
 
-h1{
-font-size:20px;
-}
+h1{font-size:20px}
 
-.pair-grid{
-grid-template-columns:repeat(2,1fr);
-}
+.pair-grid{grid-template-columns:repeat(2,1fr)}
 
-.settings{
-grid-template-columns:1fr;
-}
+.settings{grid-template-columns:1fr}
 
-.prices{
-grid-template-columns:1fr;
-}
+.prices{grid-template-columns:1fr}
 
-.results{
-grid-template-columns:1fr;
-}
+.results{grid-template-columns:1fr}
 
-.card .val{
-font-size:20px;
-}
+.card .val{font-size:20px}
 
 }
 
 @media (max-width:480px){
 
-body{
-padding:14px;
-}
+body{padding:14px}
 
 .pair-btn{
 font-size:13px;
-padding:10px 6px;
+padding:10px 6px
 }
 
 .field input{
 font-size:16px;
-padding:12px;
+padding:12px
 }
 
 }
@@ -297,14 +277,46 @@ padding:12px;
 <div class="error" id="error"></div>
 <div class="note" id="note"></div>
 
+<!-- SEO TEXT -->
+
+<div id="seo-text" style="max-width:600px;margin:40px auto 0 auto;color:#888;font-size:14px;line-height:1.6;text-align:left">
+
+<p id="seo1">
+TradeCalc is a free Forex position size calculator that helps traders calculate lot size, risk percentage, pips distance and potential profit before opening a trade.
+</p>
+
+<p id="seo2">
+The calculator supports major currency pairs including EURUSD, GBPUSD, USDJPY, AUDUSD, NZDUSD, USDCHF and more.
+It helps traders manage risk and determine the correct trade size based on account balance and stop-loss distance.
+</p>
+
+</div>
+
 </div>
 
 <script>
 
 const lang={
-ru:{balance:"Счёт ($)",risk:"Риск (%)",entry:"Вход",stop:"Стоп",tp:"Тейк",units:"Количество (TradingView)",lots:"Лоты (MT5)",riskMoney:"Риск $",profit:"Прибыль $",rr:"R:R",pips:"Пипсов до стопа"},
-ua:{balance:"Рахунок ($)",risk:"Ризик (%)",entry:"Вхід",stop:"Стоп",tp:"Тейк",units:"Кількість (TradingView)",lots:"Лоти (MT5)",riskMoney:"Ризик $",profit:"Прибуток $",rr:"R:R",pips:"Піпсів до стопу"},
-en:{balance:"Account ($)",risk:"Risk (%)",entry:"Entry",stop:"Stop",tp:"Take Profit",units:"Quantity (TradingView)",lots:"Lots (MT5)",riskMoney:"Risk $",profit:"Profit $",rr:"R:R",pips:"Pips to Stop"}
+ru:{
+balance:"Счёт ($)",risk:"Риск (%)",entry:"Вход",stop:"Стоп",tp:"Тейк",
+units:"Количество (TradingView)",lots:"Лоты (MT5)",riskMoney:"Риск $",profit:"Прибыль $",rr:"R:R",pips:"Пипсов до стопа",
+seo1:"TradeCalc — это бесплатный калькулятор размера позиции на Forex, который помогает трейдерам рассчитывать размер лота, процент риска, расстояние в пипсах и потенциальную прибыль перед открытием сделки.",
+seo2:"Калькулятор поддерживает основные валютные пары, включая EURUSD, GBPUSD, USDJPY, AUDUSD, NZDUSD, USDCHF и другие. Он помогает трейдерам управлять риском и определять правильный размер позиции на основе баланса счёта и расстояния до стоп-лосса."
+},
+
+ua:{
+balance:"Рахунок ($)",risk:"Ризик (%)",entry:"Вхід",stop:"Стоп",tp:"Тейк",
+units:"Кількість (TradingView)",lots:"Лоти (MT5)",riskMoney:"Ризик $",profit:"Прибуток $",rr:"R:R",pips:"Піпсів до стопу",
+seo1:"TradeCalc — це безкоштовний калькулятор розміру позиції на Forex, який допомагає трейдерам розрахувати розмір лота, відсоток ризику, відстань у піпсах та потенційний прибуток перед відкриттям угоди.",
+seo2:"Калькулятор підтримує основні валютні пари, включаючи EURUSD, GBPUSD, USDJPY, AUDUSD, NZDUSD, USDCHF та інші. Він допомагає трейдерам керувати ризиком і визначати правильний розмір позиції на основі балансу рахунку та відстані до стоп-лосу."
+},
+
+en:{
+balance:"Account ($)",risk:"Risk (%)",entry:"Entry",stop:"Stop",tp:"Take Profit",
+units:"Quantity (TradingView)",lots:"Lots (MT5)",riskMoney:"Risk $",profit:"Profit $",rr:"R:R",pips:"Pips to Stop",
+seo1:"TradeCalc is a free Forex position size calculator that helps traders calculate lot size, risk percentage, pips distance and potential profit before opening a trade.",
+seo2:"The calculator supports major currency pairs including EURUSD, GBPUSD, USDJPY, AUDUSD, NZDUSD, USDCHF and more. It helps traders manage risk and determine the correct trade size based on account balance and stop-loss distance."
+}
 }
 
 function setLang(l){
@@ -323,6 +335,9 @@ document.getElementById("lbl-riskMoney").textContent=lang[l].riskMoney
 document.getElementById("lbl-profit").textContent=lang[l].profit
 document.getElementById("lbl-rr").textContent=lang[l].rr
 document.getElementById("lbl-pips").textContent=lang[l].pips
+
+document.getElementById("seo1").textContent=lang[l].seo1
+document.getElementById("seo2").textContent=lang[l].seo2
 
 }
 
@@ -411,17 +426,6 @@ document.getElementById(id).addEventListener("input",calc)
 setLang("en")
 
 </script>
-<div style="max-width:600px;margin:60px auto 0 auto;color:#888;font-size:14px;line-height:1.6;text-align:left">
 
-<p>
-TradeCalc is a free Forex position size calculator that helps traders calculate lot size, risk percentage, pips distance and potential profit before opening a trade.
-</p>
-
-<p>
-The calculator supports major currency pairs including EURUSD, GBPUSD, USDJPY, AUDUSD, NZDUSD, USDCHF and more.
-It helps traders manage risk and determine the correct trade size based on account balance and stop-loss distance.
-</p>
-
-</div>
 </body>
 </html>
