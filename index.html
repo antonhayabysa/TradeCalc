@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html lang="en" id="htmlLang">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>TradeCalc | Position Size Calculator for Forex, Crypto & Indices</title>
-  <meta name="description" content="Free position size calculator for Forex, crypto and indices. Calculate lot size, risk, pips, R:R and profit before opening a trade. Works with TradingView, MT4 and MT5.">    
+  <meta name="description" content="Free position size calculator for Forex, crypto and indices. Calculate lot size, risk, pips, R:R and profit before opening a trade. Works with TradingView, MT4 and MT5.">
   <meta name="keywords" content="forex calculator, position size calculator, lot size calculator, forex risk calculator">
   <meta name="robots" content="index, follow">
   <meta name="author" content="TradeCalc">
@@ -18,168 +17,79 @@
   <link rel="apple-touch-icon" href="/favicon.png">
   <link rel="canonical" href="https://trade-calc-gamma.vercel.app">
   <meta name="theme-color" content="#0f0f0f">
-
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
-
-    :root{
-      --bg:#0f0f0f;
-      --bg2:#1a1a1a;
-      --bg3:#2a2a2a;
-      --border:#333;
-      --border-active:#666;
-      --text:#fff;
-      --text-muted:#888;
-      --text-dim:#666;
-      --seo-color:#888
-    }
-
-    body.light{
-      --bg:#f5f5f5;
-      --bg2:#fff;
-      --bg3:#e8e8e8;
-      --border:#ddd;
-      --border-active:#999;
-      --text:#111;
-      --text-muted:#555;
-      --text-dim:#999;
-      --seo-color:#666
-    }
-
-    body{
-      font-family:-apple-system,sans-serif;
-      background:var(--bg);
-      color:var(--text);
-      min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:20px;
-      transition:background 0.2s,color 0.2s
-    }
-
-    .wrap{width:100%;max-width:440px}
-
-    .header{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      margin-bottom:20px
-    }
-
-    h1{font-size:18px;font-weight:500}
-
-    .theme-btn{
-      background:var(--bg2);
-      border:1px solid var(--border);
-      border-radius:8px;
-      padding:6px 12px;
-      color:var(--text-muted);
-      font-size:16px;
-      cursor:pointer;
-      transition:all 0.2s
-    }
-
+    :root{--bg:#0f0f0f;--bg2:#1a1a1a;--bg3:#2a2a2a;--border:#333;--border-active:#666;--text:#fff;--text-muted:#888;--text-dim:#555;--green:#4ade80;--red:#f87171;--accent:#3b82f6}
+    body.light{--bg:#f5f5f5;--bg2:#fff;--bg3:#e8e8e8;--border:#ddd;--border-active:#999;--text:#111;--text-muted:#555;--text-dim:#999}
+    body{font-family:-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:20px;transition:background 0.2s,color 0.2s}
+    .wrap{width:100%;max-width:480px}
+    .header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+    h1{font-size:18px;font-weight:600}
+    .theme-btn{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:6px 12px;color:var(--text-muted);font-size:16px;cursor:pointer;transition:all 0.2s}
     .theme-btn:hover{border-color:var(--border-active);color:var(--text)}
-
     .lang{display:flex;gap:6px;margin-bottom:16px}
-
-    .pair-grid{
-      display:grid;
-      grid-template-columns:repeat(4,1fr);
-      gap:8px;
-      margin-bottom:16px
-    }
-
-    .pair-btn{
-      background:var(--bg2);
-      border:1px solid var(--border);
-      border-radius:8px;
-      padding:8px 4px;
-      color:var(--text-muted);
-      font-size:12px;
-      cursor:pointer;
-      text-align:center;
-      transition:all 0.15s
-    }
-
-    .pair-btn.active{
-      background:var(--bg3);
-      border-color:var(--border-active);
-      color:var(--text)
-    }
-
-    .settings{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:12px;
-      margin-bottom:12px
-    }
-
-    .prices{
-      display:grid;
-      grid-template-columns:1fr 1fr 1fr;
-      gap:12px;
-      margin-bottom:20px
-    }
-
-    .field label{
-      display:block;
-      font-size:12px;
-      color:var(--text-muted);
-      margin-bottom:6px
-    }
-
-    .field input{
-      width:100%;
-      background:var(--bg2);
-      border:1px solid var(--border);
-      border-radius:8px;
-      padding:10px 12px;
-      color:var(--text);
-      font-size:15px;
-      outline:none;
-      transition:border-color 0.15s
-    }
-
+    .pair-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
+    .pair-btn{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:8px 4px;color:var(--text-muted);font-size:12px;cursor:pointer;text-align:center;transition:all 0.15s;user-select:none}
+    .pair-btn.active{background:var(--bg3);border-color:var(--border-active);color:var(--text)}
+    .settings{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+    .prices{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px}
+    .field label{display:block;font-size:12px;color:var(--text-muted);margin-bottom:6px}
+    .field input{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:15px;outline:none;transition:border-color 0.15s}
     .field input:focus{border-color:var(--border-active)}
-
-    .results{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:10px
-    }
-
-    .card{
-      background:var(--bg2);
-      border-radius:8px;
-      padding:12px 14px
-    }
-
-    .card .lbl{
-      font-size:11px;
-      color:var(--text-dim);
-      margin-bottom:4px
-    }
-
+    .results{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .card{background:var(--bg2);border-radius:8px;padding:12px 14px}
+    .card .lbl{font-size:11px;color:var(--text-dim);margin-bottom:4px}
     .card .val{font-size:22px;font-weight:500}
+    .val.green{color:var(--green)}
+    .val.red{color:var(--red)}
+    .error{font-size:13px;color:var(--red);margin-top:10px;min-height:18px}
+    .note{font-size:11px;color:var(--text-dim);margin-top:6px;min-height:16px}
 
-    .val.green{color:#4ade80}
-    .val.red{color:#f87171}
+    /* TABS */
+    .tabs-wrap{margin-top:32px;width:100%}
+    .tabs{display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;padding-bottom:2px}
+    .tab{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:8px 14px;color:var(--text-muted);font-size:13px;cursor:pointer;white-space:nowrap;transition:all 0.15s;user-select:none}
+    .tab.active{background:var(--bg3);border-color:var(--border-active);color:var(--text)}
+    .tab-content{display:none}
+    .tab-content.active{display:block}
 
-    .error{font-size:13px;color:#f87171;margin-top:10px}
-    .note{font-size:11px;color:var(--text-dim);margin-top:6px}
+    /* SECTION TITLES */
+    .section-title{font-size:14px;font-weight:500;color:var(--text-muted);margin-bottom:12px}
 
-    #seo-text{
-      max-width:600px;
-      margin:40px auto 0 auto;
-      color:var(--seo-color);
-      font-size:14px;
-      line-height:1.6;
-      text-align:left
-    }
+    /* SCALE TABLE */
+    .scale-controls{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+    .tbl{width:100%;border-collapse:collapse;font-size:13px}
+    .tbl th{text-align:left;padding:8px 10px;color:var(--text-muted);font-weight:400;border-bottom:1px solid var(--border);font-size:11px}
+    .tbl td{padding:8px 10px;border-bottom:1px solid var(--border);color:var(--text)}
+    .tbl tr:last-child td{border-bottom:none}
+    .tbl td.g{color:var(--green);font-weight:500}
+    .tbl td.r{color:var(--red)}
+    .tbl tr.highlight td{background:var(--bg3)}
 
-    #seo-text p{margin-bottom:12px}
+    /* WINRATE TABLE */
+    .wr-controls{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px}
+    .wr-result{background:var(--bg2);border-radius:8px;padding:14px;margin-bottom:12px}
+    .wr-result .big{font-size:28px;font-weight:600;margin-bottom:4px}
+    .wr-result .sub{font-size:12px;color:var(--text-muted)}
+
+    /* HIERARCHY */
+    .hier-list{display:flex;flex-direction:column;gap:10px}
+    .hier-item{background:var(--bg2);border-radius:8px;padding:14px;border-left:3px solid var(--accent);cursor:pointer;transition:all 0.15s}
+    .hier-item:hover{border-color:var(--green)}
+    .hier-header{display:flex;align-items:center;justify-content:space-between}
+    .hier-num{font-size:11px;color:var(--accent);font-weight:600;margin-bottom:4px}
+    .hier-title{font-size:14px;font-weight:500}
+    .hier-body{font-size:13px;color:var(--text-muted);margin-top:8px;line-height:1.6;display:none}
+    .hier-body.open{display:block}
+    .hier-arrow{font-size:12px;color:var(--text-dim);transition:transform 0.2s}
+    .hier-arrow.open{transform:rotate(180deg)}
+
+    /* INFO BOX */
+    .info-box{background:var(--bg2);border-radius:8px;padding:14px;margin-top:12px;font-size:13px;color:var(--text-muted);line-height:1.7;border-left:3px solid var(--green)}
+
+    /* SEO */
+    #seo-text{max-width:480px;margin:32px auto 0 auto;color:var(--text-dim);font-size:13px;line-height:1.6}
+    #seo-text p{margin-bottom:10px}
 
     @media(max-width:768px){
       .wrap{max-width:100%}
@@ -189,30 +99,34 @@
       .prices{grid-template-columns:1fr}
       .results{grid-template-columns:1fr}
       .card .val{font-size:20px}
+      .wr-controls{grid-template-columns:1fr}
     }
-
     @media(max-width:480px){
       body{padding:14px}
       .pair-btn{font-size:13px;padding:10px 6px}
       .field input{font-size:16px;padding:12px}
+      .tabs{gap:6px}
+      .tab{padding:7px 10px;font-size:12px}
     }
   </style>
 </head>
-
 <body>
 <div class="wrap">
 
+  <!-- HEADER -->
   <div class="header">
     <h1>TradeCalc</h1>
     <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">☀︎</button>
   </div>
 
+  <!-- LANG -->
   <div class="lang">
     <div class="pair-btn" onclick="setLang('ru')" id="lang-ru">RU</div>
     <div class="pair-btn" onclick="setLang('ua')" id="lang-ua">UA</div>
     <div class="pair-btn active" onclick="setLang('en')" id="lang-en">EN</div>
   </div>
 
+  <!-- PAIRS -->
   <div class="pair-grid">
     <div class="pair-btn active" data-pair="EURUSD" data-pip="0.0001" data-pipval="10">EUR/USD</div>
     <div class="pair-btn" data-pair="GBPUSD" data-pip="0.0001" data-pipval="10">GBP/USD</div>
@@ -224,6 +138,7 @@
     <div class="pair-btn" data-pair="GBPJPY" data-pip="0.01" data-pipval="DYNAMIC">GBP/JPY</div>
   </div>
 
+  <!-- SETTINGS -->
   <div class="settings">
     <div class="field">
       <label id="lbl-balance">Account ($)</label>
@@ -235,6 +150,7 @@
     </div>
   </div>
 
+  <!-- PRICES -->
   <div class="prices">
     <div class="field">
       <label id="lbl-entry">Entry</label>
@@ -250,6 +166,7 @@
     </div>
   </div>
 
+  <!-- RESULTS -->
   <div class="results" id="results" style="display:none">
     <div class="card">
       <div class="lbl" id="lbl-units">Quantity (TradingView)</div>
@@ -280,6 +197,92 @@
   <div class="error" id="error"></div>
   <div class="note" id="note"></div>
 
+  <!-- TABS -->
+  <div class="tabs-wrap">
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('scale')" id="tab-scale">📊 Scale</div>
+      <div class="tab" onclick="switchTab('winrate')" id="tab-winrate">📈 WinRate</div>
+      <div class="tab" onclick="switchTab('hierarchy')" id="tab-hierarchy">🧩 Risk</div>
+    </div>
+
+    <!-- TAB 1: SCALE -->
+    <div class="tab-content active" id="tc-scale">
+      <div class="section-title" id="scale-title">Deposit scale — same system, different size</div>
+      <div class="scale-controls">
+        <div class="field">
+          <label id="lbl-sc-risk">Risk per trade (%)</label>
+          <input type="number" id="sc-risk" value="1" step="0.1" min="0.1" max="5" oninput="renderScale()">
+        </div>
+        <div class="field">
+          <label id="lbl-sc-rr">R:R (reward)</label>
+          <input type="number" id="sc-rr" value="3" step="0.5" min="1" max="10" oninput="renderScale()">
+        </div>
+      </div>
+      <table class="tbl" id="scale-table">
+        <thead>
+          <tr>
+            <th id="sh-dep">Deposit</th>
+            <th id="sh-r1">1R risk</th>
+            <th id="sh-3r">3R profit</th>
+            <th id="sh-wr100">WR 100%</th>
+            <th id="sh-wr50">WR 50%</th>
+            <th id="sh-wr30">WR 30%</th>
+          </tr>
+        </thead>
+        <tbody id="scale-body"></tbody>
+      </table>
+      <div class="info-box" id="scale-note">Same rules — different scale. Don't increase risk to increase profit.</div>
+    </div>
+
+    <!-- TAB 2: WINRATE -->
+    <div class="tab-content" id="tc-winrate">
+      <div class="section-title" id="wr-title">WinRate + R:R model</div>
+      <div class="wr-controls">
+        <div class="field">
+          <label id="lbl-wr-dep">Deposit ($)</label>
+          <input type="number" id="wr-dep" value="10000" oninput="renderWR()">
+        </div>
+        <div class="field">
+          <label id="lbl-wr-risk">Risk (%)</label>
+          <input type="number" id="wr-risk" value="1" step="0.1" oninput="renderWR()">
+        </div>
+        <div class="field">
+          <label id="lbl-wr-rr">R:R</label>
+          <input type="number" id="wr-rr" value="3" step="0.5" oninput="renderWR()">
+        </div>
+      </div>
+      <div class="field" style="margin-bottom:16px">
+        <label id="lbl-wr-trades">Trades per month</label>
+        <input type="number" id="wr-trades" value="20" oninput="renderWR()">
+      </div>
+      <table class="tbl" id="wr-table">
+        <thead>
+          <tr>
+            <th id="wh-wr">WinRate</th>
+            <th id="wh-r">Result (R)</th>
+            <th id="wh-pnl">Profit $</th>
+            <th id="wh-pct">%</th>
+          </tr>
+        </thead>
+        <tbody id="wr-body"></tbody>
+      </table>
+      <div class="wr-result" id="wr-example" style="margin-top:16px">
+        <div class="sub" id="wr-ex-label">Your example (55% WR)</div>
+        <div class="big green" id="wr-ex-val">+$240</div>
+        <div class="sub" id="wr-ex-sub">11 wins × 3R − 9 losses × 1R</div>
+      </div>
+    </div>
+
+    <!-- TAB 3: HIERARCHY -->
+    <div class="tab-content" id="tc-hierarchy">
+      <div class="section-title" id="hier-title">Risk management hierarchy</div>
+      <div class="hier-list" id="hier-list"></div>
+      <div class="info-box" id="hier-note">Profit = function of discipline, not deposit size.</div>
+    </div>
+
+  </div>
+
+  <!-- SEO -->
   <div id="seo-text">
     <p id="seo1"></p>
     <p id="seo2"></p>
@@ -288,55 +291,246 @@
 </div>
 
 <script>
+  /* ── THEME ── */
   function toggleTheme(){
-    const isLight=document.body.classList.toggle('light')
-    document.getElementById('theme-btn').textContent=isLight?'🌙':'☀︎'
+    const l=document.body.classList.toggle('light')
+    document.getElementById('theme-btn').textContent=l?'🌙':'☀︎'
   }
 
+  /* ── TABS ── */
+  function switchTab(id){
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'))
+    document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'))
+    document.getElementById('tab-'+id).classList.add('active')
+    document.getElementById('tc-'+id).classList.add('active')
+  }
+
+  /* ── LANG DATA ── */
   const lang={
+    en:{
+      balance:"Account ($)",risk:"Risk (%)",entry:"Entry",stop:"Stop",tp:"Take Profit",
+      units:"Quantity (TradingView)",lots:"Lots (MT4 / MT5)",riskMoney:"Risk $",profit:"Profit $",rr:"R:R",pips:"Pips to Stop",
+      note:"* Pip value depends on current price",
+      seo1:"TradeCalc is a free trading position size calculator that helps traders calculate position size, risk percentage, stop distance and potential profit before opening a trade.",
+      seo2:"Supports Forex, crypto, indices and other leveraged markets used on platforms like TradingView, MT4 and MT5.",
+      tabScale:"📊 Scale",tabWR:"📈 WinRate",tabHier:"🧩 Risk",
+      scaleTitle:"Deposit scale — same system, different size",
+      scRisk:"Risk per trade (%)",scRR:"R:R (reward)",
+      shDep:"Deposit",shR1:"1R risk",sh3r:"3R profit",shWR100:"WR 100%/mo",shWR50:"WR 50%/mo",shWR30:"WR 30%/mo",
+      scaleNote:"Same rules — different scale. Don't increase risk to increase profit.",
+      wrTitle:"WinRate + R:R model",
+      wrDep:"Deposit ($)",wrRisk:"Risk (%)",wrRR:"R:R",wrTrades:"Trades per month",
+      whWR:"WinRate",whR:"Result (R)",whPnl:"Profit $",whPct:"%",
+      wrExLabel:"Your example (55% WR)",wrExSub:"wins × R − losses × 1R",
+      hierTitle:"Risk management hierarchy",
+      hierNote:"Profit = function of discipline, not deposit size.",
+      hier:[
+        {num:"01",title:"Trading balance",body:"The foundation of all calculations. Risk % is always calculated from deposit. Never risk more than you can afford to lose."},
+        {num:"02",title:"Position size",body:"How many units/lots you buy or sell. Calculated from deposit × risk% ÷ stop distance. This is what the calculator gives you."},
+        {num:"03",title:"Leverage",body:"Shows how much borrowed capital is used. Important: leverage does NOT change your risk in dollars — only position size and margin do."},
+        {num:"04",title:"Commission",body:"Calculated from position volume, not leverage. Always factor spread + commission into your risk calculation, especially on small stop losses."}
+      ]
+    },
     ru:{
       balance:"Счёт ($)",risk:"Риск (%)",entry:"Вход",stop:"Стоп",tp:"Тейк",
       units:"Количество (TradingView)",lots:"Лоты (MT4 / MT5)",riskMoney:"Риск $",profit:"Прибыль $",rr:"R:R",pips:"Пипсов до стопа",
+      note:"* Pip value зависит от текущей цены",
       seo1:"TradeCalc — это бесплатный калькулятор размера позиции для трейдинга, который помогает рассчитать объём сделки, риск, расстояние до стопа и потенциальную прибыль перед открытием сделки.",
       seo2:"Подходит для Forex, криптовалют, индексов и других рынков с плечом на платформах TradingView, MT4 и MT5.",
-      note:"* Pip value зависит от текущей цены"
+      tabScale:"📊 Масштаб",tabWR:"📈 WinRate",tabHier:"🧩 Риск",
+      scaleTitle:"Масштаб депозита — одна система, разный размер",
+      scRisk:"Риск на сделку (%)",scRR:"R:R (тейк)",
+      shDep:"Депозит",shR1:"Риск 1R",sh3r:"Профит 3R",shWR100:"WR 100%/мес",shWR50:"WR 50%/мес",shWR30:"WR 30%/мес",
+      scaleNote:"Правила одинаковые — масштаб разный. Не увеличивай риск ради увеличения прибыли.",
+      wrTitle:"Модель WinRate + R:R",
+      wrDep:"Депозит ($)",wrRisk:"Риск (%)",wrRR:"R:R",wrTrades:"Сделок в месяц",
+      whWR:"WinRate",whR:"Результат (R)",whPnl:"Прибыль $",whPct:"%",
+      wrExLabel:"Твой пример (55% WR)",wrExSub:"побед × R − поражений × 1R",
+      hierTitle:"Иерархия риск-менеджмента",
+      hierNote:"Заработок = функция дисциплины, а не депозита.",
+      hier:[
+        {num:"01",title:"Торговый баланс",body:"Основа расчётов. Процент риска всегда считается от депозита. Никогда не рискуй больше, чем готов потерять."},
+        {num:"02",title:"Объём позиции",body:"Сколько единиц/лотов ты покупаешь или продаёшь. Рассчитывается от депозита × риск% ÷ расстояние до стопа. Это и показывает калькулятор."},
+        {num:"03",title:"Кредитное плечо",body:"Показывает, сколько заёмного капитала используется. Важно: плечо НЕ меняет твой риск в деньгах — его меняют только объём позиции и стоп."},
+        {num:"04",title:"Комиссия",body:"Рассчитывается от объёма позиции, не от плеча. Всегда учитывай спред и комиссию в расчёте риска, особенно при маленьких стопах."}
+      ]
     },
     ua:{
       balance:"Рахунок ($)",risk:"Ризик (%)",entry:"Вхід",stop:"Стоп",tp:"Тейк",
       units:"Кількість (TradingView)",lots:"Лоти (MT4 / MT5)",riskMoney:"Ризик $",profit:"Прибуток $",rr:"R:R",pips:"Піпсів до стопу",
+      note:"* Pip value залежить від поточної ціни",
       seo1:"TradeCalc — безкоштовний калькулятор розміру позиції для трейдингу, який допомагає розрахувати обсяг угоди, ризик, відстань до стопу та потенційний прибуток перед відкриттям позиції.",
       seo2:"Підходить для Forex, криптовалют, індексів та інших ринків з плечем на платформах TradingView, MT4 та MT5.",
-      note:"* Pip value залежить від поточної ціни"
-    },
-    en:{
-      balance:"Account ($)",risk:"Risk (%)",entry:"Entry",stop:"Stop",tp:"Take Profit",
-      units:"Quantity (TradingView)",lots:"Lots (MT4 / MT5)",riskMoney:"Risk $",profit:"Profit $",rr:"R:R",pips:"Pips to Stop",
-      seo1:"TradeCalc is a free trading position size calculator that helps traders calculate position size, risk percentage, stop distance and potential profit before opening a trade.",
-      seo2:"Supports Forex, crypto, indices and other leveraged markets used on platforms like TradingView, MT4 and MT5.",
-      note:"* Pip value depends on current price"
+      tabScale:"📊 Масштаб",tabWR:"📈 WinRate",tabHier:"🧩 Ризик",
+      scaleTitle:"Масштаб депозиту — одна система, різний розмір",
+      scRisk:"Ризик на угоду (%)",scRR:"R:R (тейк)",
+      shDep:"Депозит",shR1:"Ризик 1R",sh3r:"Профіт 3R",shWR100:"WR 100%/міс",shWR50:"WR 50%/міс",shWR30:"WR 30%/міс",
+      scaleNote:"Правила однакові — масштаб різний. Не збільшуй ризик заради збільшення прибутку.",
+      wrTitle:"Модель WinRate + R:R",
+      wrDep:"Депозит ($)",wrRisk:"Ризик (%)",wrRR:"R:R",wrTrades:"Угод на місяць",
+      whWR:"WinRate",whR:"Результат (R)",whPnl:"Прибуток $",whPct:"%",
+      wrExLabel:"Твій приклад (55% WR)",wrExSub:"перемог × R − поразок × 1R",
+      hierTitle:"Ієрархія ризик-менеджменту",
+      hierNote:"Заробіток = функція дисципліни, а не депозиту.",
+      hier:[
+        {num:"01",title:"Торговий баланс",body:"Основа розрахунків. Відсоток ризику завжди рахується від депозиту. Ніколи не ризикуй більше, ніж готовий втратити."},
+        {num:"02",title:"Обсяг позиції",body:"Скільки одиниць/лотів ти купуєш або продаєш. Розраховується від депозиту × ризик% ÷ відстань до стопу. Саме це показує калькулятор."},
+        {num:"03",title:"Кредитне плече",body:"Показує, скільки позикового капіталу використовується. Важливо: плече НЕ змінює твій ризик у грошах — його змінюють лише обсяг позиції та стоп."},
+        {num:"04",title:"Комісія",body:"Розраховується від обсягу позиції, не від плеча. Завжди враховуй спред і комісію в розрахунку ризику, особливо при малих стопах."}
+      ]
     }
   }
 
-  function setLang(l){currentLang=l
-    document.querySelectorAll('[id^="lang-"]').forEach(b=>b.classList.remove('active'))
-    document.getElementById('lang-'+l).classList.add('active')
-    document.getElementById("lbl-balance").textContent=lang[l].balance
-    document.getElementById("lbl-risk").textContent=lang[l].risk
-    document.getElementById("lbl-entry").textContent=lang[l].entry
-    document.getElementById("lbl-stop").textContent=lang[l].stop
-    document.getElementById("lbl-tp").textContent=lang[l].tp
-    document.getElementById("lbl-units").textContent=lang[l].units
-    document.getElementById("lbl-lots").textContent=lang[l].lots
-    document.getElementById("lbl-riskMoney").textContent=lang[l].riskMoney
-    document.getElementById("lbl-profit").textContent=lang[l].profit
-    document.getElementById("lbl-rr").textContent=lang[l].rr
-    document.getElementById("lbl-pips").textContent=lang[l].pips
-    document.getElementById("seo1").textContent=lang[l].seo1
-    document.getElementById("seo2").textContent=lang[l].seo2
-    if(activePipVal===null) document.getElementById("note").textContent=lang[l].note
+  let currentLang='en'
+
+  function fmt(n){
+    if(n>=1000000) return '$'+(n/1000000).toFixed(1)+'M'
+    if(n>=1000) return '$'+(n/1000).toFixed(0)+'K'
+    return '$'+Math.round(n)
   }
 
-  let activePip=0.0001,activePipVal=10,activePair='EURUSD',currentLang='en'
+  /* ── SCALE TABLE ── */
+  const deposits=[100,500,1000,5000,10000,25000,50000,100000,200000]
+
+  function renderScale(){
+    const r=parseFloat(document.getElementById('sc-risk').value)||1
+    const rr=parseFloat(document.getElementById('sc-rr').value)||3
+    const l=lang[currentLang]
+    const body=document.getElementById('scale-body')
+    body.innerHTML=''
+    deposits.forEach(dep=>{
+      const risk1=dep*r/100
+      const profit3=risk1*rr
+      // 20 trades per month
+      const wr100=profit3*20
+      const wr50=(profit3*10)-(risk1*10)
+      const wr30=(profit3*6)-(risk1*14)
+      const tr=document.createElement('tr')
+      const wr30cls=wr30>=0?'g':'r'
+      tr.innerHTML=`<td>${fmt(dep)}</td><td class="r">${fmt(risk1)}</td><td class="g">${fmt(profit3)}</td><td class="g">${fmt(wr100)}</td><td class="g">${fmt(wr50)}</td><td class="${wr30cls}">${fmt(wr30)}</td>`
+      body.appendChild(tr)
+    })
+  }
+
+  /* ── WINRATE TABLE ── */
+  const wrLevels=[30,40,50,55,60,70]
+
+  function renderWR(){
+    const dep=parseFloat(document.getElementById('wr-dep').value)||10000
+    const r=parseFloat(document.getElementById('wr-risk').value)||1
+    const rr=parseFloat(document.getElementById('wr-rr').value)||3
+    const trades=parseFloat(document.getElementById('wr-trades').value)||20
+    const l=lang[currentLang]
+    const riskAmt=dep*r/100
+    const body=document.getElementById('wr-body')
+    body.innerHTML=''
+    wrLevels.forEach(wr=>{
+      const wins=Math.round(trades*wr/100)
+      const losses=trades-wins
+      const resultR=(wins*rr)-(losses*1)
+      const pnl=resultR*riskAmt
+      const pct=(pnl/dep*100).toFixed(1)
+      const cls=pnl>=0?'g':'r'
+      const tr=document.createElement('tr')
+      tr.innerHTML=`<td>${wr}%</td><td class="${cls}">${resultR>=0?'+':''}${resultR.toFixed(0)}R</td><td class="${cls}">${pnl>=0?'+':''}${Math.round(pnl).toLocaleString()}</td><td class="${cls}">${pnl>=0?'+':''}${pct}%</td>`
+      body.appendChild(tr)
+    })
+    // example 55%
+    const wins55=Math.round(trades*0.55)
+    const losses55=trades-wins55
+    const pnl55=((wins55*rr)-(losses55*1))*riskAmt
+    const ex=document.getElementById('wr-ex-val')
+    ex.textContent=(pnl55>=0?'+':'')+Math.round(pnl55).toLocaleString()
+    ex.className='big '+(pnl55>=0?'green':'red')
+    document.getElementById('wr-ex-sub').textContent=`${wins55} ${l.wrExSub.split('×')[0].trim()} × ${rr}R − ${losses55} × 1R`
+  }
+
+  /* ── HIERARCHY ── */
+  function renderHier(){
+    const l=lang[currentLang]
+    const list=document.getElementById('hier-list')
+    list.innerHTML=''
+    l.hier.forEach((item,i)=>{
+      const div=document.createElement('div')
+      div.className='hier-item'
+      div.innerHTML=`
+        <div class="hier-header" onclick="toggleHier(${i})">
+          <div>
+            <div class="hier-num">${item.num}</div>
+            <div class="hier-title">${item.title}</div>
+          </div>
+          <div class="hier-arrow" id="harr-${i}">▼</div>
+        </div>
+        <div class="hier-body" id="hbody-${i}">${item.body}</div>
+      `
+      list.appendChild(div)
+    })
+  }
+
+  function toggleHier(i){
+    const body=document.getElementById('hbody-'+i)
+    const arr=document.getElementById('harr-'+i)
+    body.classList.toggle('open')
+    arr.classList.toggle('open')
+  }
+
+  /* ── SET LANG ── */
+  function setLang(l){
+    currentLang=l
+    const d=lang[l]
+    document.querySelectorAll('[id^="lang-"]').forEach(b=>b.classList.remove('active'))
+    document.getElementById('lang-'+l).classList.add('active')
+    // calculator labels
+    document.getElementById("lbl-balance").textContent=d.balance
+    document.getElementById("lbl-risk").textContent=d.risk
+    document.getElementById("lbl-entry").textContent=d.entry
+    document.getElementById("lbl-stop").textContent=d.stop
+    document.getElementById("lbl-tp").textContent=d.tp
+    document.getElementById("lbl-units").textContent=d.units
+    document.getElementById("lbl-lots").textContent=d.lots
+    document.getElementById("lbl-riskMoney").textContent=d.riskMoney
+    document.getElementById("lbl-profit").textContent=d.profit
+    document.getElementById("lbl-rr").textContent=d.rr
+    document.getElementById("lbl-pips").textContent=d.pips
+    document.getElementById("seo1").textContent=d.seo1
+    document.getElementById("seo2").textContent=d.seo2
+    if(activePipVal===null) document.getElementById("note").textContent=d.note
+    // tabs
+    document.getElementById('tab-scale').textContent=d.tabScale
+    document.getElementById('tab-winrate').textContent=d.tabWR
+    document.getElementById('tab-hierarchy').textContent=d.tabHier
+    // scale tab
+    document.getElementById('scale-title').textContent=d.scaleTitle
+    document.getElementById('lbl-sc-risk').textContent=d.scRisk
+    document.getElementById('lbl-sc-rr').textContent=d.scRR
+    document.getElementById('sh-dep').textContent=d.shDep
+    document.getElementById('sh-r1').textContent=d.shR1
+    document.getElementById('sh-3r').textContent=d.sh3r
+    document.getElementById('sh-wr100').textContent=d.shWR100
+    document.getElementById('sh-wr50').textContent=d.shWR50
+    document.getElementById('sh-wr30').textContent=d.shWR30
+    document.getElementById('scale-note').textContent=d.scaleNote
+    // winrate tab
+    document.getElementById('wr-title').textContent=d.wrTitle
+    document.getElementById('lbl-wr-dep').textContent=d.wrDep
+    document.getElementById('lbl-wr-risk').textContent=d.wrRisk
+    document.getElementById('lbl-wr-rr').textContent=d.wrRR
+    document.getElementById('lbl-wr-trades').textContent=d.wrTrades
+    document.getElementById('wh-wr').textContent=d.whWR
+    document.getElementById('wh-r').textContent=d.whR
+    document.getElementById('wh-pnl').textContent=d.whPnl
+    document.getElementById('wh-pct').textContent=d.whPct
+    document.getElementById('wr-ex-label').textContent=d.wrExLabel
+    // hier tab
+    document.getElementById('hier-title').textContent=d.hierTitle
+    document.getElementById('hier-note').textContent=d.hierNote
+    renderHier()
+    renderScale()
+    renderWR()
+  }
+
+  /* ── CALC ── */
+  let activePip=0.0001,activePipVal=10,activePair='EURUSD'
 
   document.querySelectorAll('.pair-btn[data-pair]').forEach(btn=>{
     btn.addEventListener('click',function(){
@@ -345,7 +539,7 @@
       activePair=this.dataset.pair
       activePip=parseFloat(this.dataset.pip)
       activePipVal=this.dataset.pipval==="DYNAMIC"?null:parseFloat(this.dataset.pipval)
-      document.getElementById("note").textContent=activePipVal===null?(currentLang&&lang[currentLang]?lang[currentLang].note:"* Pip value depends on current price"):""
+      document.getElementById("note").textContent=activePipVal===null?lang[currentLang].note:""
       calc()
     })
   })
@@ -392,6 +586,5 @@
 
   setLang("en")
 </script>
-
 </body>
 </html>
