@@ -35,8 +35,8 @@
     .settings{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
     .prices{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px}
     .field label{display:block;font-size:12px;color:var(--text-muted);margin-bottom:6px}
-    .field input{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:15px;outline:none;transition:border-color 0.15s}
-    .field input:focus{border-color:var(--border-active)}
+    .field input,.field select{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:15px;outline:none;transition:border-color 0.15s}
+    .field input:focus,.field select:focus{border-color:var(--border-active)}
     .results{display:grid;grid-template-columns:1fr 1fr;gap:10px}
     .card{background:var(--bg2);border-radius:8px;padding:12px 14px}
     .card .lbl{font-size:11px;color:var(--text-dim);margin-bottom:4px}
@@ -45,35 +45,22 @@
     .val.red{color:var(--red)}
     .error{font-size:13px;color:var(--red);margin-top:10px;min-height:18px}
     .note{font-size:11px;color:var(--text-dim);margin-top:6px;min-height:16px}
-
-    /* TABS */
     .tabs-wrap{margin-top:32px;width:100%}
     .tabs{display:flex;gap:8px;margin-bottom:16px;overflow-x:auto;padding-bottom:2px}
     .tab{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:8px 14px;color:var(--text-muted);font-size:13px;cursor:pointer;white-space:nowrap;transition:all 0.15s;user-select:none}
     .tab.active{background:var(--bg3);border-color:var(--border-active);color:var(--text)}
     .tab-content{display:none}
     .tab-content.active{display:block}
-
-    /* SECTION TITLES */
     .section-title{font-size:14px;font-weight:500;color:var(--text-muted);margin-bottom:12px}
-
-    /* SCALE TABLE */
-    .scale-controls{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
     .tbl{width:100%;border-collapse:collapse;font-size:13px}
     .tbl th{text-align:left;padding:8px 10px;color:var(--text-muted);font-weight:400;border-bottom:1px solid var(--border);font-size:11px}
     .tbl td{padding:8px 10px;border-bottom:1px solid var(--border);color:var(--text)}
     .tbl tr:last-child td{border-bottom:none}
     .tbl td.g{color:var(--green);font-weight:500}
     .tbl td.r{color:var(--red)}
-    .tbl tr.highlight td{background:var(--bg3)}
-
-    /* WINRATE TABLE */
-    .wr-controls{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px}
     .wr-result{background:var(--bg2);border-radius:8px;padding:14px;margin-bottom:12px}
     .wr-result .big{font-size:28px;font-weight:600;margin-bottom:4px}
     .wr-result .sub{font-size:12px;color:var(--text-muted)}
-
-    /* HIERARCHY */
     .hier-list{display:flex;flex-direction:column;gap:10px}
     .hier-item{background:var(--bg2);border-radius:8px;padding:14px;border-left:3px solid var(--accent);cursor:pointer;transition:all 0.15s}
     .hier-item:hover{border-color:var(--green)}
@@ -84,14 +71,13 @@
     .hier-body.open{display:block}
     .hier-arrow{font-size:12px;color:var(--text-dim);transition:transform 0.2s}
     .hier-arrow.open{transform:rotate(180deg)}
-
-    /* INFO BOX */
     .info-box{background:var(--bg2);border-radius:8px;padding:14px;margin-top:12px;font-size:13px;color:var(--text-muted);line-height:1.7;border-left:3px solid var(--green)}
-
-    /* SEO */
+    .stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+    .stat-card{background:var(--bg2);border-radius:8px;padding:10px 12px;text-align:center}
+    .stat-card .s-lbl{font-size:11px;color:var(--text-dim);margin-bottom:4px}
+    .stat-card .s-val{font-size:18px;font-weight:500}
     #seo-text{max-width:480px;margin:32px auto 0 auto;color:var(--text-dim);font-size:13px;line-height:1.6}
     #seo-text p{margin-bottom:10px}
-
     @media(max-width:768px){
       .wrap{max-width:100%}
       h1{font-size:20px}
@@ -100,12 +86,11 @@
       .prices{grid-template-columns:1fr}
       .results{grid-template-columns:1fr}
       .card .val{font-size:20px}
-      .wr-controls{grid-template-columns:1fr}
     }
     @media(max-width:480px){
       body{padding:14px}
       .pair-btn{font-size:13px;padding:10px 6px}
-      .field input{font-size:16px;padding:12px}
+      .field input,.field select{font-size:16px;padding:12px}
       .tabs{gap:6px}
       .tab{padding:7px 10px;font-size:12px}
     }
@@ -114,20 +99,17 @@
 <body>
 <div class="wrap">
 
-  <!-- HEADER -->
   <div class="header">
     <h1>TradeCalc</h1>
     <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">☀︎</button>
   </div>
 
-  <!-- LANG -->
   <div class="lang">
     <div class="pair-btn" onclick="setLang('ru')" id="lang-ru">RU</div>
     <div class="pair-btn" onclick="setLang('ua')" id="lang-ua">UA</div>
     <div class="pair-btn active" onclick="setLang('en')" id="lang-en">EN</div>
   </div>
 
-  <!-- PAIRS -->
   <div class="pair-grid">
     <div class="pair-btn active" data-pair="EURUSD" data-pip="0.0001" data-pipval="10">EUR/USD</div>
     <div class="pair-btn" data-pair="GBPUSD" data-pip="0.0001" data-pipval="10">GBP/USD</div>
@@ -139,138 +121,79 @@
     <div class="pair-btn" data-pair="GBPJPY" data-pip="0.01" data-pipval="DYNAMIC">GBP/JPY</div>
   </div>
 
-  <!-- SETTINGS -->
   <div class="settings">
-    <div class="field">
-      <label id="lbl-balance">Account ($)</label>
-      <input type="number" id="balance">
-    </div>
-    <div class="field">
-      <label id="lbl-risk">Risk (%)</label>
-      <input type="number" id="risk" step="0.1">
-    </div>
+    <div class="field"><label id="lbl-balance">Account ($)</label><input type="number" id="balance"></div>
+    <div class="field"><label id="lbl-risk">Risk (%)</label><input type="number" id="risk" step="0.1"></div>
   </div>
 
-  <!-- PRICES -->
   <div class="prices">
-    <div class="field">
-      <label id="lbl-entry">Entry</label>
-      <input type="number" id="entry" step="0.00001">
-    </div>
-    <div class="field">
-      <label id="lbl-stop">Stop</label>
-      <input type="number" id="stop" step="0.00001">
-    </div>
-    <div class="field">
-      <label id="lbl-tp">Take Profit</label>
-      <input type="number" id="tp" step="0.00001">
-    </div>
+    <div class="field"><label id="lbl-entry">Entry</label><input type="number" id="entry" step="0.00001"></div>
+    <div class="field"><label id="lbl-stop">Stop</label><input type="number" id="stop" step="0.00001"></div>
+    <div class="field"><label id="lbl-tp">Take Profit</label><input type="number" id="tp" step="0.00001"></div>
   </div>
 
-  <!-- RESULTS -->
   <div class="results" id="results" style="display:none">
-    <div class="card">
-      <div class="lbl" id="lbl-units">Quantity (TradingView)</div>
-      <div class="val" id="r-units">—</div>
-    </div>
-    <div class="card">
-      <div class="lbl" id="lbl-lots">Lots (MT4 / MT5)</div>
-      <div class="val" id="r-lots">—</div>
-    </div>
-    <div class="card">
-      <div class="lbl" id="lbl-riskMoney">Risk $</div>
-      <div class="val red" id="r-risk">—</div>
-    </div>
-    <div class="card">
-      <div class="lbl" id="lbl-profit">Profit $</div>
-      <div class="val green" id="r-profit">—</div>
-    </div>
-    <div class="card">
-      <div class="lbl" id="lbl-rr">R:R</div>
-      <div class="val" id="r-rr">—</div>
-    </div>
-    <div class="card">
-      <div class="lbl" id="lbl-pips">Pips to Stop</div>
-      <div class="val" id="r-pips">—</div>
-    </div>
+    <div class="card"><div class="lbl" id="lbl-units">Quantity (TradingView)</div><div class="val" id="r-units">—</div></div>
+    <div class="card"><div class="lbl" id="lbl-lots">Lots (MT4 / MT5)</div><div class="val" id="r-lots">—</div></div>
+    <div class="card"><div class="lbl" id="lbl-riskMoney">Risk $</div><div class="val red" id="r-risk">—</div></div>
+    <div class="card"><div class="lbl" id="lbl-profit">Profit $</div><div class="val green" id="r-profit">—</div></div>
+    <div class="card"><div class="lbl" id="lbl-rr">R:R</div><div class="val" id="r-rr">—</div></div>
+    <div class="card"><div class="lbl" id="lbl-pips">Pips to Stop</div><div class="val" id="r-pips">—</div></div>
   </div>
 
   <div class="error" id="error"></div>
   <div class="note" id="note"></div>
 
-  <!-- TABS -->
   <div class="tabs-wrap">
     <div class="tabs">
       <div class="tab active" onclick="switchTab('scale')" id="tab-scale">📊 Scale</div>
       <div class="tab" onclick="switchTab('winrate')" id="tab-winrate">📈 WinRate</div>
       <div class="tab" onclick="switchTab('hierarchy')" id="tab-hierarchy">🧩 Risk</div>
+      <div class="tab" onclick="switchTab('report')" id="tab-report">📋 Report</div>
     </div>
 
     <!-- TAB 1: SCALE -->
     <div class="tab-content active" id="tc-scale">
-      <div class="section-title" id="scale-title">Deposit scale — same system, different size</div>
-      <div class="scale-controls">
-        <div class="field">
-          <label id="lbl-sc-risk">Risk per trade (%)</label>
-          <input type="number" id="sc-risk" value="1" step="0.1" min="0.1" max="5" oninput="renderScale()">
-        </div>
-        <div class="field">
-          <label id="lbl-sc-rr">R:R (reward)</label>
-          <input type="number" id="sc-rr" value="3" step="0.5" min="1" max="10" oninput="renderScale()">
-        </div>
+      <div class="section-title" id="scale-title">Deposit scale</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+        <div class="field"><label id="lbl-sc-risk">Risk per trade (%)</label><input type="number" id="sc-risk" value="1" step="0.1" oninput="renderScale()"></div>
+        <div class="field"><label id="lbl-sc-rr">R:R</label><input type="number" id="sc-rr" value="3" step="0.5" oninput="renderScale()"></div>
       </div>
-      <table class="tbl" id="scale-table">
-        <thead>
-          <tr>
-            <th id="sh-dep">Deposit</th>
-            <th id="sh-r1">1R risk</th>
-            <th id="sh-3r">3R profit</th>
-            <th id="sh-wr100">WR 100%</th>
-            <th id="sh-wr50">WR 50%</th>
-            <th id="sh-wr30">WR 30%</th>
-          </tr>
-        </thead>
+      <table class="tbl">
+        <thead><tr>
+          <th id="sh-dep">Deposit</th><th id="sh-r1">1R risk</th><th id="sh-3r">Profit</th>
+          <th id="sh-wr100">WR 100%</th><th id="sh-wr50">WR 50%</th><th id="sh-wr30">WR 30%</th>
+        </tr></thead>
         <tbody id="scale-body"></tbody>
       </table>
-      <div class="info-box" id="scale-note">Same rules — different scale. Don't increase risk to increase profit.</div>
+      <div class="info-box" id="scale-note"></div>
     </div>
 
     <!-- TAB 2: WINRATE -->
     <div class="tab-content" id="tc-winrate">
-      <div class="section-title" id="wr-title">WinRate + R:R model</div>
-      <div class="wr-controls">
-        <div class="field">
-          <label id="lbl-wr-dep">Deposit ($)</label>
-          <input type="number" id="wr-dep" value="10000" oninput="renderWR()">
-        </div>
-        <div class="field">
-          <label id="lbl-wr-risk">Risk (%)</label>
-          <input type="number" id="wr-risk" value="1" step="0.1" oninput="renderWR()">
-        </div>
-        <div class="field">
-          <label id="lbl-wr-rr">R:R</label>
-          <input type="number" id="wr-rr" value="3" step="0.5" oninput="renderWR()">
-        </div>
+      <div class="section-title" id="wr-title">WinRate + R:R</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+        <div class="field"><label id="lbl-wr-dep">Deposit ($)</label><input type="number" id="wr-dep" value="10000" oninput="renderWR()"></div>
+        <div class="field"><label id="lbl-wr-risk">Risk (%)</label><input type="number" id="wr-risk" value="1" step="0.1" oninput="renderWR()"></div>
+        <div class="field"><label id="lbl-wr-rr">R:R</label><input type="number" id="wr-rr" value="3" step="0.5" oninput="renderWR()"></div>
+        <div class="field"><label id="lbl-wr-trades">Trades</label><input type="number" id="wr-trades" value="20" oninput="renderWR()"></div>
       </div>
-      <div class="field" style="margin-bottom:16px">
-        <label id="lbl-wr-trades">Trades per month</label>
-        <input type="number" id="wr-trades" value="20" oninput="renderWR()">
-      </div>
-      <table class="tbl" id="wr-table">
-        <thead>
-          <tr>
-            <th id="wh-wr">WinRate</th>
-            <th id="wh-r">Result (R)</th>
-            <th id="wh-pnl">Profit $</th>
-            <th id="wh-pct">%</th>
-          </tr>
-        </thead>
+      <table class="tbl">
+        <thead><tr>
+          <th id="wh-wr">WinRate</th><th id="wh-r">Result (R)</th><th id="wh-pnl">$</th><th id="wh-pct">%</th>
+        </tr></thead>
         <tbody id="wr-body"></tbody>
       </table>
-      <div class="wr-result" id="wr-example" style="margin-top:16px">
-        <div class="sub" id="wr-ex-label">Your example (55% WR)</div>
-        <div class="big green" id="wr-ex-val">+$240</div>
-        <div class="sub" id="wr-ex-sub">11 wins × 3R − 9 losses × 1R</div>
+      <div style="margin-top:16px">
+        <div class="field" style="margin-bottom:12px">
+          <label id="lbl-wr-custom">Your WinRate (%)</label>
+          <input type="number" id="wr-custom" min="1" max="100" step="1" oninput="renderWR()">
+        </div>
+        <div class="wr-result" id="wr-example">
+          <div class="sub" id="wr-ex-label">—</div>
+          <div class="big" id="wr-ex-val">—</div>
+          <div class="sub" id="wr-ex-sub">—</div>
+        </div>
       </div>
     </div>
 
@@ -278,27 +201,46 @@
     <div class="tab-content" id="tc-hierarchy">
       <div class="section-title" id="hier-title">Risk management hierarchy</div>
       <div class="hier-list" id="hier-list"></div>
-      <div class="info-box" id="hier-note">Profit = function of discipline, not deposit size.</div>
+      <div class="info-box" id="hier-note"></div>
+    </div>
+
+    <!-- TAB 4: REPORT -->
+    <div class="tab-content" id="tc-report">
+      <div class="section-title" id="report-title">Report</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+        <div class="field"><label id="lbl-rp-dep">Deposit ($)</label><input type="number" id="rp-dep" oninput="renderReport()"></div>
+        <div class="field"><label id="lbl-rp-risk">Risk per trade (%)</label><input type="number" id="rp-risk" value="1" step="0.1" oninput="renderReport()"></div>
+        <div class="field"><label id="lbl-rp-wins">✅ Wins</label><input type="number" id="rp-wins" min="0" oninput="renderReport()"></div>
+        <div class="field"><label id="lbl-rp-losses">❌ Losses</label><input type="number" id="rp-losses" min="0" oninput="renderReport()"></div>
+        <div class="field"><label id="lbl-rp-rr">Avg R:R</label><input type="number" id="rp-rr" value="3" step="0.5" oninput="renderReport()"></div>
+        <div class="field">
+          <label id="lbl-rp-period">Period</label>
+          <select id="rp-period" oninput="renderReport()">
+            <option value="day" id="opt-day">Day</option>
+            <option value="week" id="opt-week">Week</option>
+            <option value="month" selected id="opt-month">Month</option>
+            <option value="quarter" id="opt-quarter">Quarter</option>
+            <option value="half" id="opt-half">6 months</option>
+            <option value="year" id="opt-year">Year</option>
+          </select>
+        </div>
+      </div>
+      <div class="stat-grid" id="report-grid"></div>
+      <div class="info-box" id="report-summary" style="display:none"></div>
     </div>
 
   </div>
 
-  <!-- SEO -->
-  <div id="seo-text">
-    <p id="seo1"></p>
-    <p id="seo2"></p>
-  </div>
+  <div id="seo-text"><p id="seo1"></p><p id="seo2"></p></div>
 
 </div>
 
 <script>
-  /* ── THEME ── */
   function toggleTheme(){
     const l=document.body.classList.toggle('light')
     document.getElementById('theme-btn').textContent=l?'🌙':'☀︎'
   }
 
-  /* ── TABS ── */
   function switchTab(id){
     document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'))
     document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'))
@@ -306,7 +248,6 @@
     document.getElementById('tc-'+id).classList.add('active')
   }
 
-  /* ── LANG DATA ── */
   const lang={
     en:{
       balance:"Account ($)",risk:"Risk (%)",entry:"Entry",stop:"Stop",tp:"Take Profit",
@@ -314,121 +255,119 @@
       note:"* Pip value depends on current price",
       seo1:"TradeCalc is a free trading position size calculator that helps traders calculate position size, risk percentage, stop distance and potential profit before opening a trade.",
       seo2:"Supports Forex, crypto, indices and other leveraged markets used on platforms like TradingView, MT4 and MT5.",
-      tabScale:"📊 Scale",tabWR:"📈 WinRate",tabHier:"🧩 Risk",
+      tabScale:"📊 Scale",tabWR:"📈 WinRate",tabHier:"🧩 Risk",tabReport:"📋 Report",
       scaleTitle:"Deposit scale — same system, different size",
-      scRisk:"Risk per trade (%)",scRR:"R:R (reward)",
-      shDep:"Deposit",shR1:"1R risk",sh3r:"3R profit",shWR100:"WR 100%/mo",shWR50:"WR 50%/mo",shWR30:"WR 30%/mo",
+      scRisk:"Risk per trade (%)",scRR:"R:R",
+      shDep:"Deposit",shR1:"1R risk",sh3r:"Profit",shWR100:"WR 100%",shWR50:"WR 50%",shWR30:"WR 30%",
       scaleNote:"Same rules — different scale. Don't increase risk to increase profit.",
-      wrTitle:"WinRate + R:R model",
-      wrDep:"Deposit ($)",wrRisk:"Risk (%)",wrRR:"R:R",wrTrades:"Trades per month",
-      whWR:"WinRate",whR:"Result (R)",whPnl:"Profit $",whPct:"%",
-      wrExLabel:"Your example (55% WR)",wrExSub:"wins × R − losses × 1R",
+      wrTitle:"WinRate + R:R",wrDep:"Deposit ($)",wrRisk:"Risk (%)",wrRR:"R:R",wrTrades:"Trades",wrCustom:"Your WinRate (%)",
+      whWR:"WinRate",whR:"Result (R)",whPnl:"$",whPct:"%",
       hierTitle:"Risk management hierarchy",
       hierNote:"Profit = function of discipline, not deposit size.",
       hier:[
-        {num:"01",title:"Trading balance",body:"The foundation of all calculations. Risk % is always calculated from deposit. Never risk more than you can afford to lose."},
-        {num:"02",title:"Position size",body:"How many units/lots you buy or sell. Calculated from deposit × risk% ÷ stop distance. This is what the calculator gives you."},
-        {num:"03",title:"Leverage",body:"Shows how much borrowed capital is used. Important: leverage does NOT change your risk in dollars — only position size and margin do."},
-        {num:"04",title:"Commission",body:"Calculated from position volume, not leverage. Always factor spread + commission into your risk calculation, especially on small stop losses."}
-      ]
+        {num:"01",title:"Trading balance",body:"The foundation of all calculations. Risk % is always calculated from deposit."},
+        {num:"02",title:"Position size",body:"How many units/lots you buy or sell. Calculated from deposit × risk% ÷ stop distance."},
+        {num:"03",title:"Leverage",body:"Shows how much borrowed capital is used. Leverage does NOT change your risk in dollars."},
+        {num:"04",title:"Commission",body:"Calculated from position volume, not leverage. Always factor spread + commission into your risk."}
+      ],
+      reportTitle:"Report",rpDep:"Deposit ($)",rpRisk:"Risk per trade (%)",rpWins:"✅ Wins",rpLosses:"❌ Losses",rpRR:"Avg R:R",rpPeriod:"Period",
+      periods:{day:"Day",week:"Week",month:"Month",quarter:"Quarter",half:"6 months",year:"Year"},
+      stTrades:"Trades",stWins:"Profitable",stLosses:"Unprofitable",stWR:"WinRate",stTotalR:"Total R",stTotalPnl:"Total $",stPct:"% of dep",stRisk:"Risk/trade",stPerWin:"Profit/trade"
     },
     ru:{
       balance:"Счёт ($)",risk:"Риск (%)",entry:"Вход",stop:"Стоп",tp:"Тейк",
       units:"Количество (TradingView)",lots:"Лоты (MT4 / MT5)",riskMoney:"Риск $",profit:"Прибыль $",rr:"R:R",pips:"Пипсов до стопа",
       note:"* Pip value зависит от текущей цены",
-      seo1:"TradeCalc — это бесплатный калькулятор размера позиции для трейдинга, который помогает рассчитать объём сделки, риск, расстояние до стопа и потенциальную прибыль перед открытием сделки.",
-      seo2:"Подходит для Forex, криптовалют, индексов и других рынков с плечом на платформах TradingView, MT4 и MT5.",
-      tabScale:"📊 Масштаб",tabWR:"📈 WinRate",tabHier:"🧩 Риск",
+      seo1:"TradeCalc — это бесплатный калькулятор размера позиции для трейдинга.",
+      seo2:"Подходит для Forex, криптовалют, индексов на платформах TradingView, MT4 и MT5.",
+      tabScale:"📊 Масштаб",tabWR:"📈 WinRate",tabHier:"🧩 Риск",tabReport:"📋 Отчёт",
       scaleTitle:"Масштаб депозита — одна система, разный размер",
-      scRisk:"Риск на сделку (%)",scRR:"R:R (тейк)",
-      shDep:"Депозит",shR1:"Риск 1R",sh3r:"Профит 3R",shWR100:"WR 100%/мес",shWR50:"WR 50%/мес",shWR30:"WR 30%/мес",
-      scaleNote:"Правила одинаковые — масштаб разный. Не увеличивай риск ради увеличения прибыли.",
-      wrTitle:"Модель WinRate + R:R",
-      wrDep:"Депозит ($)",wrRisk:"Риск (%)",wrRR:"R:R",wrTrades:"Сделок в месяц",
-      whWR:"WinRate",whR:"Результат (R)",whPnl:"Прибыль $",whPct:"%",
-      wrExLabel:"Твой пример (55% WR)",wrExSub:"побед × R − поражений × 1R",
+      scRisk:"Риск на сделку (%)",scRR:"R:R",
+      shDep:"Депозит",shR1:"Риск 1R",sh3r:"Профит",shWR100:"WR 100%",shWR50:"WR 50%",shWR30:"WR 30%",
+      scaleNote:"Правила одинаковые — масштаб разный. Не увеличивай риск ради прибыли.",
+      wrTitle:"Модель WinRate + R:R",wrDep:"Депозит ($)",wrRisk:"Риск (%)",wrRR:"R:R",wrTrades:"Сделок",wrCustom:"Ваш WinRate (%)",
+      whWR:"WinRate",whR:"Результат (R)",whPnl:"$",whPct:"%",
       hierTitle:"Иерархия риск-менеджмента",
       hierNote:"Заработок = функция дисциплины, а не депозита.",
       hier:[
-        {num:"01",title:"Торговый баланс",body:"Основа расчётов. Процент риска всегда считается от депозита. Никогда не рискуй больше, чем готов потерять."},
-        {num:"02",title:"Объём позиции",body:"Сколько единиц/лотов ты покупаешь или продаёшь. Рассчитывается от депозита × риск% ÷ расстояние до стопа. Это и показывает калькулятор."},
-        {num:"03",title:"Кредитное плечо",body:"Показывает, сколько заёмного капитала используется. Важно: плечо НЕ меняет твой риск в деньгах — его меняют только объём позиции и стоп."},
-        {num:"04",title:"Комиссия",body:"Рассчитывается от объёма позиции, не от плеча. Всегда учитывай спред и комиссию в расчёте риска, особенно при маленьких стопах."}
-      ]
+        {num:"01",title:"Торговый баланс",body:"Основа расчётов. Процент риска всегда считается от депозита."},
+        {num:"02",title:"Объём позиции",body:"Сколько единиц/лотов ты покупаешь. Депозит × риск% ÷ расстояние до стопа."},
+        {num:"03",title:"Кредитное плечо",body:"Плечо НЕ меняет твой риск в деньгах — его меняют только объём и стоп."},
+        {num:"04",title:"Комиссия",body:"Считается от объёма позиции. Учитывай спред при маленьких стопах."}
+      ],
+      reportTitle:"Отчёт",rpDep:"Депозит ($)",rpRisk:"Риск на сделку (%)",rpWins:"✅ Прибыльных",rpLosses:"❌ Убыточных",rpRR:"Avg R:R",rpPeriod:"Период",
+      periods:{day:"День",week:"Неделя",month:"Месяц",quarter:"Квартал",half:"6 месяцев",year:"Год"},
+      stTrades:"Сделок",stWins:"Прибыльных",stLosses:"Убыточных",stWR:"WinRate",stTotalR:"Итого R",stTotalPnl:"Итого $",stPct:"% к депо",stRisk:"Риск/сделка",stPerWin:"Профит/сделка"
     },
     ua:{
       balance:"Рахунок ($)",risk:"Ризик (%)",entry:"Вхід",stop:"Стоп",tp:"Тейк",
       units:"Кількість (TradingView)",lots:"Лоти (MT4 / MT5)",riskMoney:"Ризик $",profit:"Прибуток $",rr:"R:R",pips:"Піпсів до стопу",
       note:"* Pip value залежить від поточної ціни",
-      seo1:"TradeCalc — безкоштовний калькулятор розміру позиції для трейдингу, який допомагає розрахувати обсяг угоди, ризик, відстань до стопу та потенційний прибуток перед відкриттям позиції.",
-      seo2:"Підходить для Forex, криптовалют, індексів та інших ринків з плечем на платформах TradingView, MT4 та MT5.",
-      tabScale:"📊 Масштаб",tabWR:"📈 WinRate",tabHier:"🧩 Ризик",
+      seo1:"TradeCalc — безкоштовний калькулятор розміру позиції для трейдингу.",
+      seo2:"Підходить для Forex, криптовалют, індексів на платформах TradingView, MT4 та MT5.",
+      tabScale:"📊 Масштаб",tabWR:"📈 WinRate",tabHier:"🧩 Ризик",tabReport:"📋 Звіт",
       scaleTitle:"Масштаб депозиту — одна система, різний розмір",
-      scRisk:"Ризик на угоду (%)",scRR:"R:R (тейк)",
-      shDep:"Депозит",shR1:"Ризик 1R",sh3r:"Профіт 3R",shWR100:"WR 100%/міс",shWR50:"WR 50%/міс",shWR30:"WR 30%/міс",
-      scaleNote:"Правила однакові — масштаб різний. Не збільшуй ризик заради збільшення прибутку.",
-      wrTitle:"Модель WinRate + R:R",
-      wrDep:"Депозит ($)",wrRisk:"Ризик (%)",wrRR:"R:R",wrTrades:"Угод на місяць",
-      whWR:"WinRate",whR:"Результат (R)",whPnl:"Прибуток $",whPct:"%",
-      wrExLabel:"Твій приклад (55% WR)",wrExSub:"перемог × R − поразок × 1R",
+      scRisk:"Ризик на угоду (%)",scRR:"R:R",
+      shDep:"Депозит",shR1:"Ризик 1R",sh3r:"Профіт",shWR100:"WR 100%",shWR50:"WR 50%",shWR30:"WR 30%",
+      scaleNote:"Правила однакові — масштаб різний. Не збільшуй ризик заради прибутку.",
+      wrTitle:"Модель WinRate + R:R",wrDep:"Депозит ($)",wrRisk:"Ризик (%)",wrRR:"R:R",wrTrades:"Угод",wrCustom:"Ваш WinRate (%)",
+      whWR:"WinRate",whR:"Результат (R)",whPnl:"$",whPct:"%",
       hierTitle:"Ієрархія ризик-менеджменту",
       hierNote:"Заробіток = функція дисципліни, а не депозиту.",
       hier:[
-        {num:"01",title:"Торговий баланс",body:"Основа розрахунків. Відсоток ризику завжди рахується від депозиту. Ніколи не ризикуй більше, ніж готовий втратити."},
-        {num:"02",title:"Обсяг позиції",body:"Скільки одиниць/лотів ти купуєш або продаєш. Розраховується від депозиту × ризик% ÷ відстань до стопу. Саме це показує калькулятор."},
-        {num:"03",title:"Кредитне плече",body:"Показує, скільки позикового капіталу використовується. Важливо: плече НЕ змінює твій ризик у грошах — його змінюють лише обсяг позиції та стоп."},
-        {num:"04",title:"Комісія",body:"Розраховується від обсягу позиції, не від плеча. Завжди враховуй спред і комісію в розрахунку ризику, особливо при малих стопах."}
-      ]
+        {num:"01",title:"Торговий баланс",body:"Основа розрахунків. Відсоток ризику завжди рахується від депозиту."},
+        {num:"02",title:"Обсяг позиції",body:"Скільки одиниць/лотів ти купуєш. Депозит × ризик% ÷ відстань до стопу."},
+        {num:"03",title:"Кредитне плече",body:"Плече НЕ змінює твій ризик у грошах — його змінюють лише обсяг і стоп."},
+        {num:"04",title:"Комісія",body:"Розраховується від обсягу позиції. Враховуй спред при малих стопах."}
+      ],
+      reportTitle:"Звіт",rpDep:"Депозит ($)",rpRisk:"Ризик на угоду (%)",rpWins:"✅ Прибуткових",rpLosses:"❌ Збиткових",rpRR:"Avg R:R",rpPeriod:"Період",
+      periods:{day:"День",week:"Тиждень",month:"Місяць",quarter:"Квартал",half:"6 місяців",year:"Рік"},
+      stTrades:"Угод",stWins:"Прибуткових",stLosses:"Збиткових",stWR:"WinRate",stTotalR:"Разом R",stTotalPnl:"Разом $",stPct:"% до депо",stRisk:"Ризик/угода",stPerWin:"Профіт/угода"
     }
   }
 
   let currentLang='en'
 
   function fmt(n){
-    if(n>=1000000) return '$'+(n/1000000).toFixed(1)+'M'
-    if(n>=1000) return '$'+(n/1000).toFixed(0)+'K'
+    if(Math.abs(n)>=1000000) return '$'+(n/1000000).toFixed(1)+'M'
+    if(Math.abs(n)>=1000) return '$'+(n/1000).toFixed(0)+'K'
     return '$'+Math.round(n)
   }
 
-  /* ── SCALE TABLE ── */
+  /* SCALE */
   const deposits=[100,500,1000,5000,10000,25000,50000,100000,200000]
-
   function renderScale(){
     const r=parseFloat(document.getElementById('sc-risk').value)||1
     const rr=parseFloat(document.getElementById('sc-rr').value)||3
-    const l=lang[currentLang]
     const body=document.getElementById('scale-body')
     body.innerHTML=''
     deposits.forEach(dep=>{
       const risk1=dep*r/100
-      const profit3=risk1*rr
-      // 20 trades per month
-      const wr100=profit3*20
-      const wr50=(profit3*10)-(risk1*10)
-      const wr30=(profit3*6)-(risk1*14)
+      const profit=risk1*rr
+      const wr100=profit*20
+      const wr50=(profit*10)-(risk1*10)
+      const wr30=(profit*6)-(risk1*14)
       const tr=document.createElement('tr')
-      const wr30cls=wr30>=0?'g':'r'
-      tr.innerHTML=`<td>${fmt(dep)}</td><td class="r">${fmt(risk1)}</td><td class="g">${fmt(profit3)}</td><td class="g">${fmt(wr100)}</td><td class="g">${fmt(wr50)}</td><td class="${wr30cls}">${fmt(wr30)}</td>`
+      tr.innerHTML=`<td>${fmt(dep)}</td><td class="r">${fmt(risk1)}</td><td class="g">${fmt(profit)}</td><td class="g">${fmt(wr100)}</td><td class="g">${fmt(wr50)}</td><td class="${wr30>=0?'g':'r'}">${fmt(wr30)}</td>`
       body.appendChild(tr)
     })
   }
 
-  /* ── WINRATE TABLE ── */
+  /* WINRATE */
   const wrLevels=[30,40,50,55,60,70]
-
   function renderWR(){
     const dep=parseFloat(document.getElementById('wr-dep').value)||10000
     const r=parseFloat(document.getElementById('wr-risk').value)||1
     const rr=parseFloat(document.getElementById('wr-rr').value)||3
     const trades=parseFloat(document.getElementById('wr-trades').value)||20
-    const l=lang[currentLang]
+    const customWR=parseFloat(document.getElementById('wr-custom').value)
     const riskAmt=dep*r/100
     const body=document.getElementById('wr-body')
     body.innerHTML=''
     wrLevels.forEach(wr=>{
       const wins=Math.round(trades*wr/100)
       const losses=trades-wins
-      const resultR=(wins*rr)-(losses*1)
+      const resultR=(wins*rr)-(losses)
       const pnl=resultR*riskAmt
       const pct=(pnl/dep*100).toFixed(1)
       const cls=pnl>=0?'g':'r'
@@ -436,17 +375,20 @@
       tr.innerHTML=`<td>${wr}%</td><td class="${cls}">${resultR>=0?'+':''}${resultR.toFixed(0)}R</td><td class="${cls}">${pnl>=0?'+':''}${Math.round(pnl).toLocaleString()}</td><td class="${cls}">${pnl>=0?'+':''}${pct}%</td>`
       body.appendChild(tr)
     })
-    // example 55%
-    const wins55=Math.round(trades*0.55)
-    const losses55=trades-wins55
-    const pnl55=((wins55*rr)-(losses55*1))*riskAmt
-    const ex=document.getElementById('wr-ex-val')
-    ex.textContent=(pnl55>=0?'+':'')+Math.round(pnl55).toLocaleString()
-    ex.className='big '+(pnl55>=0?'green':'red')
-    document.getElementById('wr-ex-sub').textContent=`${wins55} ${l.wrExSub.split('×')[0].trim()} × ${rr}R − ${losses55} × 1R`
+    // custom WR result
+    if(customWR>0){
+      const winsC=Math.round(trades*customWR/100)
+      const lossesC=trades-winsC
+      const pnlC=((winsC*rr)-lossesC)*riskAmt
+      const ex=document.getElementById('wr-ex-val')
+      ex.textContent=(pnlC>=0?'+':'')+Math.round(pnlC).toLocaleString()
+      ex.className='big '+(pnlC>=0?'green':'red')
+      document.getElementById('wr-ex-label').textContent=customWR+'% WinRate'
+      document.getElementById('wr-ex-sub').textContent=`${winsC}W × ${rr}R − ${lossesC}L × 1R = ${((winsC*rr)-lossesC).toFixed(1)}R`
+    }
   }
 
-  /* ── HIERARCHY ── */
+  /* HIERARCHY */
   function renderHier(){
     const l=lang[currentLang]
     const list=document.getElementById('hier-list')
@@ -454,34 +396,61 @@
     l.hier.forEach((item,i)=>{
       const div=document.createElement('div')
       div.className='hier-item'
-      div.innerHTML=`
-        <div class="hier-header" onclick="toggleHier(${i})">
-          <div>
-            <div class="hier-num">${item.num}</div>
-            <div class="hier-title">${item.title}</div>
-          </div>
-          <div class="hier-arrow" id="harr-${i}">▼</div>
-        </div>
-        <div class="hier-body" id="hbody-${i}">${item.body}</div>
-      `
+      div.innerHTML=`<div class="hier-header" onclick="toggleHier(${i})"><div><div class="hier-num">${item.num}</div><div class="hier-title">${item.title}</div></div><div class="hier-arrow" id="harr-${i}">▼</div></div><div class="hier-body" id="hbody-${i}">${item.body}</div>`
       list.appendChild(div)
     })
   }
-
   function toggleHier(i){
-    const body=document.getElementById('hbody-'+i)
-    const arr=document.getElementById('harr-'+i)
-    body.classList.toggle('open')
-    arr.classList.toggle('open')
+    document.getElementById('hbody-'+i).classList.toggle('open')
+    document.getElementById('harr-'+i).classList.toggle('open')
   }
 
-  /* ── SET LANG ── */
+  /* REPORT */
+  function renderReport(){
+    const d=lang[currentLang]
+    const dep=parseFloat(document.getElementById('rp-dep').value)
+    const riskPct=parseFloat(document.getElementById('rp-risk').value)||1
+    const wins=parseInt(document.getElementById('rp-wins').value)||0
+    const losses=parseInt(document.getElementById('rp-losses').value)||0
+    const rr=parseFloat(document.getElementById('rp-rr').value)||3
+    const grid=document.getElementById('report-grid')
+    const summary=document.getElementById('report-summary')
+    grid.innerHTML=''
+    summary.style.display='none'
+    if(!dep||(wins===0&&losses===0)) return
+    const total=wins+losses
+    const wr=Math.round(wins/total*100)
+    const riskAmt=dep*riskPct/100
+    const totalR=(wins*rr)-losses
+    const totalPnl=totalR*riskAmt
+    const pctGain=(totalPnl/dep*100)
+    const stats=[
+      {l:d.stTrades,v:total,c:''},
+      {l:d.stWins,v:wins,c:'var(--green)'},
+      {l:d.stLosses,v:losses,c:'var(--red)'},
+      {l:d.stWR,v:wr+'%',c:wr>=50?'var(--green)':'var(--red)'},
+      {l:d.stTotalR,v:(totalR>=0?'+':'')+totalR.toFixed(1)+'R',c:totalR>=0?'var(--green)':'var(--red)'},
+      {l:d.stTotalPnl,v:(totalPnl>=0?'+':'')+'$'+Math.round(totalPnl).toLocaleString(),c:totalPnl>=0?'var(--green)':'var(--red)'},
+      {l:d.stPct,v:(pctGain>=0?'+':'')+pctGain.toFixed(2)+'%',c:pctGain>=0?'var(--green)':'var(--red)'},
+      {l:d.stRisk,v:'$'+Math.round(riskAmt),c:''},
+      {l:d.stPerWin,v:'$'+Math.round(riskAmt*rr),c:'var(--green)'},
+    ]
+    stats.forEach(s=>{
+      const div=document.createElement('div')
+      div.className='stat-card'
+      div.innerHTML=`<div class="s-lbl">${s.l}</div><div class="s-val" style="color:${s.c||'var(--text)'}">${s.v}</div>`
+      grid.appendChild(div)
+    })
+    summary.style.display='block'
+    summary.textContent=`${wins}W / ${losses}L · WR ${wr}% · ${totalR>=0?'+':''}${totalR.toFixed(1)}R · ${totalPnl>=0?'+':''}$${Math.round(totalPnl).toLocaleString()} · ${pctGain>=0?'+':''}${pctGain.toFixed(2)}%`
+  }
+
+  /* SET LANG */
   function setLang(l){
     currentLang=l
     const d=lang[l]
     document.querySelectorAll('[id^="lang-"]').forEach(b=>b.classList.remove('active'))
     document.getElementById('lang-'+l).classList.add('active')
-    // calculator labels
     document.getElementById("lbl-balance").textContent=d.balance
     document.getElementById("lbl-risk").textContent=d.risk
     document.getElementById("lbl-entry").textContent=d.entry
@@ -496,11 +465,10 @@
     document.getElementById("seo1").textContent=d.seo1
     document.getElementById("seo2").textContent=d.seo2
     if(activePipVal===null) document.getElementById("note").textContent=d.note
-    // tabs
     document.getElementById('tab-scale').textContent=d.tabScale
     document.getElementById('tab-winrate').textContent=d.tabWR
     document.getElementById('tab-hierarchy').textContent=d.tabHier
-    // scale tab
+    document.getElementById('tab-report').textContent=d.tabReport
     document.getElementById('scale-title').textContent=d.scaleTitle
     document.getElementById('lbl-sc-risk').textContent=d.scRisk
     document.getElementById('lbl-sc-rr').textContent=d.scRR
@@ -511,26 +479,37 @@
     document.getElementById('sh-wr50').textContent=d.shWR50
     document.getElementById('sh-wr30').textContent=d.shWR30
     document.getElementById('scale-note').textContent=d.scaleNote
-    // winrate tab
     document.getElementById('wr-title').textContent=d.wrTitle
     document.getElementById('lbl-wr-dep').textContent=d.wrDep
     document.getElementById('lbl-wr-risk').textContent=d.wrRisk
     document.getElementById('lbl-wr-rr').textContent=d.wrRR
     document.getElementById('lbl-wr-trades').textContent=d.wrTrades
+    document.getElementById('lbl-wr-custom').textContent=d.wrCustom
     document.getElementById('wh-wr').textContent=d.whWR
     document.getElementById('wh-r').textContent=d.whR
     document.getElementById('wh-pnl').textContent=d.whPnl
     document.getElementById('wh-pct').textContent=d.whPct
-    document.getElementById('wr-ex-label').textContent=d.wrExLabel
-    // hier tab
     document.getElementById('hier-title').textContent=d.hierTitle
     document.getElementById('hier-note').textContent=d.hierNote
+    document.getElementById('report-title').textContent=d.reportTitle
+    document.getElementById('lbl-rp-dep').textContent=d.rpDep
+    document.getElementById('lbl-rp-risk').textContent=d.rpRisk
+    document.getElementById('lbl-rp-wins').textContent=d.rpWins
+    document.getElementById('lbl-rp-losses').textContent=d.rpLosses
+    document.getElementById('lbl-rp-rr').textContent=d.rpRR
+    document.getElementById('lbl-rp-period').textContent=d.rpPeriod
+    // period select options
+    Object.keys(d.periods).forEach(k=>{
+      const el=document.getElementById('opt-'+k)
+      if(el) el.textContent=d.periods[k]
+    })
     renderHier()
     renderScale()
     renderWR()
+    renderReport()
   }
 
-  /* ── CALC ── */
+  /* CALC */
   let activePip=0.0001,activePipVal=10,activePair='EURUSD'
 
   document.querySelectorAll('.pair-btn[data-pair]').forEach(btn=>{
