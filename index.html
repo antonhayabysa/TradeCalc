@@ -20,7 +20,7 @@
   <script defer src="https://cdn.vercel-insights.com/v1/script.js"></script>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
-    :root{--bg:#0f0f0f;--bg2:#1a1a1a;--bg3:#2a2a2a;--border:#333;--border-active:#666;--text:#fff;--text-muted:#888;--text-dim:#555;--green:#4ade80;--red:#f87171;--accent:#3b82f6}
+    :root{--bg:#0f0f0f;--bg2:#1a1a1a;--bg3:#2a2a2a;--border:#333;--border-active:#666;--text:#fff;--text-muted:#888;--text-dim:#555;--green:#4ade80;--red:#f87171;--yellow:#fbbf24;--accent:#3b82f6}
     body.light{--bg:#f5f5f5;--bg2:#fff;--bg3:#e8e8e8;--border:#ddd;--border-active:#999;--text:#111;--text-muted:#555;--text-dim:#999}
     body{font-family:-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:20px;transition:background 0.2s,color 0.2s}
     .wrap{width:100%;max-width:480px}
@@ -76,6 +76,25 @@
     .stat-card{background:var(--bg2);border-radius:8px;padding:10px 12px;text-align:center}
     .stat-card .s-lbl{font-size:11px;color:var(--text-dim);margin-bottom:4px}
     .stat-card .s-val{font-size:18px;font-weight:500}
+    /* PROP CHECKER */
+    .prop-firm-btns{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
+    .prop-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;align-items:center;padding:10px 12px;background:var(--bg2);border-radius:8px;border-left:3px solid var(--border)}
+    .prop-row.safe{border-left-color:var(--green)}
+    .prop-row.warn{border-left-color:var(--yellow)}
+    .prop-row.danger{border-left-color:var(--red)}
+    .prop-row .p-label{font-size:12px;color:var(--text-muted)}
+    .prop-row .p-vals{text-align:right;font-size:13px}
+    .prop-row .p-used{font-weight:500}
+    .prop-row .p-left{font-size:11px;color:var(--text-dim);margin-top:2px}
+    .prop-status{border-radius:8px;padding:16px;text-align:center;margin-top:12px}
+    .prop-status .ps-icon{font-size:28px;margin-bottom:6px}
+    .prop-status .ps-text{font-size:15px;font-weight:500}
+    .prop-status .ps-sub{font-size:12px;color:var(--text-muted);margin-top:4px}
+    .prop-status.safe{background:#4ade8011;border:1px solid #4ade8044}
+    .prop-status.warn{background:#fbbf2411;border:1px solid #fbbf2444}
+    .prop-status.danger{background:#f8717111;border:1px solid #f8717144}
+    .bar-wrap{background:var(--bg3);border-radius:4px;height:6px;margin-top:6px;overflow:hidden}
+    .bar-fill{height:100%;border-radius:4px;transition:width 0.3s}
     #seo-text{max-width:480px;margin:32px auto 0 auto;color:var(--text-dim);font-size:13px;line-height:1.6}
     #seo-text p{margin-bottom:10px}
     @media(max-width:768px){
@@ -86,6 +105,7 @@
       .prices{grid-template-columns:1fr}
       .results{grid-template-columns:1fr}
       .card .val{font-size:20px}
+      .prop-firm-btns{grid-template-columns:repeat(2,1fr)}
     }
     @media(max-width:480px){
       body{padding:14px}
@@ -150,11 +170,12 @@
       <div class="tab" onclick="switchTab('winrate')" id="tab-winrate">📈 WinRate</div>
       <div class="tab" onclick="switchTab('hierarchy')" id="tab-hierarchy">🧩 Risk</div>
       <div class="tab" onclick="switchTab('report')" id="tab-report">📋 Report</div>
+      <div class="tab" onclick="switchTab('prop')" id="tab-prop">🏢 Prop</div>
     </div>
 
     <!-- TAB 1: SCALE -->
     <div class="tab-content active" id="tc-scale">
-      <div class="section-title" id="scale-title">Deposit scale</div>
+      <div class="section-title" id="scale-title">Deposit scale — same system, different size</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
         <div class="field"><label id="lbl-sc-risk">Risk per trade (%)</label><input type="number" id="sc-risk" value="1" step="0.1" oninput="renderScale()"></div>
         <div class="field"><label id="lbl-sc-rr">R:R</label><input type="number" id="sc-rr" value="3" step="0.5" oninput="renderScale()"></div>
@@ -229,6 +250,78 @@
       <div class="info-box" id="report-summary" style="display:none"></div>
     </div>
 
+    <!-- TAB 5: PROP CHECKER -->
+    <div class="tab-content" id="tc-prop">
+      <div class="section-title" id="prop-title">Prop Firm Checker</div>
+
+      <!-- firm selector -->
+      <div class="prop-firm-btns">
+        <div class="pair-btn active" onclick="selectFirm('ftmo')" id="pfb-ftmo">FTMO</div>
+        <div class="pair-btn" onclick="selectFirm('fundednext')" id="pfb-fundednext">FundedNext</div>
+        <div class="pair-btn" onclick="selectFirm('e8')" id="pfb-e8">E8</div>
+        <div class="pair-btn" onclick="selectFirm('custom')" id="pfb-custom" id="pfb-custom">Custom</div>
+      </div>
+
+      <!-- account + phase -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+        <div class="field">
+          <label id="lbl-pp-size">Account ($)</label>
+          <input type="number" id="pp-size" value="100000" oninput="renderProp()">
+        </div>
+        <div class="field">
+          <label id="lbl-pp-phase">Phase</label>
+          <select id="pp-phase" oninput="onPhaseChange()">
+            <option value="1" id="opt-phase1">Phase 1</option>
+            <option value="2" id="opt-phase2">Phase 2</option>
+            <option value="funded" id="opt-funded">Funded</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- limits (editable for custom) -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px">
+        <div class="field">
+          <label id="lbl-pp-profit-target">Profit target (%)</label>
+          <input type="number" id="pp-profit-target" step="0.1" oninput="renderProp()">
+        </div>
+        <div class="field">
+          <label id="lbl-pp-daily">Daily loss (%)</label>
+          <input type="number" id="pp-daily" step="0.1" oninput="renderProp()">
+        </div>
+        <div class="field">
+          <label id="lbl-pp-total">Max drawdown (%)</label>
+          <input type="number" id="pp-total" step="0.1" oninput="renderProp()">
+        </div>
+      </div>
+
+      <!-- current state -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+        <div class="field">
+          <label id="lbl-pp-profit">Current profit (%)</label>
+          <input type="number" id="pp-profit" value="0" step="0.1" oninput="renderProp()">
+        </div>
+        <div class="field">
+          <label id="lbl-pp-daily-used">Today loss (%)</label>
+          <input type="number" id="pp-daily-used" value="0" step="0.1" oninput="renderProp()">
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+        <div class="field">
+          <label id="lbl-pp-account">Account ($)</label>
+          <input type="number" id="pp-account" value="100000" oninput="renderProp()">
+        </div>
+        <div class="field">
+          <label id="lbl-pp-split">Profit split (%)</label>
+          <input type="number" id="pp-split" value="80" min="1" max="100" step="1" oninput="renderProp()">
+        </div>
+      </div>
+
+      <!-- results -->
+      <div id="prop-rows"></div>
+      <div id="prop-status"></div>
+      <div id="prop-payout" style="display:none;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px"></div>
+    </div>
+
   </div>
 
   <div id="seo-text"><p id="seo1"></p><p id="seo2"></p></div>
@@ -248,6 +341,210 @@
     document.getElementById('tc-'+id).classList.add('active')
   }
 
+  /* ── PROP FIRMS DATA ── */
+  const propFirms={
+    ftmo:{
+      name:'FTMO',split:80,
+      phases:{
+        1:{profitTarget:10,dailyLoss:5,maxDrawdown:10},
+        2:{profitTarget:5,dailyLoss:5,maxDrawdown:10},
+        funded:{profitTarget:null,dailyLoss:5,maxDrawdown:10}
+      }
+    },
+    fundednext:{
+      name:'FundedNext',split:90,
+      phases:{
+        1:{profitTarget:8,dailyLoss:5,maxDrawdown:10},
+        2:{profitTarget:5,dailyLoss:5,maxDrawdown:10},
+        funded:{profitTarget:null,dailyLoss:5,maxDrawdown:10}
+      }
+    },
+    e8:{
+      name:'E8 Markets',split:80,
+      phases:{
+        1:{profitTarget:8,dailyLoss:4,maxDrawdown:8},
+        2:{profitTarget:5,dailyLoss:4,maxDrawdown:8},
+        funded:{profitTarget:null,dailyLoss:4,maxDrawdown:8}
+      }
+    },
+    custom:{
+      name:'Custom',split:80,
+      phases:{
+        1:{profitTarget:10,dailyLoss:5,maxDrawdown:10},
+        2:{profitTarget:5,dailyLoss:5,maxDrawdown:10},
+        funded:{profitTarget:null,dailyLoss:5,maxDrawdown:10}
+      }
+    }
+  }
+
+  let activeFirm='ftmo'
+  let isCustom=false
+
+  function selectFirm(f){
+    activeFirm=f
+    isCustom=(f==='custom')
+    document.querySelectorAll('[id^="pfb-"]').forEach(b=>b.classList.remove('active'))
+    document.getElementById('pfb-'+f).classList.add('active')
+    if(!isCustom) document.getElementById('pp-split').value=propFirms[f].split||80
+    onPhaseChange()
+  }
+
+  function onPhaseChange(){
+    const phase=document.getElementById('pp-phase').value
+    const firm=propFirms[activeFirm]
+    const pd=firm.phases[phase]
+    if(!isCustom){
+      document.getElementById('pp-profit-target').value=pd.profitTarget||''
+      document.getElementById('pp-daily').value=pd.dailyLoss
+      document.getElementById('pp-total').value=pd.maxDrawdown
+      document.getElementById('pp-profit-target').disabled=(pd.profitTarget===null)
+    }
+    renderProp()
+  }
+
+  function renderProp(){
+    const d=lang[currentLang]
+    const size=parseFloat(document.getElementById('pp-size').value)||100000
+    const profitTarget=parseFloat(document.getElementById('pp-profit-target').value)||0
+    const dailyLimit=parseFloat(document.getElementById('pp-daily').value)||5
+    const totalLimit=parseFloat(document.getElementById('pp-total').value)||10
+    const currentProfit=parseFloat(document.getElementById('pp-profit').value)||0
+    const dailyUsed=parseFloat(document.getElementById('pp-daily-used').value)||0
+    const phase=document.getElementById('pp-phase').value
+
+    const dailyUsedPct=Math.abs(dailyUsed)
+    const totalLossPct=currentProfit<0?Math.abs(currentProfit):0
+
+    const dailyPct=dailyUsedPct/dailyLimit*100
+    const totalPct=totalLossPct/totalLimit*100
+    const profitPct=profitTarget>0?currentProfit/profitTarget*100:0
+
+    const dailyLeft=(dailyLimit-dailyUsedPct).toFixed(1)
+    const totalLeft=(totalLimit-totalLossPct).toFixed(1)
+    const profitLeft=profitTarget>0?(profitTarget-currentProfit).toFixed(1):null
+
+    function getClass(pct){ return pct>=90?'danger':pct>=70?'warn':'safe' }
+    function getColor(pct){ return pct>=90?'var(--red)':pct>=70?'var(--yellow)':'var(--green)' }
+    function barColor(pct){ return pct>=90?'#f87171':pct>=70?'#fbbf24':'#4ade80' }
+
+    const rows=document.getElementById('prop-rows')
+    rows.innerHTML=''
+
+    const items=[
+      {
+        label:d.propDailyLoss,
+        limit:dailyLimit+'%',
+        used:dailyUsedPct.toFixed(1)+'%',
+        left:dailyLeft+'%',
+        pct:dailyPct,
+        leftLabel:d.propLeft
+      },
+      {
+        label:d.propMaxDD,
+        limit:totalLimit+'%',
+        used:totalLossPct.toFixed(1)+'%',
+        left:totalLeft+'%',
+        pct:totalPct,
+        leftLabel:d.propLeft
+      }
+    ]
+
+    if(profitTarget>0){
+      items.push({
+        label:d.propTarget,
+        limit:profitTarget+'%',
+        used:currentProfit.toFixed(1)+'%',
+        left:profitLeft+'%',
+        pct:profitPct,
+        leftLabel:d.propNeeded,
+        isProfit:true
+      })
+    }
+
+    items.forEach(item=>{
+      const cls=item.isProfit?(profitPct>=100?'safe':'warn'):getClass(item.pct)
+      const color=item.isProfit?(profitPct>=100?'var(--green)':'var(--yellow)'):getColor(item.pct)
+      const bc=item.isProfit?(profitPct>=100?'#4ade80':'#fbbf24'):barColor(item.pct)
+      const barW=item.isProfit?Math.min(profitPct,100):Math.min(item.pct,100)
+      const div=document.createElement('div')
+      div.className='prop-row '+cls
+      div.innerHTML=`
+        <div>
+          <div class="p-label">${item.label}</div>
+          <div class="p-label" style="font-size:11px;margin-top:2px">${d.propLimit}: ${item.limit}</div>
+          <div class="bar-wrap"><div class="bar-fill" style="width:${barW.toFixed(0)}%;background:${bc}"></div></div>
+        </div>
+        <div class="p-vals">
+          <div class="p-used" style="color:${color}">${item.used}</div>
+          <div class="p-left">${item.leftLabel}: ${item.left}</div>
+        </div>
+      `
+      rows.appendChild(div)
+    })
+
+    // Overall status
+    const statusDiv=document.getElementById('prop-status')
+    const isDanger=dailyPct>=100||totalPct>=100
+    const isWarn=dailyPct>=70||totalPct>=70
+    const isComplete=profitTarget>0&&profitPct>=100
+
+    let cls,icon,text,sub
+    if(isDanger){
+      cls='danger'; icon='🚨'
+      text=d.propStatusDanger
+      sub=d.propStatusDangerSub
+    } else if(isComplete){
+      cls='safe'; icon='🎯'
+      text=d.propStatusComplete
+      sub=d.propStatusCompleteSub
+    } else if(isWarn){
+      cls='warn'; icon='⚠️'
+      text=d.propStatusWarn
+      sub=d.propStatusWarnSub
+    } else {
+      cls='safe'; icon='✅'
+      text=d.propStatusSafe
+      sub=d.propStatusSafeSub
+    }
+
+    statusDiv.innerHTML=`
+      <div class="prop-status ${cls}">
+        <div class="ps-icon">${icon}</div>
+        <div class="ps-text">${text}</div>
+        <div class="ps-sub">${sub}</div>
+      </div>
+    `
+
+    // Payout calculation
+    const account=parseFloat(document.getElementById('pp-account').value)||size
+    const split=parseFloat(document.getElementById('pp-split').value)||80
+    const profitAmt=account*currentProfit/100
+    const myPayout=profitAmt*split/100
+    const firmCut=profitAmt*(100-split)/100
+
+    const payoutDiv=document.getElementById('prop-payout')
+    if(profitAmt>0){
+      payoutDiv.style.display='grid'
+      payoutDiv.innerHTML=`
+        <div class="stat-card">
+          <div class="s-lbl">${d.propGrossProfit}</div>
+          <div class="s-val" style="color:var(--green)">$${Math.round(profitAmt).toLocaleString()}</div>
+        </div>
+        <div class="stat-card">
+          <div class="s-lbl">${d.propMyPayout} (${split}%)</div>
+          <div class="s-val" style="color:var(--green)">$${Math.round(myPayout).toLocaleString()}</div>
+        </div>
+        <div class="stat-card">
+          <div class="s-lbl">${d.propFirmCut} (${100-split}%)</div>
+          <div class="s-val" style="color:var(--text-muted)">$${Math.round(firmCut).toLocaleString()}</div>
+        </div>
+      `
+    } else {
+      payoutDiv.style.display='none'
+    }
+  }
+
+  /* ── LANG DATA ── */
   const lang={
     en:{
       balance:"Account ($)",risk:"Risk (%)",entry:"Entry",stop:"Stop",tp:"Take Profit",
@@ -255,7 +552,7 @@
       note:"* Pip value depends on current price",
       seo1:"TradeCalc is a free trading position size calculator that helps traders calculate position size, risk percentage, stop distance and potential profit before opening a trade.",
       seo2:"Supports Forex, crypto, indices and other leveraged markets used on platforms like TradingView, MT4 and MT5.",
-      tabScale:"📊 Scale",tabWR:"📈 WinRate",tabHier:"🧩 Risk",tabReport:"📋 Report",
+      tabScale:"📊 Scale",tabWR:"📈 WinRate",tabHier:"🧩 Risk",tabReport:"📋 Report",tabProp:"🏢 Prop",
       scaleTitle:"Deposit scale — same system, different size",
       scRisk:"Risk per trade (%)",scRR:"R:R",
       shDep:"Deposit",shR1:"1R risk",sh3r:"Profit",shWR100:"WR 100%",shWR50:"WR 50%",shWR30:"WR 30%",
@@ -272,7 +569,17 @@
       ],
       reportTitle:"Report",rpDep:"Deposit ($)",rpRisk:"Risk per trade (%)",rpWins:"✅ Wins",rpLosses:"❌ Losses",rpRR:"Avg R:R",rpPeriod:"Period",
       periods:{day:"Day",week:"Week",month:"Month",quarter:"Quarter",half:"6 months",year:"Year"},
-      stTrades:"Trades",stWins:"Profitable",stLosses:"Unprofitable",stWR:"WinRate",stTotalR:"Total R",stTotalPnl:"Total $",stPct:"% of dep",stRisk:"Risk/trade",stPerWin:"Profit/trade"
+      stTrades:"Trades",stWins:"Profitable",stLosses:"Unprofitable",stWR:"WinRate",stTotalR:"Total R",stTotalPnl:"Total $",stPct:"% of dep",stRisk:"Risk/trade",stPerWin:"Profit/trade",
+      propTitle:"Prop Firm Checker",
+      ppSize:"Account ($)",ppPhase:"Phase",ppProfitTarget:"Profit target (%)",ppDaily:"Daily loss (%)",ppTotal:"Max drawdown (%)",ppProfit:"Current profit (%)",ppDailyUsed:"Today loss (%)",
+      phases:{1:"Phase 1",2:"Phase 2",funded:"Funded"},
+      pfbCustom:"Custom",
+      propDailyLoss:"Daily loss limit",propMaxDD:"Max drawdown",propTarget:"Profit target",
+      propLimit:"Limit",propLeft:"Left",propNeeded:"Needed",
+      propStatusSafe:"✅ You're safe",propStatusSafeSub:"Keep trading within the rules.",
+      propStatusWarn:"⚠️ Approaching limits",propStatusWarnSub:"Slow down. Reduce risk per trade.",
+      propStatusDanger:"🚨 Limit reached",propStatusDangerSub:"Stop trading. You risk losing the account.",
+      propStatusComplete:"🎯 Target reached!",propStatusCompleteSub:"You've hit the profit target. Request payout.",propGrossProfit:"Gross profit",propMyPayout:"Your payout",propFirmCut:"Firm cut",ppAccountLbl:"Account ($)",ppSplitLbl:"Profit split (%)"
     },
     ru:{
       balance:"Счёт ($)",risk:"Риск (%)",entry:"Вход",stop:"Стоп",tp:"Тейк",
@@ -280,7 +587,7 @@
       note:"* Pip value зависит от текущей цены",
       seo1:"TradeCalc — это бесплатный калькулятор размера позиции для трейдинга.",
       seo2:"Подходит для Forex, криптовалют, индексов на платформах TradingView, MT4 и MT5.",
-      tabScale:"📊 Масштаб",tabWR:"📈 WinRate",tabHier:"🧩 Риск",tabReport:"📋 Отчёт",
+      tabScale:"📊 Масштаб",tabWR:"📈 WinRate",tabHier:"🧩 Риск",tabReport:"📋 Отчёт",tabProp:"🏢 Проп",
       scaleTitle:"Масштаб депозита — одна система, разный размер",
       scRisk:"Риск на сделку (%)",scRR:"R:R",
       shDep:"Депозит",shR1:"Риск 1R",sh3r:"Профит",shWR100:"WR 100%",shWR50:"WR 50%",shWR30:"WR 30%",
@@ -297,7 +604,17 @@
       ],
       reportTitle:"Отчёт",rpDep:"Депозит ($)",rpRisk:"Риск на сделку (%)",rpWins:"✅ Прибыльных",rpLosses:"❌ Убыточных",rpRR:"Avg R:R",rpPeriod:"Период",
       periods:{day:"День",week:"Неделя",month:"Месяц",quarter:"Квартал",half:"6 месяцев",year:"Год"},
-      stTrades:"Сделок",stWins:"Прибыльных",stLosses:"Убыточных",stWR:"WinRate",stTotalR:"Итого R",stTotalPnl:"Итого $",stPct:"% к депо",stRisk:"Риск/сделка",stPerWin:"Профит/сделка"
+      stTrades:"Сделок",stWins:"Прибыльных",stLosses:"Убыточных",stWR:"WinRate",stTotalR:"Итого R",stTotalPnl:"Итого $",stPct:"% к депо",stRisk:"Риск/сделка",stPerWin:"Профит/сделка",
+      propTitle:"Проверка проп-фирмы",
+      ppSize:"Аккаунт ($)",ppPhase:"Фаза",ppProfitTarget:"Цель профита (%)",ppDaily:"Дневной лимит (%)",ppTotal:"Макс. просадка (%)",ppProfit:"Текущий профит (%)",ppDailyUsed:"Убыток сегодня (%)",
+      phases:{1:"Фаза 1",2:"Фаза 2",funded:"Фандед"},
+      pfbCustom:"Свой",
+      propDailyLoss:"Дневной лимит",propMaxDD:"Макс. просадка",propTarget:"Цель профита",
+      propLimit:"Лимит",propLeft:"Осталось",propNeeded:"Нужно",
+      propStatusSafe:"✅ Всё в порядке",propStatusSafeSub:"Продолжай торговать в рамках правил.",
+      propStatusWarn:"⚠️ Близко к лимиту",propStatusWarnSub:"Снизь риск. Будь осторожен.",
+      propStatusDanger:"🚨 Лимит достигнут",propStatusDangerSub:"Прекрати торговлю. Риск потери аккаунта.",
+      propStatusComplete:"🎯 Цель достигнута!",propStatusCompleteSub:"Ты выполнил цель по прибыли. Запроси выплату.",propGrossProfit:"Валовая прибыль",propMyPayout:"Твоя выплата",propFirmCut:"Комиссия пропа",ppAccountLbl:"Аккаунт ($)",ppSplitLbl:"Сплит (%)"
     },
     ua:{
       balance:"Рахунок ($)",risk:"Ризик (%)",entry:"Вхід",stop:"Стоп",tp:"Тейк",
@@ -305,7 +622,7 @@
       note:"* Pip value залежить від поточної ціни",
       seo1:"TradeCalc — безкоштовний калькулятор розміру позиції для трейдингу.",
       seo2:"Підходить для Forex, криптовалют, індексів на платформах TradingView, MT4 та MT5.",
-      tabScale:"📊 Масштаб",tabWR:"📈 WinRate",tabHier:"🧩 Ризик",tabReport:"📋 Звіт",
+      tabScale:"📊 Масштаб",tabWR:"📈 WinRate",tabHier:"🧩 Ризик",tabReport:"📋 Звіт",tabProp:"🏢 Проп",
       scaleTitle:"Масштаб депозиту — одна система, різний розмір",
       scRisk:"Ризик на угоду (%)",scRR:"R:R",
       shDep:"Депозит",shR1:"Ризик 1R",sh3r:"Профіт",shWR100:"WR 100%",shWR50:"WR 50%",shWR30:"WR 30%",
@@ -322,7 +639,17 @@
       ],
       reportTitle:"Звіт",rpDep:"Депозит ($)",rpRisk:"Ризик на угоду (%)",rpWins:"✅ Прибуткових",rpLosses:"❌ Збиткових",rpRR:"Avg R:R",rpPeriod:"Період",
       periods:{day:"День",week:"Тиждень",month:"Місяць",quarter:"Квартал",half:"6 місяців",year:"Рік"},
-      stTrades:"Угод",stWins:"Прибуткових",stLosses:"Збиткових",stWR:"WinRate",stTotalR:"Разом R",stTotalPnl:"Разом $",stPct:"% до депо",stRisk:"Ризик/угода",stPerWin:"Профіт/угода"
+      stTrades:"Угод",stWins:"Прибуткових",stLosses:"Збиткових",stWR:"WinRate",stTotalR:"Разом R",stTotalPnl:"Разом $",stPct:"% до депо",stRisk:"Ризик/угода",stPerWin:"Профіт/угода",
+      propTitle:"Перевірка проп-фірми",
+      ppSize:"Акаунт ($)",ppPhase:"Фаза",ppProfitTarget:"Ціль профіту (%)",ppDaily:"Денний ліміт (%)",ppTotal:"Макс. просадка (%)",ppProfit:"Поточний профіт (%)",ppDailyUsed:"Збиток сьогодні (%)",
+      phases:{1:"Фаза 1",2:"Фаза 2",funded:"Фандед"},
+      pfbCustom:"Свій",
+      propDailyLoss:"Денний ліміт",propMaxDD:"Макс. просадка",propTarget:"Ціль профіту",
+      propLimit:"Ліміт",propLeft:"Залишилось",propNeeded:"Потрібно",
+      propStatusSafe:"✅ Все гаразд",propStatusSafeSub:"Продовжуй торгувати в межах правил.",
+      propStatusWarn:"⚠️ Близько до ліміту",propStatusWarnSub:"Знизь ризик. Будь обережний.",
+      propStatusDanger:"🚨 Ліміт досягнуто",propStatusDangerSub:"Зупини торгівлю. Ризик втрати акаунту.",
+      propStatusComplete:"🎯 Ціль досягнута!",propStatusCompleteSub:"Ти виконав ціль з прибутку. Запроси виплату.",propGrossProfit:"Валовий прибуток",propMyPayout:"Твоя виплата",propFirmCut:"Комісія пропа",ppAccountLbl:"Акаунт ($)",ppSplitLbl:"Спліт (%)"
     }
   }
 
@@ -375,7 +702,6 @@
       tr.innerHTML=`<td>${wr}%</td><td class="${cls}">${resultR>=0?'+':''}${resultR.toFixed(0)}R</td><td class="${cls}">${pnl>=0?'+':''}${Math.round(pnl).toLocaleString()}</td><td class="${cls}">${pnl>=0?'+':''}${pct}%</td>`
       body.appendChild(tr)
     })
-    // custom WR result
     if(customWR>0){
       const winsC=Math.round(trades*customWR/100)
       const lossesC=trades-winsC
@@ -469,6 +795,7 @@
     document.getElementById('tab-winrate').textContent=d.tabWR
     document.getElementById('tab-hierarchy').textContent=d.tabHier
     document.getElementById('tab-report').textContent=d.tabReport
+    document.getElementById('tab-prop').textContent=d.tabProp
     document.getElementById('scale-title').textContent=d.scaleTitle
     document.getElementById('lbl-sc-risk').textContent=d.scRisk
     document.getElementById('lbl-sc-rr').textContent=d.scRR
@@ -498,7 +825,20 @@
     document.getElementById('lbl-rp-losses').textContent=d.rpLosses
     document.getElementById('lbl-rp-rr').textContent=d.rpRR
     document.getElementById('lbl-rp-period').textContent=d.rpPeriod
-    // period select options
+    document.getElementById('prop-title').textContent=d.propTitle
+    document.getElementById('lbl-pp-size').textContent=d.ppSize
+    document.getElementById('lbl-pp-phase').textContent=d.ppPhase
+    document.getElementById('lbl-pp-profit-target').textContent=d.ppProfitTarget
+    document.getElementById('lbl-pp-daily').textContent=d.ppDaily
+    document.getElementById('lbl-pp-total').textContent=d.ppTotal
+    document.getElementById('lbl-pp-profit').textContent=d.ppProfit
+    document.getElementById('lbl-pp-daily-used').textContent=d.ppDailyUsed
+    document.getElementById('pfb-custom').textContent=d.pfbCustom
+    document.getElementById('lbl-pp-account').textContent=d.ppAccountLbl||'Account ($)'
+    document.getElementById('lbl-pp-split').textContent=d.ppSplitLbl||'Profit split (%)'
+    document.getElementById('opt-phase1').textContent=d.phases[1]
+    document.getElementById('opt-phase2').textContent=d.phases[2]
+    document.getElementById('opt-funded').textContent=d.phases.funded
     Object.keys(d.periods).forEach(k=>{
       const el=document.getElementById('opt-'+k)
       if(el) el.textContent=d.periods[k]
@@ -507,6 +847,7 @@
     renderScale()
     renderWR()
     renderReport()
+    renderProp()
   }
 
   /* CALC */
@@ -564,6 +905,8 @@
     document.getElementById(id).addEventListener("input",calc)
   })
 
+  // init prop
+  selectFirm('ftmo')
   setLang("en")
 </script>
 </body>
