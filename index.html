@@ -484,6 +484,12 @@
 
     // Overall status
     const statusDiv=document.getElementById('prop-status')
+    // don't show status if nothing entered yet
+    if(currentProfit===0&&dailyUsed===0){
+      statusDiv.innerHTML=''
+      document.getElementById('prop-payout').style.display='none'
+      return
+    }
     const isDanger=dailyPct>=100||totalPct>=100
     const isWarn=dailyPct>=70||totalPct>=70
     const isComplete=profitTarget>0&&profitPct>=100
