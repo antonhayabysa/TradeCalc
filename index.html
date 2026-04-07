@@ -130,16 +130,50 @@
     <div class="pair-btn active" onclick="setLang('en')" id="lang-en">EN</div>
   </div>
 
-  <div class="pair-grid">
-    <div class="pair-btn active" data-pair="EURUSD" data-pip="0.0001" data-pipval="10">EUR/USD</div>
-    <div class="pair-btn" data-pair="GBPUSD" data-pip="0.0001" data-pipval="10">GBP/USD</div>
-    <div class="pair-btn" data-pair="AUDUSD" data-pip="0.0001" data-pipval="10">AUD/USD</div>
-    <div class="pair-btn" data-pair="NZDUSD" data-pip="0.0001" data-pipval="10">NZD/USD</div>
-    <div class="pair-btn" data-pair="USDJPY" data-pip="0.01" data-pipval="DYNAMIC">USD/JPY</div>
-    <div class="pair-btn" data-pair="USDCHF" data-pip="0.0001" data-pipval="DYNAMIC">USD/CHF</div>
-    <div class="pair-btn" data-pair="USDCAD" data-pip="0.0001" data-pipval="DYNAMIC">USD/CAD</div>
-    <div class="pair-btn" data-pair="GBPJPY" data-pip="0.01" data-pipval="DYNAMIC">GBP/JPY</div>
+  <!-- category tabs -->
+  <div style="display:flex;gap:6px;margin-bottom:8px">
+    <div class="pair-btn active" onclick="showCat('forex')" id="cat-forex">Forex</div>
+    <div class="pair-btn" onclick="showCat('us')" id="cat-us">🇺🇸 US Indices</div>
+    <div class="pair-btn" onclick="showCat('eu')" id="cat-eu">🇪🇺 EU Indices</div>
   </div>
+
+  <!-- FOREX pairs -->
+  <div class="pair-grid" id="pairs-forex">
+    <div class="pair-btn active" data-pair="EURUSD" data-pip="0.0001" data-pipval="10" data-type="forex">EUR/USD</div>
+    <div class="pair-btn" data-pair="GBPUSD" data-pip="0.0001" data-pipval="10" data-type="forex">GBP/USD</div>
+    <div class="pair-btn" data-pair="AUDUSD" data-pip="0.0001" data-pipval="10" data-type="forex">AUD/USD</div>
+    <div class="pair-btn" data-pair="NZDUSD" data-pip="0.0001" data-pipval="10" data-type="forex">NZD/USD</div>
+    <div class="pair-btn" data-pair="USDJPY" data-pip="0.01" data-pipval="DYNAMIC" data-type="forex">USD/JPY</div>
+    <div class="pair-btn" data-pair="USDCHF" data-pip="0.0001" data-pipval="DYNAMIC" data-type="forex">USD/CHF</div>
+    <div class="pair-btn" data-pair="USDCAD" data-pip="0.0001" data-pipval="DYNAMIC" data-type="forex">USD/CAD</div>
+    <div class="pair-btn" data-pair="GBPJPY" data-pip="0.01" data-pipval="DYNAMIC" data-type="forex">GBP/JPY</div>
+  </div>
+
+  <!-- US INDICES -->
+  <div class="pair-grid" id="pairs-us" style="display:none">
+    <div class="pair-btn" data-pair="SP500" data-pip="1" data-pipval="INDEX" data-cs-ftmo="1" data-cs-fp="50" data-cs-e8="1" data-cur="USD" data-type="index" data-ott="17:00-18:00 / 20:30-22:00">S&P 500</div>
+    <div class="pair-btn" data-pair="NAS100" data-pip="1" data-pipval="INDEX" data-cs-ftmo="1" data-cs-fp="20" data-cs-e8="1" data-cur="USD" data-type="index" data-ott="17:00-18:00 / 20:30-22:00">NAS 100</div>
+    <div class="pair-btn" data-pair="DJ30" data-pip="1" data-pipval="INDEX" data-cs-ftmo="1" data-cs-fp="5" data-cs-e8="1" data-cur="USD" data-type="index" data-ott="17:00-18:00 / 20:30-22:00">DJ 30</div>
+  </div>
+
+  <!-- EU INDICES -->
+  <div class="pair-grid" id="pairs-eu" style="display:none">
+    <div class="pair-btn" data-pair="DAX40" data-pip="1" data-pipval="INDEX" data-cs-ftmo="1" data-cs-fp="25" data-cs-e8="1" data-cur="EUR" data-type="index" data-ott="10:00-18:30 Kyiv">DAX 40</div>
+    <div class="pair-btn" data-pair="EU50" data-pip="1" data-pipval="INDEX" data-cs-ftmo="1" data-cs-fp="10" data-cs-e8="1" data-cur="EUR" data-type="index" data-ott="10:00-18:30 Kyiv">Euro 50</div>
+    <div class="pair-btn" data-pair="FTSE100" data-pip="1" data-pipval="INDEX" data-cs-ftmo="1" data-cs-fp="10" data-cs-e8="1" data-cur="GBP" data-type="index" data-ott="10:00-18:30 / 16:30-23:00">FTSE 100</div>
+  </div>
+
+  <!-- broker selector for indices -->
+  <div id="broker-row" style="display:none;gap:6px;margin-bottom:8px;flex-wrap:wrap">
+    <div class="pair-btn active" onclick="selectBroker('ftmo')" id="br-ftmo">FTMO</div>
+    <div class="pair-btn" onclick="selectBroker('fp')" id="br-fp">Funding Pips</div>
+    <div class="pair-btn" onclick="selectBroker('e8')" id="br-e8">E8</div>
+    <div class="pair-btn" onclick="selectBroker('custom')" id="br-custom">Custom CS</div>
+    <input type="number" id="custom-cs" placeholder="Contract Size" style="display:none;width:120px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:6px 10px;color:var(--text);font-size:13px" oninput="calc()">
+  </div>
+
+  <!-- index info bar -->
+  <div id="index-info" style="display:none;font-size:12px;color:var(--text-muted);background:var(--bg2);border-radius:8px;padding:10px 12px;margin-bottom:8px;line-height:1.6"></div>
 
   <div class="settings">
     <div class="field"><label id="lbl-balance">Account ($)</label><input type="number" id="balance"></div>
@@ -153,7 +187,7 @@
   </div>
 
   <div class="results" id="results" style="display:none">
-    <div class="card"><div class="lbl" id="lbl-units">Quantity (TradingView)</div><div class="val" id="r-units">—</div></div>
+    <div class="card"><div class="lbl" id="lbl-units">Lots</div><div class="val" id="r-units">—</div></div>
     <div class="card"><div class="lbl" id="lbl-lots">Lots (MT4 / MT5)</div><div class="val" id="r-lots">—</div></div>
     <div class="card"><div class="lbl" id="lbl-riskMoney">Risk $</div><div class="val red" id="r-risk">—</div></div>
     <div class="card"><div class="lbl" id="lbl-profit">Profit $</div><div class="val green" id="r-profit">—</div></div>
@@ -558,7 +592,7 @@
       note:"* Pip value depends on current price",
       seo1:"TradeCalc is a free trading position size calculator that helps traders calculate position size, risk percentage, stop distance and potential profit before opening a trade.",
       seo2:"Supports Forex, crypto, indices and other leveraged markets used on platforms like TradingView, MT4 and MT5.",
-      tabScale:"📊 Scale",tabWR:"📈 WinRate",tabHier:"🧩 Risk",tabReport:"📋 Report",tabProp:"🏢 Prop",
+      tabScale:"📊 Scale",catForex:"Forex",catUS:"🇺🇸 US Indices",catEU:"🇪🇺 EU Indices",brCustom:"Custom CS",tabWR:"📈 WinRate",tabHier:"🧩 Risk",tabReport:"📋 Report",tabProp:"🏢 Prop",
       scaleTitle:"Deposit scale — same system, different size",
       scRisk:"Risk per trade (%)",scRR:"R:R",
       shDep:"Deposit",shR1:"1R risk",sh3r:"Profit",shWR100:"WR 100%",shWR50:"WR 50%",shWR30:"WR 30%",
@@ -593,7 +627,7 @@
       note:"* Pip value зависит от текущей цены",
       seo1:"TradeCalc — это бесплатный калькулятор размера позиции для трейдинга.",
       seo2:"Подходит для Forex, криптовалют, индексов на платформах TradingView, MT4 и MT5.",
-      tabScale:"📊 Масштаб",tabWR:"📈 WinRate",tabHier:"🧩 Риск",tabReport:"📋 Отчёт",tabProp:"🏢 Проп",
+      tabScale:"📊 Масштаб",catForex:"Forex",catUS:"🇺🇸 Індекси США",catEU:"🇪🇺 Індекси ЄС",brCustom:"Свій CS",catForex:"Forex",catUS:"🇺🇸 Индексы США",catEU:"🇪🇺 Индексы ЕС",brCustom:"Свой CS",tabWR:"📈 WinRate",tabHier:"🧩 Риск",tabReport:"📋 Отчёт",tabProp:"🏢 Проп",
       scaleTitle:"Масштаб депозита — одна система, разный размер",
       scRisk:"Риск на сделку (%)",scRR:"R:R",
       shDep:"Депозит",shR1:"Риск 1R",sh3r:"Профит",shWR100:"WR 100%",shWR50:"WR 50%",shWR30:"WR 30%",
@@ -854,19 +888,119 @@
     renderWR()
     renderReport()
     renderProp()
+    if(activeType==='index') updateIndexInfo()
   }
 
   /* CALC */
   let activePip=0.0001,activePipVal=10,activePair='EURUSD'
+  let activeType='forex',activeBroker='ftmo',activeCS=null,activeCur='USD'
+  let activeOTT=''
+
+  function showCat(cat){
+    document.querySelectorAll('[id^="cat-"]').forEach(b=>b.classList.remove('active'))
+    document.getElementById('cat-'+cat).classList.add('active')
+    document.getElementById('pairs-forex').style.display=cat==='forex'?'grid':'none'
+    document.getElementById('pairs-us').style.display=cat==='us'?'grid':'none'
+    document.getElementById('pairs-eu').style.display=cat==='eu'?'grid':'none'
+    document.getElementById('broker-row').style.display=cat!=='forex'?'flex':'none'
+    if(cat==='forex'){
+      document.getElementById('index-info').style.display='none'
+      activeType='forex'
+    }
+    const d=lang[currentLang]
+    if(d.catForex) document.getElementById('cat-forex').textContent=d.catForex
+    if(d.catUS) document.getElementById('cat-us').textContent=d.catUS
+    if(d.catEU) document.getElementById('cat-eu').textContent=d.catEU
+  }
+
+  function selectBroker(b){
+    activeBroker=b
+    document.querySelectorAll('[id^="br-"]').forEach(x=>x.classList.remove('active'))
+    document.getElementById('br-'+b).classList.add('active')
+    document.getElementById('custom-cs').style.display=b==='custom'?'inline-block':'none'
+    updateIndexInfo()
+    calc()
+  }
+
+  const indexData={
+    SP500:{
+      tv:'ES1! (CME) / US500 (CapitalCom)',
+      ott_trade:{en:'AM OTT: 17:00-18:00 · PM OTT: 20:30-22:00',ru:'AM OTT: 17:00-18:00 · PM OTT: 20:30-22:00',ua:'AM OTT: 17:00-18:00 · PM OTT: 20:30-22:00'},
+      ott_avoid:{en:'⛔ Avoid: Pre-Market 15:30-16:30 · Lunch 19:00-20:00',ru:'⛔ Избегать: Pre-Market 15:30-16:30 · Ланч 19:00-20:00',ua:'⛔ Уникати: Pre-Market 15:30-16:30 · Ланч 19:00-20:00'},
+      ott_caution:{en:'⚠️ Caution: Last Hour 22:00-23:00 (volatile)',ru:'⚠️ Осторожно: Last Hour 22:00-23:00 (волатильно)',ua:'⚠️ Обережно: Last Hour 22:00-23:00 (волатильно)'}
+    },
+    NAS100:{
+      tv:'NQ1! (CME) / US100 (CapitalCom)',
+      ott_trade:{en:'AM OTT: 17:00-18:00 · PM OTT: 20:30-22:00',ru:'AM OTT: 17:00-18:00 · PM OTT: 20:30-22:00',ua:'AM OTT: 17:00-18:00 · PM OTT: 20:30-22:00'},
+      ott_avoid:{en:'⛔ Avoid: Pre-Market 15:30-16:30 · Lunch 19:00-20:00',ru:'⛔ Избегать: 15:30-16:30 · Ланч 19:00-20:00',ua:'⛔ Уникати: 15:30-16:30 · Ланч 19:00-20:00'},
+      ott_caution:{en:'⚠️ Caution: Last Hour 22:00-23:00',ru:'⚠️ Осторожно: 22:00-23:00',ua:'⚠️ Обережно: 22:00-23:00'}
+    },
+    DJ30:{
+      tv:'YM1! (CBOT) / US30 (CapitalCom)',
+      ott_trade:{en:'AM OTT: 17:00-18:00 · PM OTT: 20:30-22:00',ru:'AM OTT: 17:00-18:00 · PM OTT: 20:30-22:00',ua:'AM OTT: 17:00-18:00 · PM OTT: 20:30-22:00'},
+      ott_avoid:{en:'⛔ Avoid: Pre-Market 15:30-16:30 · Lunch 19:00-20:00',ru:'⛔ Избегать: 15:30-16:30 · Ланч 19:00-20:00',ua:'⛔ Уникати: 15:30-16:30 · Ланч 19:00-20:00'},
+      ott_caution:{en:'⚠️ Caution: Last Hour 22:00-23:00',ru:'⚠️ Осторожно: 22:00-23:00',ua:'⚠️ Обережно: 22:00-23:00'}
+    },
+    DAX40:{
+      tv:'FDAX1! (EUREX) / GER40 (Forex.com)',
+      ott_trade:{en:'✅ Trade: 10:00-18:30 Kyiv (Xetra hours) · Best: 10:00-15:00',ru:'✅ Торговать: 10:00-18:30 Киев (часы Xetra) · Лучшее: 10:00-15:00',ua:'✅ Торгувати: 10:00-18:30 Київ (години Xetra) · Краще: 10:00-15:00'},
+      ott_avoid:{en:'⛔ Avoid: after 18:30 (Xetra closed)',ru:'⛔ Избегать: после 18:30 (Xetra закрыта)',ua:'⛔ Уникати: після 18:30 (Xetra закрита)'},
+      ott_caution:{en:'⚠️ Note: EUR index — lots converted from USD',ru:'⚠️ Важно: индекс в EUR — лоты конвертируются из USD',ua:'⚠️ Важливо: індекс в EUR — лоти конвертуються з USD'}
+    },
+    EU50:{
+      tv:'FESX1! (EUREX) / EU50 (Forex.com)',
+      ott_trade:{en:'✅ Trade: 10:00-18:30 Kyiv · Best: 10:00-15:00',ru:'✅ Торговать: 10:00-18:30 Киев · Лучшее: 10:00-15:00',ua:'✅ Торгувати: 10:00-18:30 Київ · Краще: 10:00-15:00'},
+      ott_avoid:{en:'⛔ Avoid: after 18:30',ru:'⛔ Избегать: после 18:30',ua:'⛔ Уникати: після 18:30'},
+      ott_caution:{en:'⚠️ Note: EUR index — lots converted from USD',ru:'⚠️ Важно: индекс в EUR — конвертация из USD',ua:'⚠️ Важливо: індекс в EUR — конвертація з USD'}
+    },
+    FTSE100:{
+      tv:'UKX / UK100 (Forex.com)',
+      ott_trade:{en:'✅ London: 10:00-18:30 · AM OTT: 17:00-18:00 · PM OTT: 20:30-22:00',ru:'✅ Лондон: 10:00-18:30 · AM OTT: 17:00-18:00 · PM OTT: 20:30-22:00',ua:'✅ Лондон: 10:00-18:30 · AM OTT: 17:00-18:00 · PM OTT: 20:30-22:00'},
+      ott_avoid:{en:'⛔ Avoid: Lunch 19:00-20:00',ru:'⛔ Избегать: Ланч 19:00-20:00',ua:'⛔ Уникати: Ланч 19:00-20:00'},
+      ott_caution:{en:'⚠️ Note: GBP index — lots converted from USD',ru:'⚠️ Важно: индекс в GBP — конвертация из USD',ua:'⚠️ Важливо: індекс в GBP — конвертація з USD'}
+    }
+  }
+
+  function updateIndexInfo(){
+    const info=document.getElementById('index-info')
+    if(activeType!=='index'){info.style.display='none';return}
+    const btn=document.querySelector('.pair-btn[data-pair="'+activePair+'"]')
+    if(!btn)return
+    const csKey='data-cs-'+activeBroker
+    const cs=activeBroker==='custom'?(parseFloat(document.getElementById('custom-cs').value)||1):parseFloat(btn.getAttribute(csKey)||'1')
+    activeCS=cs
+    activeCur=btn.getAttribute('data-cur')||'USD'
+    const l=currentLang
+    const d=indexData[activePair]||{}
+    const curNote=activeCur!=='USD'?` <span style="color:var(--yellow)">⚠ ${activeCur}</span>`:'<span style="color:var(--green)">USD</span>'
+    const csNote={en:'Contract Size',ru:'Размер контракта',ua:'Розмір контракту'}
+    const tvNote={en:'TradingView',ru:'TradingView',ua:'TradingView'}
+    info.style.display='block'
+    info.innerHTML=`
+      <div style="margin-bottom:6px"><strong>${activePair}</strong> &nbsp;·&nbsp; ${csNote[l]}: <strong>${cs}</strong> &nbsp;·&nbsp; 1 lot × 1pt = $${cs} &nbsp;·&nbsp; ${curNote}</div>
+      <div style="margin-bottom:4px;color:var(--text-dim);font-size:11px">${tvNote[l]}: ${d.tv||''}</div>
+      <div style="color:var(--green);margin-bottom:2px">${(d.ott_trade||{})[l]||''}</div>
+      <div style="color:var(--red);margin-bottom:2px">${(d.ott_avoid||{})[l]||''}</div>
+      <div style="color:var(--yellow)">${(d.ott_caution||{})[l]||''}</div>
+    `
+  }
 
   document.querySelectorAll('.pair-btn[data-pair]').forEach(btn=>{
     btn.addEventListener('click',function(){
       document.querySelectorAll('.pair-btn[data-pair]').forEach(b=>b.classList.remove('active'))
       this.classList.add('active')
       activePair=this.dataset.pair
-      activePip=parseFloat(this.dataset.pip)
-      activePipVal=this.dataset.pipval==="DYNAMIC"?null:parseFloat(this.dataset.pipval)
-      document.getElementById("note").textContent=activePipVal===null?lang[currentLang].note:""
+      activePip=parseFloat(this.dataset.pip)||1
+      activeType=this.dataset.type||'forex'
+      if(activeType==='index'){
+        activePipVal='INDEX'
+        document.getElementById("note").textContent=''
+        updateIndexInfo()
+      } else {
+        activePipVal=this.dataset.pipval==="DYNAMIC"?null:parseFloat(this.dataset.pipval)
+        document.getElementById("note").textContent=activePipVal===null?lang[currentLang].note:""
+        document.getElementById('index-info').style.display='none'
+      }
       calc()
     })
   })
@@ -891,19 +1025,31 @@
     const tpDist=Math.abs(tp-entry)
     if(stopDist===0)return
     const riskMoney=balance*riskPct/100
-    const stopPips=stopDist/activePip
-    const tpPips=tpDist/activePip
-    const pipVal=getPipValue(activePair,entry)
-    const lots=riskMoney/(stopPips*pipVal)
-    const units=Math.round(lots*100000)
-    const profit=lots*tpPips*pipVal
+    const stopPoints=stopDist/activePip
+    const tpPoints=tpDist/activePip
     const rr=tpDist/stopDist
-    document.getElementById("r-units").textContent=units.toLocaleString()
-    document.getElementById("r-lots").textContent=lots.toFixed(2)
+    let lots,units,profit,pipVal
+
+    if(activeType==='index'){
+      const cs=activeCS||1
+      lots=riskMoney/(cs*stopPoints)
+      units=Math.round(lots*100)/100
+      profit=lots*cs*tpPoints
+      document.getElementById("r-units").textContent=lots.toFixed(2)+' lots'
+      document.getElementById("r-lots").textContent=lots.toFixed(2)
+    } else {
+      pipVal=getPipValue(activePair,entry)
+      lots=riskMoney/(stopPoints*pipVal)
+      units=Math.round(lots*100000)
+      profit=lots*tpPoints*pipVal
+      document.getElementById("r-units").textContent=units.toLocaleString()
+      document.getElementById("r-lots").textContent=lots.toFixed(2)
+    }
+
     document.getElementById("r-risk").textContent="$"+Math.round(riskMoney)
     document.getElementById("r-profit").textContent="$"+Math.round(profit)
     document.getElementById("r-rr").textContent="1 : "+rr.toFixed(2)
-    document.getElementById("r-pips").textContent=Math.round(stopPips)
+    document.getElementById("r-pips").textContent=Math.round(stopPoints)
     results.style.display="grid"
   }
 
