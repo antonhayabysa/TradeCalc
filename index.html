@@ -172,6 +172,15 @@
     <input type="number" id="custom-cs" placeholder="Contract Size" style="display:none;width:120px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:6px 10px;color:var(--text);font-size:13px" oninput="calc()">
   </div>
 
+  <!-- FX rate input for EUR/GBP indices -->
+  <div id="fx-rate-row" style="display:none;gap:12px;margin-bottom:8px;align-items:center;background:var(--bg2);border-radius:8px;padding:10px 12px;border-left:3px solid var(--yellow)">
+    <div style="flex:1">
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:4px" id="fx-rate-label">EURUSD rate (for lot conversion)</div>
+      <input type="number" id="fx-rate" value="1.10" step="0.0001" style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:8px 10px;color:var(--text);font-size:15px;outline:none" oninput="calc()">
+    </div>
+    <div style="font-size:12px;color:var(--text-dim)" id="fx-rate-note">Risk in USD ÷ rate = Risk in index currency</div>
+  </div>
+
   <!-- index info bar -->
   <div id="index-info" style="display:none;font-size:12px;color:var(--text-muted);background:var(--bg2);border-radius:8px;padding:10px 12px;margin-bottom:8px;line-height:1.6"></div>
 
@@ -905,6 +914,7 @@
     document.getElementById('broker-row').style.display=cat!=='forex'?'flex':'none'
     if(cat==='forex'){
       document.getElementById('index-info').style.display='none'
+      document.getElementById('fx-rate-row').style.display='none'
       activeType='forex'
     }
     const d=lang[currentLang]
@@ -983,6 +993,19 @@
       <div style="color:var(--red);margin-bottom:2px">${(d.ott_avoid||{})[l]||''}</div>
       <div style="color:var(--yellow)">${(d.ott_caution||{})[l]||''}</div>
     `
+
+    // show/hide FX rate field
+    const fxRow=document.getElementById('fx-rate-row')
+    if(activeCur!=='USD'){
+      fxRow.style.display='flex'
+      const pair=activeCur==='EUR'?'EURUSD':'GBPUSD'
+      const fxLabels={en:`${pair} rate (for lot conversion)`,ru:`Курс ${pair} (для конвертации лотов)`,ua:`Курс ${pair} (для конвертації лотів)`}
+      const fxNotes={en:`Risk $USD ÷ ${pair} = Risk in ${activeCur}`,ru:`Риск $USD ÷ ${pair} = Риск в ${activeCur}`,ua:`Ризик $USD ÷ ${pair} = Ризик в ${activeCur}`}
+      document.getElementById('fx-rate-label').textContent=fxLabels[l]
+      document.getElementById('fx-rate-note').textContent=fxNotes[l]
+    } else {
+      fxRow.style.display='none'
+    }
   }
 
   document.querySelectorAll('.pair-btn[data-pair]').forEach(btn=>{
@@ -1032,9 +1055,14 @@
 
     if(activeType==='index'){
       const cs=activeCS||1
-      lots=riskMoney/(cs*stopPoints)
-      units=Math.round(lots*100)/100
-      profit=lots*cs*tpPoints
+      // For EUR/GBP indices: convert riskMoney from USD to index currency
+      let riskInCur=riskMoney
+      if(activeCur!=='USD'){
+        const fxRate=parseFloat(document.getElementById('fx-rate').value)||1
+        riskInCur=riskMoney/fxRate  // USD / EURUSD = EUR, USD / GBPUSD = GBP
+      }
+      lots=riskInCur/(cs*stopPoints)
+      profit=lots*cs*tpPoints*(activeCur!=='USD'?(parseFloat(document.getElementById('fx-rate').value)||1):1)
       document.getElementById("r-units").textContent=lots.toFixed(2)+' lots'
       document.getElementById("r-lots").textContent=lots.toFixed(2)
     } else {
