@@ -217,6 +217,8 @@
     <div class="card"><div class="lbl" id="lbl-pips">Pips to Stop</div><div class="val" id="r-pips">—</div></div>
   </div>
 
+  <div id="mt5-block" style="display:none;background:var(--bg2);border-radius:8px;padding:14px;margin-top:10px;border:1px solid var(--accent)"></div>
+
   <div id="buffer-panel" style="display:none;background:var(--bg2);border-radius:8px;padding:14px;margin-top:10px;border-left:3px solid var(--green)"></div>
 
   <div class="error" id="error"></div>
@@ -644,7 +646,7 @@
       propStatusWarn:"⚠️ Approaching limits",propStatusWarnSub:"Slow down. Reduce risk per trade.",
       propStatusDanger:"🚨 Limit reached",propStatusDangerSub:"Stop trading. You risk losing the account.",
       propStatusComplete:"🎯 Target reached!",propStatusCompleteSub:"You've hit the profit target. Request payout.",propGrossProfit:"Gross profit",propMyPayout:"Your payout",propFirmCut:"Firm cut",ppAccountLbl:"Account ($)",ppSplitLbl:"Profit split (%)",
-      bufLbl:"🛡 Spread/Slippage buffer (pt)",actualLbl:"Actual MT5 result ($) — optional",bufTitle:"🛡 Real risk & result (spread + slippage)",bufPlanHdr:"PLAN (before entry)",bufPlanRisk:"Planned risk (no buffer / TradingView)",bufEffStop:"Effective stop",bufSlipRisk:"Risk if slipped (same lot)",bufSafeLot:"Safe lot (risk = budget)",bufExpProfit:"Expected profit (after spread)",bufRealRR:"Real R:R",bufFactHdr:"ACTUAL (after trade)",bufActualLbl:"Actual MT5 result",bufDeviation:"Broker execution deviation",bufHint:"Buffer = your broker's spread + slippage (auto per instrument). It widens the stop (risk) and trims the TP (profit) so the numbers match MT5. For the deviation, set Risk % so the lot matches the size you actually traded.",bufAuto:"Auto",bufEditable:"editable",bufUnitPt:"pt",bufUnitPip:"pip"
+      bufLbl:"🛡 Spread/Slippage buffer (pt)",actualLbl:"Actual MT5 result ($) — optional",bufTitle:"🛡 Real risk & result (spread + slippage)",bufPlanHdr:"WHAT TO EXPECT WITH THIS LOT",bufMaxLoss:"Max loss (with slippage)",bufPlanRisk:"Planned risk (no buffer / TradingView)",bufEffStop:"Effective stop",bufSlipRisk:"Risk if slipped (same lot)",bufSafeLot:"Safe lot (risk = budget)",bufExpProfit:"Expected profit (after spread)",bufRealRR:"Real R:R",bufFactHdr:"ACTUAL (after trade)",bufActualLbl:"Actual MT5 result",bufDeviation:"Broker execution deviation",bufHint:"Buffer = your broker's spread + slippage (auto per instrument). It widens the stop (risk) and trims the TP (profit) so the numbers match MT5. For the deviation, set Risk % so the lot matches the size you actually traded.",bufAuto:"Auto",bufEditable:"editable",bufUnitPt:"pt",bufUnitPip:"pip",bufPlanWord:"plan",bufSpreadShare:"Spread eats (of stop)",bufStopWarn:"Stop is tight — for an honest R:R use a stop ≥",verGood:"🟢 Good trade — spread barely matters, real ≈ plan",verOk:"🟡 Acceptable — spread eats a bit of the profit",verBad:"🔴 Bad trade: spread eats {s}% of your stop. Widen the stop to ≥{n} {u} so the R:R becomes honest",mt5Hdr:"📋 Enter in MT5",mt5Vol:"Volume (lot)",mt5Price:"Entry price",mt5SL:"Stop Loss",mt5TP:"Take Profit",mt5Note:"Change only the Volume (= safe lot). Leave price, stop and TP exactly as on your chart — don't touch them."
     },
     ru:{
       balance:"Счёт ($)",risk:"Риск (%)",entry:"Вход",stop:"Стоп",tp:"Тейк",
@@ -680,7 +682,7 @@
       propStatusWarn:"⚠️ Близко к лимиту",propStatusWarnSub:"Снизь риск. Будь осторожен.",
       propStatusDanger:"🚨 Лимит достигнут",propStatusDangerSub:"Прекрати торговлю. Риск потери аккаунта.",
       propStatusComplete:"🎯 Цель достигнута!",propStatusCompleteSub:"Ты выполнил цель по прибыли. Запроси выплату.",propGrossProfit:"Валовая прибыль",propMyPayout:"Твоя выплата",propFirmCut:"Комиссия пропа",ppAccountLbl:"Аккаунт ($)",ppSplitLbl:"Сплит (%)",
-      bufLbl:"🛡 Буфер спреда/слиппеджа (пт)",actualLbl:"Факт. результат MT5 ($) — необязательно",bufTitle:"🛡 Риск и результат (спред + слиппедж)",bufPlanHdr:"ПЛАН (до входа)",bufPlanRisk:"Плановый риск (без буфера / TradingView)",bufEffStop:"Эфф. стоп",bufSlipRisk:"Риск при слиппедже (тем же лотом)",bufSafeLot:"Безопасный лот (риск = бюджет)",bufExpProfit:"Ожид. прибыль (с учётом спреда)",bufRealRR:"Реальный R:R",bufFactHdr:"ФАКТ (после сделки)",bufActualLbl:"Факт. результат MT5",bufDeviation:"Отклонение исполнения брокера",bufHint:"Буфер = спред + слиппедж твоего брокера (авто под инструмент). Он расширяет стоп (риск) и срезает тейк (прибыль), чтобы цифры сходились с MT5. Для отклонения выставь Риск %, чтобы лот совпал с тем, которым реально торговал.",bufAuto:"Авто",bufEditable:"можно менять",bufUnitPt:"пт",bufUnitPip:"пип"
+      bufLbl:"🛡 Буфер спреда/слиппеджа (пт)",actualLbl:"Факт. результат MT5 ($) — необязательно",bufTitle:"🛡 Риск и результат (спред + слиппедж)",bufPlanHdr:"ЧТО ОЖИДАТЬ С ЭТИМ ЛОТОМ",bufMaxLoss:"Макс. убыток (со слиппеджем)",bufPlanRisk:"Плановый риск (без буфера / TradingView)",bufEffStop:"Эфф. стоп",bufSlipRisk:"Риск при слиппедже (тем же лотом)",bufSafeLot:"Безопасный лот (риск = бюджет)",bufExpProfit:"Ожид. прибыль (с учётом спреда)",bufRealRR:"Реальный R:R",bufFactHdr:"ФАКТ (после сделки)",bufActualLbl:"Факт. результат MT5",bufDeviation:"Отклонение исполнения брокера",bufHint:"Буфер = спред + слиппедж твоего брокера (авто под инструмент). Он расширяет стоп (риск) и срезает тейк (прибыль), чтобы цифры сходились с MT5. Для отклонения выставь Риск %, чтобы лот совпал с тем, которым реально торговал.",bufAuto:"Авто",bufEditable:"можно менять",bufUnitPt:"пт",bufUnitPip:"пип",bufPlanWord:"план",bufSpreadShare:"Спред съедает (от стопа)",bufStopWarn:"Стоп узкий — для честного R:R ставь стоп ≥",verGood:"🟢 Хорошая сделка — спред почти не мешает, реал ≈ план",verOk:"🟡 Терпимо — спред немного ест прибыль, но жить можно",verBad:"🔴 Плохая сделка: спред съедает {s}% стопа. Расширь стоп до ≥{n} {u} — тогда R:R станет честным",mt5Hdr:"📋 Впиши в MT5",mt5Vol:"Объём (лот)",mt5Price:"Цена открытия",mt5SL:"Стоп Лосс",mt5TP:"Тейк Профит",mt5Note:"Меняешь только Объём (= безопасный лот). Цену, стоп и тейк ставишь точно как на графике — не трогаешь."
     },
     ua:{
       balance:"Рахунок ($)",risk:"Ризик (%)",entry:"Вхід",stop:"Стоп",tp:"Тейк",
@@ -716,7 +718,7 @@
       propStatusWarn:"⚠️ Близько до ліміту",propStatusWarnSub:"Знизь ризик. Будь обережний.",
       propStatusDanger:"🚨 Ліміт досягнуто",propStatusDangerSub:"Зупини торгівлю. Ризик втрати акаунту.",
       propStatusComplete:"🎯 Ціль досягнута!",propStatusCompleteSub:"Ти виконав ціль з прибутку. Запроси виплату.",propGrossProfit:"Валовий прибуток",propMyPayout:"Твоя виплата",propFirmCut:"Комісія пропа",ppAccountLbl:"Акаунт ($)",ppSplitLbl:"Спліт (%)",
-      bufLbl:"🛡 Буфер спреду/сліпеджу (пт)",actualLbl:"Факт. результат MT5 ($) — необов'язково",bufTitle:"🛡 Ризик і результат (спред + сліпедж)",bufPlanHdr:"ПЛАН (до входу)",bufPlanRisk:"Плановий ризик (без буфера / TradingView)",bufEffStop:"Еф. стоп",bufSlipRisk:"Ризик при сліпеджі (тим же лотом)",bufSafeLot:"Безпечний лот (ризик = бюджет)",bufExpProfit:"Очік. прибуток (з урахуванням спреду)",bufRealRR:"Реальний R:R",bufFactHdr:"ФАКТ (після угоди)",bufActualLbl:"Факт. результат MT5",bufDeviation:"Відхилення виконання брокера",bufHint:"Буфер = спред + сліпедж твого брокера (авто під інструмент). Він розширює стоп (ризик) і зрізає тейк (прибуток), щоб цифри збігались з MT5. Для відхилення встав Ризик %, щоб лот збігся з тим, яким реально торгував.",bufAuto:"Авто",bufEditable:"можна змінювати",bufUnitPt:"пт",bufUnitPip:"піп"
+      bufLbl:"🛡 Буфер спреду/сліпеджу (пт)",actualLbl:"Факт. результат MT5 ($) — необов'язково",bufTitle:"🛡 Ризик і результат (спред + сліпедж)",bufPlanHdr:"ЩО ОЧІКУВАТИ З ЦИМ ЛОТОМ",bufMaxLoss:"Макс. збиток (зі сліпеджем)",bufPlanRisk:"Плановий ризик (без буфера / TradingView)",bufEffStop:"Еф. стоп",bufSlipRisk:"Ризик при сліпеджі (тим же лотом)",bufSafeLot:"Безпечний лот (ризик = бюджет)",bufExpProfit:"Очік. прибуток (з урахуванням спреду)",bufRealRR:"Реальний R:R",bufFactHdr:"ФАКТ (після угоди)",bufActualLbl:"Факт. результат MT5",bufDeviation:"Відхилення виконання брокера",bufHint:"Буфер = спред + сліпедж твого брокера (авто під інструмент). Він розширює стоп (ризик) і зрізає тейк (прибуток), щоб цифри збігались з MT5. Для відхилення встав Ризик %, щоб лот збігся з тим, яким реально торгував.",bufAuto:"Авто",bufEditable:"можна змінювати",bufUnitPt:"пт",bufUnitPip:"піп",bufPlanWord:"план",bufSpreadShare:"Спред з'їдає (від стопу)",bufStopWarn:"Стоп вузький — для чесного R:R став стоп ≥",verGood:"🟢 Хороша угода — спред майже не заважає, реал ≈ план",verOk:"🟡 Терпимо — спред трохи з'їдає прибуток",verBad:"🔴 Погана угода: спред з'їдає {s}% стопу. Розшир стоп до ≥{n} {u} — тоді R:R стане чесним",mt5Hdr:"📋 Впиши в MT5",mt5Vol:"Об'єм (лот)",mt5Price:"Ціна відкриття",mt5SL:"Стоп Лосс",mt5TP:"Тейк Профіт",mt5Note:"Змінюєш тільки Об'єм (= безпечний лот). Ціну, стоп і тейк ставиш точно як на графіку — не чіпаєш."
     }
   }
 
@@ -1078,9 +1080,10 @@
   function renderBuffer(stopPoints,tpPoints,nominalLot,riskMoney,perPointUSD){
     const panel=document.getElementById('buffer-panel')
     if(!panel) return
+    const mt5=document.getElementById('mt5-block')
     const d=lang[currentLang]
     const buf=parseFloat(document.getElementById('buffer').value)||0
-    if(buf<=0||!isFinite(perPointUSD)||perPointUSD<=0){panel.style.display='none';return}
+    if(!isFinite(perPointUSD)||perPointUSD<=0){panel.style.display='none';if(mt5)mt5.style.display='none';return}
     const unit=activeType==='index'?d.bufUnitPt:d.bufUnitPip
     const lotUnit=activeType==='index'?' lots':''
     const effStop=stopPoints+buf                          // stop fills worse by spread+slippage
@@ -1088,14 +1091,43 @@
     const plannedRisk=nominalLot*stopPoints*perPointUSD   // ideal (TradingView), no costs
     const slipRisk=nominalLot*effStop*perPointUSD         // same lot, but slipped on the stop
     const safeLot=riskMoney/(effStop*perPointUSD)         // resized so worst-case risk = budget
-    const expProfit=nominalLot*effTp*perPointUSD          // realistic profit after execution drag
+    const expProfit=safeLot*effTp*perPointUSD             // realistic profit with the SAFE lot you actually enter
     const effRR=effStop>0?effTp/effStop:0
+    const planProfit=nominalLot*tpPoints*perPointUSD      // TradingView ideal (no costs)
+    const profGapPct=planProfit>0?(expProfit-planProfit)/planProfit*100:0
+    const spreadShare=stopPoints>0?buf/stopPoints*100:0   // how much of the stop the spread eats
+    const shCol=spreadShare<10?'var(--green)':spreadShare<25?'var(--yellow)':'var(--red)'
+    const minStop=Math.ceil(buf*10)                       // stop where spread is only ~10%
+
+    // ── 📋 ready-to-enter MT5 values (always shown) ──
+    if(mt5){
+      const eV=document.getElementById('entry').value
+      const sV=document.getElementById('stop').value
+      const tV=document.getElementById('tp').value
+      mt5.style.display='block'
+      mt5.innerHTML=`
+        <div style="font-weight:600;margin-bottom:10px">${d.mt5Hdr}</div>
+        <div class="buf-line"><span class="buf-l">${d.mt5Vol}</span><span class="buf-v"><strong style="color:var(--accent)">${safeLot.toFixed(2)}</strong>${lotUnit}</span></div>
+        <div class="buf-line"><span class="buf-l">${d.mt5Price}</span><span class="buf-v">${eV}</span></div>
+        <div class="buf-line"><span class="buf-l">${d.mt5SL}</span><span class="buf-v">${sV}</span></div>
+        <div class="buf-line"><span class="buf-l">${d.mt5TP}</span><span class="buf-v">${tV}</span></div>
+        <div style="font-size:11px;color:var(--text-dim);margin-top:10px;line-height:1.5">${d.mt5Note}</div>
+      `
+    }
+
+    if(buf<=0){ panel.style.display='none'; return }
+
+    // plain-language verdict (traffic light)
+    let verdict,vCol,vBg
+    if(spreadShare<10){ verdict=d.verGood; vCol='var(--green)'; vBg='#4ade8011' }
+    else if(spreadShare<25){ verdict=d.verOk; vCol='var(--yellow)'; vBg='#fbbf2411' }
+    else { verdict=(d.verBad||'').replace('{s}',Math.round(spreadShare)).replace('{n}',minStop).replace('{u}',unit); vCol='var(--red)'; vBg='#f8717111' }
 
     // optional: actual MT5 result -> execution deviation %
     const actual=parseFloat(document.getElementById('actual-pnl').value)
     let factHtml=''
     if(isFinite(actual)){
-      const base=actual>=0?expProfit:plannedRisk          // compare wins vs exp profit, losses vs planned risk
+      const base=actual>=0?expProfit:riskMoney            // wins vs expected profit, losses vs max risk (budget)
       let devLine=''
       if(base>0){
         const dev=(Math.abs(actual)-base)/base*100
@@ -1112,13 +1144,13 @@
     panel.style.display='block'
     panel.innerHTML=`
       <div style="font-weight:600;margin-bottom:10px">${d.bufTitle}</div>
+      <div style="background:${vBg};border:1px solid ${vCol}55;border-radius:6px;padding:10px 12px;margin-bottom:12px;color:${vCol};font-size:13px;font-weight:600;line-height:1.45">${verdict}</div>
       <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px">${d.bufPlanHdr}</div>
-      <div class="buf-line"><span class="buf-l">${d.bufPlanRisk}</span><span class="buf-v">$${Math.round(plannedRisk)}</span></div>
       <div class="buf-line"><span class="buf-l">${d.bufEffStop}</span><span class="buf-v">${stopPoints.toFixed(1)} + ${buf.toFixed(1)} = <strong>${effStop.toFixed(1)} ${unit}</strong></span></div>
-      <div class="buf-line"><span class="buf-l">${d.bufSlipRisk}</span><span class="buf-v" style="color:var(--red)"><strong>$${Math.round(slipRisk)}</strong></span></div>
-      <div class="buf-line"><span class="buf-l">${d.bufSafeLot}</span><span class="buf-v" style="color:var(--green)"><strong>${safeLot.toFixed(2)}</strong>${lotUnit}</span></div>
-      <div class="buf-line"><span class="buf-l">${d.bufExpProfit}</span><span class="buf-v">$${Math.round(expProfit)}</span></div>
+      <div class="buf-line"><span class="buf-l">${d.bufMaxLoss}</span><span class="buf-v" style="color:var(--red)"><strong>$${Math.round(riskMoney)}</strong></span></div>
+      <div class="buf-line"><span class="buf-l">${d.bufExpProfit}</span><span class="buf-v" style="color:var(--green)"><strong>$${Math.round(expProfit)}</strong></span></div>
       <div class="buf-line"><span class="buf-l">${d.bufRealRR}</span><span class="buf-v">1 : ${effRR.toFixed(2)}</span></div>
+      <div class="buf-line"><span class="buf-l">${d.bufSpreadShare}</span><span class="buf-v" style="color:${shCol}"><strong>${spreadShare.toFixed(0)}%</strong></span></div>
       ${factHtml}
       <div style="font-size:11px;color:var(--text-dim);margin-top:10px;line-height:1.5">${d.bufHint}</div>
     `
@@ -1131,7 +1163,7 @@
     const stop=parseFloat(document.getElementById("stop").value)
     const tp=parseFloat(document.getElementById("tp").value)
     const results=document.getElementById("results")
-    if(!balance||!riskPct||!entry||!stop||!tp){results.style.display="none";document.getElementById("buffer-panel").style.display="none";return}
+    if(!balance||!riskPct||!entry||!stop||!tp){results.style.display="none";document.getElementById("buffer-panel").style.display="none";document.getElementById("mt5-block").style.display="none";return}
     const stopDist=Math.abs(entry-stop)
     const tpDist=Math.abs(tp-entry)
     if(stopDist===0)return
