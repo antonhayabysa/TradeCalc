@@ -45,6 +45,11 @@
     .val.red{color:var(--red)}
     .error{font-size:13px;color:var(--red);margin-top:10px;min-height:18px}
     .note{font-size:11px;color:var(--text-dim);margin-top:6px;min-height:16px}
+    /* SPREAD/SLIPPAGE BUFFER */
+    .buf-line{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px;font-size:13px;gap:10px}
+    .buf-line .buf-l{color:var(--text-muted)}
+    .buf-line .buf-v{text-align:right}
+    .buf-line:last-of-type{margin-bottom:0}
     .tabs-wrap{margin-top:32px;width:100%}
     .tabs{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:16px;width:100%}
     .tab{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:8px 4px;color:var(--text-muted);font-size:12px;cursor:pointer;text-align:center;transition:all 0.15s;user-select:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -139,28 +144,28 @@
 
   <!-- FOREX pairs -->
   <div class="pair-grid" id="pairs-forex">
-    <div class="pair-btn active" data-pair="EURUSD" data-pip="0.0001" data-pipval="10" data-type="forex">EUR/USD</div>
-    <div class="pair-btn" data-pair="GBPUSD" data-pip="0.0001" data-pipval="10" data-type="forex">GBP/USD</div>
-    <div class="pair-btn" data-pair="AUDUSD" data-pip="0.0001" data-pipval="10" data-type="forex">AUD/USD</div>
-    <div class="pair-btn" data-pair="NZDUSD" data-pip="0.0001" data-pipval="10" data-type="forex">NZD/USD</div>
-    <div class="pair-btn" data-pair="USDJPY" data-pip="0.01" data-pipval="DYNAMIC" data-type="forex">USD/JPY</div>
-    <div class="pair-btn" data-pair="USDCHF" data-pip="0.0001" data-pipval="DYNAMIC" data-type="forex">USD/CHF</div>
-    <div class="pair-btn" data-pair="USDCAD" data-pip="0.0001" data-pipval="DYNAMIC" data-type="forex">USD/CAD</div>
-    <div class="pair-btn" data-pair="GBPJPY" data-pip="0.01" data-pipval="DYNAMIC" data-type="forex">GBP/JPY</div>
+    <div class="pair-btn active" data-pair="EURUSD" data-pip="0.0001" data-pipval="10" data-type="forex" data-buffer="0.3">EUR/USD</div>
+    <div class="pair-btn" data-pair="GBPUSD" data-pip="0.0001" data-pipval="10" data-type="forex" data-buffer="0.5">GBP/USD</div>
+    <div class="pair-btn" data-pair="AUDUSD" data-pip="0.0001" data-pipval="10" data-type="forex" data-buffer="0.5">AUD/USD</div>
+    <div class="pair-btn" data-pair="NZDUSD" data-pip="0.0001" data-pipval="10" data-type="forex" data-buffer="0.6">NZD/USD</div>
+    <div class="pair-btn" data-pair="USDJPY" data-pip="0.01" data-pipval="DYNAMIC" data-type="forex" data-buffer="0.5">USD/JPY</div>
+    <div class="pair-btn" data-pair="USDCHF" data-pip="0.0001" data-pipval="DYNAMIC" data-type="forex" data-buffer="0.5">USD/CHF</div>
+    <div class="pair-btn" data-pair="USDCAD" data-pip="0.0001" data-pipval="DYNAMIC" data-type="forex" data-buffer="0.6">USD/CAD</div>
+    <div class="pair-btn" data-pair="GBPJPY" data-pip="0.01" data-pipval="DYNAMIC" data-type="forex" data-buffer="1.0">GBP/JPY</div>
   </div>
 
   <!-- US INDICES -->
   <div class="pair-grid" id="pairs-us" style="display:none">
-    <div class="pair-btn" data-pair="SP500" data-pip="1" data-pipval="INDEX" data-cs-ftmo="1" data-cs-fp="50" data-cs-e8="1" data-cur="USD" data-type="index" data-ott="17:00-18:00 / 20:30-22:00">S&P 500</div>
-    <div class="pair-btn" data-pair="NAS100" data-pip="1" data-pipval="INDEX" data-cs-ftmo="1" data-cs-fp="20" data-cs-e8="1" data-cur="USD" data-type="index" data-ott="17:00-18:00 / 20:30-22:00">NAS 100</div>
-    <div class="pair-btn" data-pair="DJ30" data-pip="1" data-pipval="INDEX" data-cs-ftmo="1" data-cs-fp="5" data-cs-e8="1" data-cur="USD" data-type="index" data-ott="17:00-18:00 / 20:30-22:00">DJ 30</div>
+    <div class="pair-btn" data-pair="SP500" data-pip="1" data-pipval="INDEX" data-cs-ftmo="1" data-cs-fp="50" data-cs-e8="1" data-cur="USD" data-type="index" data-buffer="0.5" data-ott="17:00-18:00 / 20:30-22:00">S&P 500</div>
+    <div class="pair-btn" data-pair="NAS100" data-pip="1" data-pipval="INDEX" data-cs-ftmo="1" data-cs-fp="20" data-cs-e8="1" data-cur="USD" data-type="index" data-buffer="1.5" data-ott="17:00-18:00 / 20:30-22:00">NAS 100</div>
+    <div class="pair-btn" data-pair="DJ30" data-pip="1" data-pipval="INDEX" data-cs-ftmo="1" data-cs-fp="5" data-cs-e8="1" data-cur="USD" data-type="index" data-buffer="3.0" data-ott="17:00-18:00 / 20:30-22:00">DJ 30</div>
   </div>
 
   <!-- EU INDICES -->
   <div class="pair-grid" id="pairs-eu" style="display:none">
-    <div class="pair-btn" data-pair="DAX40" data-pip="1" data-pipval="INDEX" data-cs-ftmo="1" data-cs-fp="25" data-cs-e8="1" data-cur="EUR" data-type="index" data-ott="10:00-18:30 Kyiv">DAX 40</div>
-    <div class="pair-btn" data-pair="EU50" data-pip="1" data-pipval="INDEX" data-cs-ftmo="1" data-cs-fp="10" data-cs-e8="1" data-cur="EUR" data-type="index" data-ott="10:00-18:30 Kyiv">Euro 50</div>
-    <div class="pair-btn" data-pair="FTSE100" data-pip="1" data-pipval="INDEX" data-cs-ftmo="1" data-cs-fp="10" data-cs-e8="1" data-cur="GBP" data-type="index" data-ott="10:00-18:30 / 16:30-23:00">FTSE 100</div>
+    <div class="pair-btn" data-pair="DAX40" data-pip="1" data-pipval="INDEX" data-cs-ftmo="1" data-cs-fp="25" data-cs-e8="1" data-cur="EUR" data-type="index" data-buffer="0.3" data-ott="10:00-18:30 Kyiv">DAX 40</div>
+    <div class="pair-btn" data-pair="EU50" data-pip="1" data-pipval="INDEX" data-cs-ftmo="1" data-cs-fp="10" data-cs-e8="1" data-cur="EUR" data-type="index" data-buffer="0.5" data-ott="10:00-18:30 Kyiv">Euro 50</div>
+    <div class="pair-btn" data-pair="FTSE100" data-pip="1" data-pipval="INDEX" data-cs-ftmo="1" data-cs-fp="10" data-cs-e8="1" data-cur="GBP" data-type="index" data-buffer="0.8" data-ott="10:00-18:30 / 16:30-23:00">FTSE 100</div>
   </div>
 
   <!-- broker selector for indices -->
@@ -195,6 +200,12 @@
     <div class="field"><label id="lbl-tp">Take Profit</label><input type="number" id="tp" step="0.00001"></div>
   </div>
 
+  <div id="buffer-row" style="margin-bottom:20px;background:var(--bg2);border-radius:8px;padding:12px 14px;border-left:3px solid var(--accent)">
+    <label id="lbl-buffer" style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:6px">🛡 Spread/Slippage buffer</label>
+    <input type="number" id="buffer" value="0.3" step="0.1" style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:15px;outline:none">
+    <div id="buffer-auto-note" style="font-size:11px;color:var(--text-dim);margin-top:6px"></div>
+  </div>
+
   <div class="results" id="results" style="display:none">
     <div class="card"><div class="lbl" id="lbl-units">Lots</div><div class="val" id="r-units">—</div></div>
     <div class="card"><div class="lbl" id="lbl-lots">Lots (MT4 / MT5)</div><div class="val" id="r-lots">—</div></div>
@@ -203,6 +214,8 @@
     <div class="card"><div class="lbl" id="lbl-rr">R:R</div><div class="val" id="r-rr">—</div></div>
     <div class="card"><div class="lbl" id="lbl-pips">Pips to Stop</div><div class="val" id="r-pips">—</div></div>
   </div>
+
+  <div id="buffer-panel" style="display:none;background:var(--bg2);border-radius:8px;padding:14px;margin-top:10px;border-left:3px solid var(--green)"></div>
 
   <div class="error" id="error"></div>
   <div class="note" id="note"></div>
@@ -628,7 +641,8 @@
       propStatusSafe:"✅ You're safe",propStatusSafeSub:"Keep trading within the rules.",
       propStatusWarn:"⚠️ Approaching limits",propStatusWarnSub:"Slow down. Reduce risk per trade.",
       propStatusDanger:"🚨 Limit reached",propStatusDangerSub:"Stop trading. You risk losing the account.",
-      propStatusComplete:"🎯 Target reached!",propStatusCompleteSub:"You've hit the profit target. Request payout.",propGrossProfit:"Gross profit",propMyPayout:"Your payout",propFirmCut:"Firm cut",ppAccountLbl:"Account ($)",ppSplitLbl:"Profit split (%)"
+      propStatusComplete:"🎯 Target reached!",propStatusCompleteSub:"You've hit the profit target. Request payout.",propGrossProfit:"Gross profit",propMyPayout:"Your payout",propFirmCut:"Firm cut",ppAccountLbl:"Account ($)",ppSplitLbl:"Profit split (%)",
+      bufLbl:"🛡 Spread/Slippage buffer",bufTitle:"🛡 Real risk (spread + slippage)",bufEffStop:"Effective stop",bufSafeLot:"Safe lot (buffer-adjusted)",bufRealRisk:"Real risk if slipped (on lot above)",bufRealRR:"Real R:R",bufHint:"The buffer is added to your stop to cover spread + slippage. Increase it during volatile sessions (open, news, last hour).",bufAuto:"Auto",bufEditable:"editable",bufUnitPt:"pt",bufUnitPip:"pip"
     },
     ru:{
       balance:"Счёт ($)",risk:"Риск (%)",entry:"Вход",stop:"Стоп",tp:"Тейк",
@@ -663,7 +677,8 @@
       propStatusSafe:"✅ Всё в порядке",propStatusSafeSub:"Продолжай торговать в рамках правил.",
       propStatusWarn:"⚠️ Близко к лимиту",propStatusWarnSub:"Снизь риск. Будь осторожен.",
       propStatusDanger:"🚨 Лимит достигнут",propStatusDangerSub:"Прекрати торговлю. Риск потери аккаунта.",
-      propStatusComplete:"🎯 Цель достигнута!",propStatusCompleteSub:"Ты выполнил цель по прибыли. Запроси выплату.",propGrossProfit:"Валовая прибыль",propMyPayout:"Твоя выплата",propFirmCut:"Комиссия пропа",ppAccountLbl:"Аккаунт ($)",ppSplitLbl:"Сплит (%)"
+      propStatusComplete:"🎯 Цель достигнута!",propStatusCompleteSub:"Ты выполнил цель по прибыли. Запроси выплату.",propGrossProfit:"Валовая прибыль",propMyPayout:"Твоя выплата",propFirmCut:"Комиссия пропа",ppAccountLbl:"Аккаунт ($)",ppSplitLbl:"Сплит (%)",
+      bufLbl:"🛡 Буфер спреда/слиппеджа",bufTitle:"🛡 Реальный риск (спред + слиппедж)",bufEffStop:"Эфф. стоп",bufSafeLot:"Безопасный лот (с буфером)",bufRealRisk:"Реальный риск при проскальзывании (на лот выше)",bufRealRR:"Реальный R:R",bufHint:"Буфер добавляется к стопу, чтобы покрыть спред и слиппедж. Увеличивай его в волатильные сессии (открытие, новости, последний час).",bufAuto:"Авто",bufEditable:"можно менять",bufUnitPt:"пт",bufUnitPip:"пип"
     },
     ua:{
       balance:"Рахунок ($)",risk:"Ризик (%)",entry:"Вхід",stop:"Стоп",tp:"Тейк",
@@ -698,7 +713,8 @@
       propStatusSafe:"✅ Все гаразд",propStatusSafeSub:"Продовжуй торгувати в межах правил.",
       propStatusWarn:"⚠️ Близько до ліміту",propStatusWarnSub:"Знизь ризик. Будь обережний.",
       propStatusDanger:"🚨 Ліміт досягнуто",propStatusDangerSub:"Зупини торгівлю. Ризик втрати акаунту.",
-      propStatusComplete:"🎯 Ціль досягнута!",propStatusCompleteSub:"Ти виконав ціль з прибутку. Запроси виплату.",propGrossProfit:"Валовий прибуток",propMyPayout:"Твоя виплата",propFirmCut:"Комісія пропа",ppAccountLbl:"Акаунт ($)",ppSplitLbl:"Спліт (%)"
+      propStatusComplete:"🎯 Ціль досягнута!",propStatusCompleteSub:"Ти виконав ціль з прибутку. Запроси виплату.",propGrossProfit:"Валовий прибуток",propMyPayout:"Твоя виплата",propFirmCut:"Комісія пропа",ppAccountLbl:"Акаунт ($)",ppSplitLbl:"Спліт (%)",
+      bufLbl:"🛡 Буфер спреду/сліпеджу",bufTitle:"🛡 Реальний ризик (спред + сліпедж)",bufEffStop:"Еф. стоп",bufSafeLot:"Безпечний лот (з буфером)",bufRealRisk:"Реальний ризик при проковзуванні (на лот вище)",bufRealRR:"Реальний R:R",bufHint:"Буфер додається до стопу, щоб покрити спред і сліпедж. Збільшуй його у волатильні сесії (відкриття, новини, остання година).",bufAuto:"Авто",bufEditable:"можна змінювати",bufUnitPt:"пт",bufUnitPip:"піп"
     }
   }
 
@@ -898,6 +914,9 @@
     renderReport()
     renderProp()
     if(activeType==='index') updateIndexInfo()
+    document.getElementById("lbl-buffer").textContent=d.bufLbl
+    updateBufferNote(document.getElementById('buffer').value)
+    calc()
   }
 
   /* CALC */
@@ -1024,6 +1043,11 @@
         document.getElementById("note").textContent=activePipVal===null?lang[currentLang].note:""
         document.getElementById('index-info').style.display='none'
       }
+      // auto-fill per-instrument spread/slippage buffer
+      if(this.dataset.buffer!==undefined){
+        document.getElementById('buffer').value=this.dataset.buffer
+        updateBufferNote(this.dataset.buffer)
+      }
       calc()
     })
   })
@@ -1036,6 +1060,38 @@
     return 10
   }
 
+  function updateBufferNote(buf){
+    const note=document.getElementById('buffer-auto-note')
+    if(!note) return
+    const d=lang[currentLang]
+    const unit=activeType==='index'?d.bufUnitPt:d.bufUnitPip
+    note.textContent=(d.bufAuto||'Auto')+': '+activePair+' = '+buf+' '+unit+' · '+(d.bufEditable||'editable')
+  }
+
+  // Spread/Slippage buffer — additive layer, does NOT change the 6 cards above
+  function renderBuffer(stopPoints,tpPoints,nominalLot,riskMoney,perPointUSD){
+    const panel=document.getElementById('buffer-panel')
+    if(!panel) return
+    const d=lang[currentLang]
+    const buf=parseFloat(document.getElementById('buffer').value)||0
+    if(buf<=0||!isFinite(perPointUSD)||perPointUSD<=0){panel.style.display='none';return}
+    const unit=activeType==='index'?d.bufUnitPt:d.bufUnitPip
+    const lotUnit=activeType==='index'?' lots':''
+    const effStop=stopPoints+buf                         // stop corrected for spread+slippage
+    const protectedLot=riskMoney/(effStop*perPointUSD)   // safe size: worst-case loss = your risk $
+    const realRisk=nominalLot*effStop*perPointUSD        // real loss if you trade the lot above and get slipped
+    const effRR=tpPoints/effStop                         // honest R:R after the buffer
+    panel.style.display='block'
+    panel.innerHTML=`
+      <div style="font-weight:600;margin-bottom:10px">${d.bufTitle}</div>
+      <div class="buf-line"><span class="buf-l">${d.bufEffStop}</span><span class="buf-v">${stopPoints.toFixed(1)} + ${buf.toFixed(1)} = <strong>${effStop.toFixed(1)} ${unit}</strong></span></div>
+      <div class="buf-line"><span class="buf-l">${d.bufSafeLot}</span><span class="buf-v" style="color:var(--green)"><strong>${protectedLot.toFixed(2)}</strong>${lotUnit}</span></div>
+      <div class="buf-line"><span class="buf-l">${d.bufRealRisk}</span><span class="buf-v" style="color:var(--red)"><strong>$${Math.round(realRisk)}</strong></span></div>
+      <div class="buf-line"><span class="buf-l">${d.bufRealRR}</span><span class="buf-v">1 : ${effRR.toFixed(2)}</span></div>
+      <div style="font-size:11px;color:var(--text-dim);margin-top:10px;line-height:1.5">${d.bufHint}</div>
+    `
+  }
+
   function calc(){
     const balance=parseFloat(document.getElementById("balance").value)
     const riskPct=parseFloat(document.getElementById("risk").value)
@@ -1043,7 +1099,7 @@
     const stop=parseFloat(document.getElementById("stop").value)
     const tp=parseFloat(document.getElementById("tp").value)
     const results=document.getElementById("results")
-    if(!balance||!riskPct||!entry||!stop||!tp){results.style.display="none";return}
+    if(!balance||!riskPct||!entry||!stop||!tp){results.style.display="none";document.getElementById("buffer-panel").style.display="none";return}
     const stopDist=Math.abs(entry-stop)
     const tpDist=Math.abs(tp-entry)
     if(stopDist===0)return
@@ -1051,18 +1107,20 @@
     const stopPoints=stopDist/activePip
     const tpPoints=tpDist/activePip
     const rr=tpDist/stopDist
-    let lots,units,profit,pipVal
+    let lots,units,profit,pipVal,perPointUSD
 
     if(activeType==='index'){
       const cs=activeCS||1
       // For EUR/GBP indices: convert riskMoney from USD to index currency
       let riskInCur=riskMoney
+      let fxRate=1
       if(activeCur!=='USD'){
-        const fxRate=parseFloat(document.getElementById('fx-rate').value)||1
+        fxRate=parseFloat(document.getElementById('fx-rate').value)||1
         riskInCur=riskMoney/fxRate  // USD / EURUSD = EUR, USD / GBPUSD = GBP
       }
       lots=riskInCur/(cs*stopPoints)
-      profit=lots*cs*tpPoints*(activeCur!=='USD'?(parseFloat(document.getElementById('fx-rate').value)||1):1)
+      profit=lots*cs*tpPoints*fxRate
+      perPointUSD=cs*fxRate  // USD value of 1 point per 1 lot
       document.getElementById("r-units").textContent=lots.toFixed(2)+' lots'
       document.getElementById("r-lots").textContent=lots.toFixed(2)
     } else {
@@ -1070,6 +1128,7 @@
       lots=riskMoney/(stopPoints*pipVal)
       units=Math.round(lots*100000)
       profit=lots*tpPoints*pipVal
+      perPointUSD=pipVal  // USD value of 1 pip per 1 lot
       document.getElementById("r-units").textContent=units.toLocaleString()
       document.getElementById("r-lots").textContent=lots.toFixed(2)
     }
@@ -1079,9 +1138,11 @@
     document.getElementById("r-rr").textContent="1 : "+rr.toFixed(2)
     document.getElementById("r-pips").textContent=Math.round(stopPoints)
     results.style.display="grid"
+
+    renderBuffer(stopPoints,tpPoints,lots,riskMoney,perPointUSD)
   }
 
-  ["balance","risk","entry","stop","tp"].forEach(id=>{
+  ["balance","risk","entry","stop","tp","buffer"].forEach(id=>{
     document.getElementById(id).addEventListener("input",calc)
   })
 
