@@ -136,10 +136,11 @@
   </div>
 
   <!-- category tabs -->
-  <div style="display:flex;gap:6px;margin-bottom:8px">
+  <div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap">
     <div class="pair-btn active" onclick="showCat('forex')" id="cat-forex">Forex</div>
     <div class="pair-btn" onclick="showCat('us')" id="cat-us">🇺🇸 US Indices</div>
     <div class="pair-btn" onclick="showCat('eu')" id="cat-eu">🇪🇺 EU Indices</div>
+    <div class="pair-btn" onclick="openPayout()" id="cat-payout">💰 Payout</div>
   </div>
 
   <!-- FOREX pairs -->
@@ -204,8 +205,6 @@
     <label id="lbl-buffer" style="display:block;font-size:12px;color:var(--text-muted);margin-bottom:6px">🛡 Spread/Slippage buffer</label>
     <input type="number" id="buffer" value="0.3" step="0.1" style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:15px;outline:none">
     <div id="buffer-auto-note" style="font-size:11px;color:var(--text-dim);margin-top:6px"></div>
-    <label id="lbl-actual" style="display:block;font-size:12px;color:var(--text-muted);margin:12px 0 6px">Actual MT5 result ($) — optional</label>
-    <input type="number" id="actual-pnl" step="0.01" style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 12px;color:var(--text);font-size:15px;outline:none">
   </div>
 
   <div class="results" id="results" style="display:none">
@@ -225,12 +224,13 @@
   <div class="note" id="note"></div>
 
   <div class="tabs-wrap">
-    <div class="tabs">
+    <div class="tabs" style="grid-template-columns:repeat(6,1fr)">
       <div class="tab active" onclick="switchTab('scale')" id="tab-scale">📊 Scale</div>
       <div class="tab" onclick="switchTab('winrate')" id="tab-winrate">📈 WinRate</div>
       <div class="tab" onclick="switchTab('hierarchy')" id="tab-hierarchy">🧩 Risk</div>
       <div class="tab" onclick="switchTab('report')" id="tab-report">📋 Report</div>
       <div class="tab" onclick="switchTab('prop')" id="tab-prop">🏢 Prop</div>
+      <div class="tab" onclick="switchTab('payout')" id="tab-payout">💰 Payout</div>
     </div>
 
     <!-- TAB 1: SCALE -->
@@ -380,6 +380,34 @@
       <div id="prop-rows"></div>
       <div id="prop-status"></div>
       <div id="prop-payout" style="display:none;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px"></div>
+    </div>
+
+    <!-- TAB 6: PAYOUT (FundingPips consistency) -->
+    <div class="tab-content" id="tc-payout">
+      <div class="section-title" id="pay-title">💰 FundingPips — проверка выплаты</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+        <div class="pair-btn" id="payq-5000" onclick="setPayAcc(5000)">$5k</div>
+        <div class="pair-btn" id="payq-10000" onclick="setPayAcc(10000)">$10k</div>
+        <div class="pair-btn" id="payq-25000" onclick="setPayAcc(25000)">$25k</div>
+        <div class="pair-btn" id="payq-35000" onclick="setPayAcc(35000)">$35k</div>
+        <div class="pair-btn" id="payq-50000" onclick="setPayAcc(50000)">$50k</div>
+        <div class="pair-btn active" id="payq-100000" onclick="setPayAcc(100000)">$100k</div>
+        <div class="pair-btn" id="payq-200000" onclick="setPayAcc(200000)">$200k</div>
+      </div>
+      <div class="field" style="margin-bottom:12px"><label id="lbl-pay-acc">Account ($)</label><input type="number" id="pay-acc" value="100000" oninput="checkConsistency()"></div>
+      <div id="lbl-pay-cycle" style="font-size:12px;color:var(--text-muted);margin-bottom:6px">Reward cycle:</div>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:16px">
+        <div class="pair-btn" id="cyc-weekly" onclick="selectCycle('weekly')">Weekly 60%</div>
+        <div class="pair-btn" id="cyc-biweekly" onclick="selectCycle('biweekly')">Bi-Weekly 80%</div>
+        <div class="pair-btn active" id="cyc-ondemand" onclick="selectCycle('ondemand')">On Demand 90%</div>
+        <div class="pair-btn" id="cyc-monthly" onclick="selectCycle('monthly')">Monthly 100%</div>
+      </div>
+      <div class="field" style="margin-bottom:16px">
+        <label id="lbl-pay-days">Profit per day, comma-separated ($)</label>
+        <input type="text" id="pay-days-input" placeholder="300, 450, 200, 500" oninput="checkConsistency()">
+      </div>
+      <div id="pay-result"></div>
+      <div class="info-box" id="pay-note" style="margin-top:12px"></div>
     </div>
 
   </div>
@@ -646,7 +674,7 @@
       propStatusWarn:"⚠️ Approaching limits",propStatusWarnSub:"Slow down. Reduce risk per trade.",
       propStatusDanger:"🚨 Limit reached",propStatusDangerSub:"Stop trading. You risk losing the account.",
       propStatusComplete:"🎯 Target reached!",propStatusCompleteSub:"You've hit the profit target. Request payout.",propGrossProfit:"Gross profit",propMyPayout:"Your payout",propFirmCut:"Firm cut",ppAccountLbl:"Account ($)",ppSplitLbl:"Profit split (%)",
-      bufLbl:"🛡 Spread/Slippage buffer (pt)",actualLbl:"Actual MT5 result ($) — optional",bufTitle:"🛡 Real risk & result (spread + slippage)",bufPlanHdr:"WHAT TO EXPECT WITH THIS LOT",bufMaxLoss:"Max loss (with slippage)",bufPlanRisk:"Planned risk (no buffer / TradingView)",bufEffStop:"Effective stop",bufSlipRisk:"Risk if slipped (same lot)",bufSafeLot:"Safe lot (risk = budget)",bufExpProfit:"Expected profit (after spread)",bufRealRR:"Real R:R",bufFactHdr:"ACTUAL (after trade)",bufActualLbl:"Actual MT5 result",bufDeviation:"Broker execution deviation",bufHint:"Buffer = your broker's spread + slippage (auto per instrument). It widens the stop (risk) and trims the TP (profit) so the numbers match MT5. For the deviation, set Risk % so the lot matches the size you actually traded.",bufAuto:"Auto",bufEditable:"editable",bufUnitPt:"pt",bufUnitPip:"pip",bufPlanWord:"plan",bufSpreadShare:"Spread eats (of stop)",bufStopWarn:"Stop is tight — for an honest R:R use a stop ≥",verGood:"🟢 Good trade — spread barely matters, real ≈ plan",verOk:"🟡 Acceptable — spread eats a bit of the profit",verBad:"🔴 Bad trade: spread eats {s}% of your stop. Widen the stop to ≥{n} {u} so the R:R becomes honest",mt5Hdr:"📋 Enter in MT5",mt5Vol:"Volume (lot)",mt5Price:"Entry price",mt5SL:"Stop Loss",mt5TP:"Take Profit",mt5Note:"Change only the Volume (= safe lot). Leave price, stop and TP exactly as on your chart — don't touch them."
+      bufLbl:"🛡 Spread/Slippage buffer (pt)",actualLbl:"Actual MT5 result ($) — optional",bufTitle:"🛡 Real risk & result (spread + slippage)",bufPlanHdr:"WHAT TO EXPECT WITH THIS LOT",bufMaxLoss:"Max loss (with slippage)",bufPlanRisk:"Planned risk (no buffer / TradingView)",bufEffStop:"Effective stop",bufSlipRisk:"Risk if slipped (same lot)",bufSafeLot:"Safe lot (risk = budget)",bufExpProfit:"Expected profit (after spread)",bufRealRR:"Real R:R",bufFactHdr:"ACTUAL (after trade)",bufActualLbl:"Actual MT5 result",bufDeviation:"Broker execution deviation",bufHint:"Buffer = your broker's spread + slippage (auto per instrument). It widens the stop (risk) and trims the TP (profit) so the numbers match MT5. For the deviation, set Risk % so the lot matches the size you actually traded.",bufAuto:"Auto",bufEditable:"editable",bufHintOff:"Off by default (= same as FundingPips). Type your broker spread to see the real fill.",bufUnitPt:"pt",bufUnitPip:"pip",bufPlanWord:"plan",bufSpreadShare:"Spread eats (of stop)",bufStopWarn:"Stop is tight — for an honest R:R use a stop ≥",verGood:"🟢 Good trade — spread barely matters, real ≈ plan",verOk:"🟡 Acceptable — spread eats a bit of the profit",verBad:"🔴 Spread eats {s}% of your stop — that's a lot. Just enter the smaller SAFE LOT below; keep your stop & TP exactly as drawn. If the real R:R isn't worth it, skip the trade.",mt5Hdr:"📋 Enter in MT5",mt5Vol:"Volume (lot)",mt5Price:"Entry price",mt5SL:"Stop Loss",mt5TP:"Take Profit",mt5Note:"Change only the Volume (= safe lot). Leave price, stop and TP exactly as on your chart — don't touch them.",tabPay:"💰 Payout",payTitle:"💰 FundingPips — payout check",payAccLbl:"Account ($)",paySplitLbl:"Profit split (%)",payDaysLbl:"Profit per day, comma-separated ($)",payYes:"✅ You can request a payout",payNo:"⛔ Not yet",payTooLow:"Profit too low: {t}. You need ≥2% = {m} to request a payout.",payViol:"35% breach: your best day {b} = {p}% of total. Daily cap {l}. Add profit on other days to lower its share.",payOk:"All rules met. Your payout (after split): {po}.",payTotal:"Total / % of account",payBest:"Best day (% of total)",payLimit:"35% cap / day",payNote:"35% rule: no single day may exceed 35% of total profit. Spread profit over ≥3 days (best day ≤35%), and you need ≥2% total to withdraw.",payCycleLbl:"Reward cycle (can't be changed later):",cycWeekly:"Weekly",cycBiweekly:"Bi-Weekly",cycOndemand:"On Demand",cycMonthly:"Monthly",payOkNoRule:"No 35% rule on this cycle. Your payout: {po} ({s}%).",payNoteNoRule:"This cycle has no 35% rule — at cycle end you simply withdraw whatever profit is in the account.",paySplitCard:"Split",payPayoutCard:"Your payout",payCompare:"Payout by cycle (same profit)",recStopLbl:"🔧 Optional — only if your stop is NOT structure-based: a wider-stop version (same R:R):",recStopBtn:"Use these",recRestore:"Restore my values"
     },
     ru:{
       balance:"Счёт ($)",risk:"Риск (%)",entry:"Вход",stop:"Стоп",tp:"Тейк",
@@ -682,7 +710,7 @@
       propStatusWarn:"⚠️ Близко к лимиту",propStatusWarnSub:"Снизь риск. Будь осторожен.",
       propStatusDanger:"🚨 Лимит достигнут",propStatusDangerSub:"Прекрати торговлю. Риск потери аккаунта.",
       propStatusComplete:"🎯 Цель достигнута!",propStatusCompleteSub:"Ты выполнил цель по прибыли. Запроси выплату.",propGrossProfit:"Валовая прибыль",propMyPayout:"Твоя выплата",propFirmCut:"Комиссия пропа",ppAccountLbl:"Аккаунт ($)",ppSplitLbl:"Сплит (%)",
-      bufLbl:"🛡 Буфер спреда/слиппеджа (пт)",actualLbl:"Факт. результат MT5 ($) — необязательно",bufTitle:"🛡 Риск и результат (спред + слиппедж)",bufPlanHdr:"ЧТО ОЖИДАТЬ С ЭТИМ ЛОТОМ",bufMaxLoss:"Макс. убыток (со слиппеджем)",bufPlanRisk:"Плановый риск (без буфера / TradingView)",bufEffStop:"Эфф. стоп",bufSlipRisk:"Риск при слиппедже (тем же лотом)",bufSafeLot:"Безопасный лот (риск = бюджет)",bufExpProfit:"Ожид. прибыль (с учётом спреда)",bufRealRR:"Реальный R:R",bufFactHdr:"ФАКТ (после сделки)",bufActualLbl:"Факт. результат MT5",bufDeviation:"Отклонение исполнения брокера",bufHint:"Буфер = спред + слиппедж твоего брокера (авто под инструмент). Он расширяет стоп (риск) и срезает тейк (прибыль), чтобы цифры сходились с MT5. Для отклонения выставь Риск %, чтобы лот совпал с тем, которым реально торговал.",bufAuto:"Авто",bufEditable:"можно менять",bufUnitPt:"пт",bufUnitPip:"пип",bufPlanWord:"план",bufSpreadShare:"Спред съедает (от стопа)",bufStopWarn:"Стоп узкий — для честного R:R ставь стоп ≥",verGood:"🟢 Хорошая сделка — спред почти не мешает, реал ≈ план",verOk:"🟡 Терпимо — спред немного ест прибыль, но жить можно",verBad:"🔴 Плохая сделка: спред съедает {s}% стопа. Расширь стоп до ≥{n} {u} — тогда R:R станет честным",mt5Hdr:"📋 Впиши в MT5",mt5Vol:"Объём (лот)",mt5Price:"Цена открытия",mt5SL:"Стоп Лосс",mt5TP:"Тейк Профит",mt5Note:"Меняешь только Объём (= безопасный лот). Цену, стоп и тейк ставишь точно как на графике — не трогаешь."
+      bufLbl:"🛡 Буфер спреда/слиппеджа (пт)",actualLbl:"Факт. результат MT5 ($) — необязательно",bufTitle:"🛡 Риск и результат (спред + слиппедж)",bufPlanHdr:"ЧТО ОЖИДАТЬ С ЭТИМ ЛОТОМ",bufMaxLoss:"Макс. убыток (со слиппеджем)",bufPlanRisk:"Плановый риск (без буфера / TradingView)",bufEffStop:"Эфф. стоп",bufSlipRisk:"Риск при слиппедже (тем же лотом)",bufSafeLot:"Безопасный лот (риск = бюджет)",bufExpProfit:"Ожид. прибыль (с учётом спреда)",bufRealRR:"Реальный R:R",bufFactHdr:"ФАКТ (после сделки)",bufActualLbl:"Факт. результат MT5",bufDeviation:"Отклонение исполнения брокера",bufHint:"Буфер = спред + слиппедж твоего брокера (авто под инструмент). Он расширяет стоп (риск) и срезает тейк (прибыль), чтобы цифры сходились с MT5. Для отклонения выставь Риск %, чтобы лот совпал с тем, которым реально торговал.",bufAuto:"Авто",bufEditable:"можно менять",bufHintOff:"По умолчанию выключен (= как FundingPips). Впиши спред брокера, чтобы увидеть реальное исполнение.",bufUnitPt:"пт",bufUnitPip:"пип",bufPlanWord:"план",bufSpreadShare:"Спред съедает (от стопа)",bufStopWarn:"Стоп узкий — для честного R:R ставь стоп ≥",verGood:"🟢 Хорошая сделка — спред почти не мешает, реал ≈ план",verOk:"🟡 Терпимо — спред немного ест прибыль, но жить можно",verBad:"🔴 Спред съедает {s}% стопа — это много. Просто введи меньший БЕЗОПАСНЫЙ ЛОТ снизу; стоп и тейк не трогай. Если реальный R:R не устраивает — лучше пропусти сделку.",mt5Hdr:"📋 Впиши в MT5",mt5Vol:"Объём (лот)",mt5Price:"Цена открытия",mt5SL:"Стоп Лосс",mt5TP:"Тейк Профит",mt5Note:"Меняешь только Объём (= безопасный лот). Цену, стоп и тейк ставишь точно как на графике — не трогаешь.",tabPay:"💰 Выплата",payTitle:"💰 FundingPips — проверка выплаты",payAccLbl:"Аккаунт ($)",paySplitLbl:"Сплит (%)",payDaysLbl:"Прибыль по дням через запятую ($)",payYes:"✅ Можно запросить вывод",payNo:"⛔ Пока нельзя",payTooLow:"Мало прибыли: {t}. Для вывода нужно ≥2% = {m}.",payViol:"Нарушение 35%: лучший день {b} = {p}% от общей. Лимит на день {l}. Набери прибыль в другие дни, чтобы снизить его долю.",payOk:"Все правила соблюдены. Твоя выплата (после сплита): {po}.",payTotal:"Всего / % счёта",payBest:"Лучший день (% от общей)",payLimit:"Лимит 35% / день",payNote:"Правило 35%: ни один день не должен превышать 35% от общей прибыли. Раздели прибыль на ≥3 дня (лучший день ≤35%), и для вывода нужно ≥2% всего.",payCycleLbl:"Цикл выплат (потом нельзя поменять):",cycWeekly:"Неделя",cycBiweekly:"2 недели",cycOndemand:"On Demand",cycMonthly:"Месяц",payOkNoRule:"На этом цикле нет правила 35%. Твоя выплата: {po} ({s}%).",payNoteNoRule:"На этом цикле правила 35% нет — в конце цикла просто выводишь всю прибыль, что есть на счёте.",paySplitCard:"Сплит",payPayoutCard:"Твоя выплата",payCompare:"Выплата по циклам (та же прибыль)",recStopLbl:"🔧 Необязательно — только если стоп НЕ по структуре: вариант с широким стопом (тот же R:R):",recStopBtn:"Поставить стоп",recRestore:"Вернуть мои значения"
     },
     ua:{
       balance:"Рахунок ($)",risk:"Ризик (%)",entry:"Вхід",stop:"Стоп",tp:"Тейк",
@@ -718,7 +746,7 @@
       propStatusWarn:"⚠️ Близько до ліміту",propStatusWarnSub:"Знизь ризик. Будь обережний.",
       propStatusDanger:"🚨 Ліміт досягнуто",propStatusDangerSub:"Зупини торгівлю. Ризик втрати акаунту.",
       propStatusComplete:"🎯 Ціль досягнута!",propStatusCompleteSub:"Ти виконав ціль з прибутку. Запроси виплату.",propGrossProfit:"Валовий прибуток",propMyPayout:"Твоя виплата",propFirmCut:"Комісія пропа",ppAccountLbl:"Акаунт ($)",ppSplitLbl:"Спліт (%)",
-      bufLbl:"🛡 Буфер спреду/сліпеджу (пт)",actualLbl:"Факт. результат MT5 ($) — необов'язково",bufTitle:"🛡 Ризик і результат (спред + сліпедж)",bufPlanHdr:"ЩО ОЧІКУВАТИ З ЦИМ ЛОТОМ",bufMaxLoss:"Макс. збиток (зі сліпеджем)",bufPlanRisk:"Плановий ризик (без буфера / TradingView)",bufEffStop:"Еф. стоп",bufSlipRisk:"Ризик при сліпеджі (тим же лотом)",bufSafeLot:"Безпечний лот (ризик = бюджет)",bufExpProfit:"Очік. прибуток (з урахуванням спреду)",bufRealRR:"Реальний R:R",bufFactHdr:"ФАКТ (після угоди)",bufActualLbl:"Факт. результат MT5",bufDeviation:"Відхилення виконання брокера",bufHint:"Буфер = спред + сліпедж твого брокера (авто під інструмент). Він розширює стоп (ризик) і зрізає тейк (прибуток), щоб цифри збігались з MT5. Для відхилення встав Ризик %, щоб лот збігся з тим, яким реально торгував.",bufAuto:"Авто",bufEditable:"можна змінювати",bufUnitPt:"пт",bufUnitPip:"піп",bufPlanWord:"план",bufSpreadShare:"Спред з'їдає (від стопу)",bufStopWarn:"Стоп вузький — для чесного R:R став стоп ≥",verGood:"🟢 Хороша угода — спред майже не заважає, реал ≈ план",verOk:"🟡 Терпимо — спред трохи з'їдає прибуток",verBad:"🔴 Погана угода: спред з'їдає {s}% стопу. Розшир стоп до ≥{n} {u} — тоді R:R стане чесним",mt5Hdr:"📋 Впиши в MT5",mt5Vol:"Об'єм (лот)",mt5Price:"Ціна відкриття",mt5SL:"Стоп Лосс",mt5TP:"Тейк Профіт",mt5Note:"Змінюєш тільки Об'єм (= безпечний лот). Ціну, стоп і тейк ставиш точно як на графіку — не чіпаєш."
+      bufLbl:"🛡 Буфер спреду/сліпеджу (пт)",actualLbl:"Факт. результат MT5 ($) — необов'язково",bufTitle:"🛡 Ризик і результат (спред + сліпедж)",bufPlanHdr:"ЩО ОЧІКУВАТИ З ЦИМ ЛОТОМ",bufMaxLoss:"Макс. збиток (зі сліпеджем)",bufPlanRisk:"Плановий ризик (без буфера / TradingView)",bufEffStop:"Еф. стоп",bufSlipRisk:"Ризик при сліпеджі (тим же лотом)",bufSafeLot:"Безпечний лот (ризик = бюджет)",bufExpProfit:"Очік. прибуток (з урахуванням спреду)",bufRealRR:"Реальний R:R",bufFactHdr:"ФАКТ (після угоди)",bufActualLbl:"Факт. результат MT5",bufDeviation:"Відхилення виконання брокера",bufHint:"Буфер = спред + сліпедж твого брокера (авто під інструмент). Він розширює стоп (ризик) і зрізає тейк (прибуток), щоб цифри збігались з MT5. Для відхилення встав Ризик %, щоб лот збігся з тим, яким реально торгував.",bufAuto:"Авто",bufEditable:"можна змінювати",bufHintOff:"За замовчуванням вимкнено (= як FundingPips). Впиши спред брокера, щоб побачити реальне виконання.",bufUnitPt:"пт",bufUnitPip:"піп",bufPlanWord:"план",bufSpreadShare:"Спред з'їдає (від стопу)",bufStopWarn:"Стоп вузький — для чесного R:R став стоп ≥",verGood:"🟢 Хороша угода — спред майже не заважає, реал ≈ план",verOk:"🟡 Терпимо — спред трохи з'їдає прибуток",verBad:"🔴 Спред з'їдає {s}% стопу — це багато. Просто введи менший БЕЗПЕЧНИЙ ЛОТ знизу; стоп і тейк не чіпай. Якщо реальний R:R не влаштовує — краще пропусти угоду.",mt5Hdr:"📋 Впиши в MT5",mt5Vol:"Об'єм (лот)",mt5Price:"Ціна відкриття",mt5SL:"Стоп Лосс",mt5TP:"Тейк Профіт",mt5Note:"Змінюєш тільки Об'єм (= безпечний лот). Ціну, стоп і тейк ставиш точно як на графіку — не чіпаєш.",tabPay:"💰 Виплата",payTitle:"💰 FundingPips — перевірка виплати",payAccLbl:"Акаунт ($)",paySplitLbl:"Спліт (%)",payDaysLbl:"Прибуток по днях через кому ($)",payYes:"✅ Можна запросити виплату",payNo:"⛔ Поки не можна",payTooLow:"Мало прибутку: {t}. Для виплати потрібно ≥2% = {m}.",payViol:"Порушення 35%: найкращий день {b} = {p}% від загального. Ліміт на день {l}. Набери прибуток в інші дні, щоб знизити його частку.",payOk:"Усі правила дотримані. Твоя виплата (після спліту): {po}.",payTotal:"Всього / % рахунку",payBest:"Найкращий день (% від заг.)",payLimit:"Ліміт 35% / день",payNote:"Правило 35%: жоден день не повинен перевищувати 35% від загального прибутку. Розділи прибуток на ≥3 дні (найкращий день ≤35%), і для виплати потрібно ≥2% всього.",payCycleLbl:"Цикл виплат (потім не змінити):",cycWeekly:"Тиждень",cycBiweekly:"2 тижні",cycOndemand:"On Demand",cycMonthly:"Місяць",payOkNoRule:"На цьому циклі немає правила 35%. Твоя виплата: {po} ({s}%).",payNoteNoRule:"На цьому циклі правила 35% немає — в кінці циклу просто виводиш весь прибуток, що є на рахунку.",paySplitCard:"Спліт",payPayoutCard:"Твоя виплата",payCompare:"Виплата по циклах (той же прибуток)",recStopLbl:"🔧 Необов'язково — тільки якщо стоп НЕ за структурою: варіант з широким стопом (той же R:R):",recStopBtn:"Поставити стоп",recRestore:"Повернути мої значення"
     }
   }
 
@@ -840,6 +868,91 @@
     summary.textContent=`${wins}W / ${losses}L · WR ${wr}% · ${totalR>=0?'+':''}${totalR.toFixed(1)}R · ${totalPnl>=0?'+':''}$${Math.round(totalPnl).toLocaleString()} · ${pctGain>=0?'+':''}${pctGain.toFixed(2)}%`
   }
 
+  /* FUNDINGPIPS PAYOUT / REWARD CYCLES */
+  const cycles={
+    weekly:{split:60,rule:false,key:'cycWeekly'},
+    biweekly:{split:80,rule:false,key:'cycBiweekly'},
+    ondemand:{split:90,rule:true,key:'cycOndemand'},
+    monthly:{split:100,rule:false,key:'cycMonthly'}
+  }
+  let activeCycle='ondemand'
+  function selectCycle(c){
+    activeCycle=c
+    document.querySelectorAll('[id^="cyc-"]').forEach(b=>b.classList.remove('active'))
+    const b=document.getElementById('cyc-'+c); if(b) b.classList.add('active')
+    checkConsistency()
+  }
+  function checkConsistency(){
+    const d=lang[currentLang]
+    const acc=parseFloat(document.getElementById('pay-acc').value)||0
+    const cyc=cycles[activeCycle]||cycles.ondemand
+    const split=cyc.split
+    const raw=document.getElementById('pay-days-input').value||''
+    const days=raw.split(/[,;\s]+/).map(s=>parseFloat(s)).filter(v=>!isNaN(v))
+    const res=document.getElementById('pay-result')
+    const note=document.getElementById('pay-note')
+    if(note) note.textContent = cyc.rule ? (d.payNote||'') : (d.payNoteNoRule||'')
+    if(!res) return
+    if(!acc||days.length===0){res.innerHTML='';return}
+    const total=days.reduce((a,b)=>a+b,0)
+    const best=Math.max(...days)
+    const limit35=total*0.35
+    const minProfit=acc*0.02
+    const totalPct=acc>0?total/acc*100:0
+    const bestPct=total>0?best/total*100:0
+    const payout=total*split/100
+    let head,col,bg,msg
+    if(cyc.rule){
+      if(total<minProfit){
+        col='var(--red)';bg='#f8717111';head=d.payNo
+        msg=(d.payTooLow||'').replace('{t}','$'+Math.round(total)).replace('{m}','$'+Math.round(minProfit))
+      } else if(best>limit35+0.01){
+        col='var(--yellow)';bg='#fbbf2411';head=d.payNo
+        msg=(d.payViol||'').replace('{b}','$'+Math.round(best)).replace('{p}',bestPct.toFixed(0)).replace('{l}','$'+Math.round(limit35))
+      } else {
+        col='var(--green)';bg='#4ade8011';head=d.payYes
+        msg=(d.payOk||'').replace('{po}','$'+Math.round(payout))
+      }
+    } else {
+      col='var(--green)';bg='#4ade8011';head=d.payYes
+      msg=(d.payOkNoRule||'').replace('{po}','$'+Math.round(payout)).replace('{s}',split)
+    }
+    const cmp=['weekly','biweekly','ondemand','monthly'].map(k=>{
+      const c=cycles[k], p=total*c.split/100, sel=k===activeCycle
+      const flag=c.rule?' <span style="color:var(--yellow)">⚠️35%</span>':''
+      return `<div class="buf-line"${sel?' style="font-weight:700"':''}><span class="buf-l">${d[c.key]||k} ${c.split}%${sel?' ◄':''}</span><span class="buf-v">$${Math.round(p)}${flag}</span></div>`
+    }).join('')
+    const cards = cyc.rule
+      ? `<div class="stat-card"><div class="s-lbl">${d.payBest}</div><div class="s-val" style="color:${bestPct>35?'var(--red)':'var(--green)'}">${bestPct.toFixed(0)}%</div></div><div class="stat-card"><div class="s-lbl">${d.payLimit}</div><div class="s-val">$${Math.round(limit35)}</div></div>`
+      : `<div class="stat-card"><div class="s-lbl">${d.paySplitCard||'Split'}</div><div class="s-val">${split}%</div></div><div class="stat-card"><div class="s-lbl">${d.payPayoutCard||'Payout'}</div><div class="s-val" style="color:var(--green)">$${Math.round(payout)}</div></div>`
+    res.innerHTML=`
+      <div style="border-radius:8px;padding:14px;background:${bg};border:1px solid ${col}55;margin-bottom:12px">
+        <div style="font-size:16px;font-weight:700;color:${col};margin-bottom:6px">${head}</div>
+        <div style="font-size:13px;color:var(--text-muted);line-height:1.5">${msg}</div>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-card"><div class="s-lbl">${d.payTotal}</div><div class="s-val">$${Math.round(total)} <span style="font-size:12px;color:${totalPct>=2?'var(--green)':'var(--red)'}">(${totalPct.toFixed(2)}%)</span></div></div>
+        ${cards}
+      </div>
+      <div style="background:var(--bg2);border-radius:8px;padding:12px 14px;margin-top:12px">
+        <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px">${d.payCompare||'Payout by cycle'}</div>
+        ${cmp}
+      </div>
+    `
+  }
+
+  function openPayout(){
+    switchTab('payout')
+    const el=document.getElementById('tab-payout')||document.getElementById('tc-payout')
+    if(el) el.scrollIntoView({behavior:'smooth',block:'center'})
+  }
+  function setPayAcc(v){
+    document.getElementById('pay-acc').value=v
+    document.querySelectorAll('[id^="payq-"]').forEach(b=>b.classList.remove('active'))
+    const b=document.getElementById('payq-'+v); if(b) b.classList.add('active')
+    checkConsistency()
+  }
+
   /* SET LANG */
   function setLang(l){
     currentLang=l
@@ -919,8 +1032,18 @@
     renderProp()
     if(activeType==='index') updateIndexInfo()
     document.getElementById("lbl-buffer").textContent=d.bufLbl
-    document.getElementById("lbl-actual").textContent=d.actualLbl
+    document.getElementById('tab-payout').textContent=d.tabPay
+    document.getElementById('cat-payout').textContent=d.tabPay
+    document.getElementById('pay-title').textContent=d.payTitle
+    document.getElementById('lbl-pay-acc').textContent=d.payAccLbl
+    document.getElementById('lbl-pay-cycle').textContent=d.payCycleLbl||'Reward cycle:'
+    document.getElementById('cyc-weekly').textContent=(d.cycWeekly||'Weekly')+' 60%'
+    document.getElementById('cyc-biweekly').textContent=(d.cycBiweekly||'Bi-Weekly')+' 80%'
+    document.getElementById('cyc-ondemand').textContent=(d.cycOndemand||'On Demand')+' 90%'
+    document.getElementById('cyc-monthly').textContent=(d.cycMonthly||'Monthly')+' 100%'
+    document.getElementById('lbl-pay-days').textContent=d.payDaysLbl
     updateBufferNote(document.getElementById('buffer').value)
+    checkConsistency()
     calc()
   }
 
@@ -1097,7 +1220,8 @@
     const profGapPct=planProfit>0?(expProfit-planProfit)/planProfit*100:0
     const spreadShare=stopPoints>0?buf/stopPoints*100:0   // how much of the stop the spread eats
     const shCol=spreadShare<10?'var(--green)':spreadShare<25?'var(--yellow)':'var(--red)'
-    const minStop=Math.ceil(buf*10)                       // stop where spread is only ~10%
+    const minStop=Math.ceil(buf*10)
+
 
     // ── 📋 ready-to-enter MT5 values (always shown) ──
     if(mt5){
@@ -1117,41 +1241,16 @@
 
     if(buf<=0){ panel.style.display='none'; return }
 
-    // plain-language verdict (traffic light)
-    let verdict,vCol,vBg
-    if(spreadShare<10){ verdict=d.verGood; vCol='var(--green)'; vBg='#4ade8011' }
-    else if(spreadShare<25){ verdict=d.verOk; vCol='var(--yellow)'; vBg='#fbbf2411' }
-    else { verdict=(d.verBad||'').replace('{s}',Math.round(spreadShare)).replace('{n}',minStop).replace('{u}',unit); vCol='var(--red)'; vBg='#f8717111' }
-
     // optional: actual MT5 result -> execution deviation %
-    const actual=parseFloat(document.getElementById('actual-pnl').value)
-    let factHtml=''
-    if(isFinite(actual)){
-      const base=actual>=0?expProfit:riskMoney            // wins vs expected profit, losses vs max risk (budget)
-      let devLine=''
-      if(base>0){
-        const dev=(Math.abs(actual)-base)/base*100
-        const col=dev<=0?'var(--green)':'var(--red)'
-        const sign=dev>=0?'+':''
-        devLine=`<div class="buf-line"><span class="buf-l">${d.bufDeviation}</span><span class="buf-v" style="color:${col}">${sign}${dev.toFixed(1)}%</span></div>`
-      }
-      factHtml=`
-        <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.04em;margin:12px 0 6px">${d.bufFactHdr}</div>
-        <div class="buf-line"><span class="buf-l">${d.bufActualLbl}</span><span class="buf-v" style="color:${actual>=0?'var(--green)':'var(--red)'}"><strong>${actual>=0?'+':''}$${Math.round(actual)}</strong></span></div>
-        ${devLine}`
-    }
-
     panel.style.display='block'
     panel.innerHTML=`
       <div style="font-weight:600;margin-bottom:10px">${d.bufTitle}</div>
-      <div style="background:${vBg};border:1px solid ${vCol}55;border-radius:6px;padding:10px 12px;margin-bottom:12px;color:${vCol};font-size:13px;font-weight:600;line-height:1.45">${verdict}</div>
       <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px">${d.bufPlanHdr}</div>
       <div class="buf-line"><span class="buf-l">${d.bufEffStop}</span><span class="buf-v">${stopPoints.toFixed(1)} + ${buf.toFixed(1)} = <strong>${effStop.toFixed(1)} ${unit}</strong></span></div>
       <div class="buf-line"><span class="buf-l">${d.bufMaxLoss}</span><span class="buf-v" style="color:var(--red)"><strong>$${Math.round(riskMoney)}</strong></span></div>
       <div class="buf-line"><span class="buf-l">${d.bufExpProfit}</span><span class="buf-v" style="color:var(--green)"><strong>$${Math.round(expProfit)}</strong></span></div>
       <div class="buf-line"><span class="buf-l">${d.bufRealRR}</span><span class="buf-v">1 : ${effRR.toFixed(2)}</span></div>
       <div class="buf-line"><span class="buf-l">${d.bufSpreadShare}</span><span class="buf-v" style="color:${shCol}"><strong>${spreadShare.toFixed(0)}%</strong></span></div>
-      ${factHtml}
       <div style="font-size:11px;color:var(--text-dim);margin-top:10px;line-height:1.5">${d.bufHint}</div>
     `
   }
@@ -1206,7 +1305,7 @@
     renderBuffer(stopPoints,tpPoints,lots,riskMoney,perPointUSD)
   }
 
-  ["balance","risk","entry","stop","tp","buffer","actual-pnl"].forEach(id=>{
+  ["balance","risk","entry","stop","tp","buffer"].forEach(id=>{
     document.getElementById(id).addEventListener("input",calc)
   })
 
