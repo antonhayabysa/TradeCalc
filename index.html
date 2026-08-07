@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TradeCalc | Position Size Calculator for Forex, Crypto & Indices</title>
-  <meta name="description" content="Free position size calculator for Forex, crypto and indices. Calculate lot size, risk, pips, R:R and profit before opening a trade. Works with TradingView, MT4 and MT5.">
-  <meta name="keywords" content="forex calculator, position size calculator, lot size calculator, forex risk calculator">
+  <title>TradeCalc | Position Size Calculator for Forex, Gold, Oil, Indices & Prop Firms</title>
+  <meta name="description" content="Free position size calculator for Forex, gold, silver, oil, US & EU indices. Calculate lot size, risk, pips, R:R and profit before opening a trade. Prop firm rules for FTMO, FundingPips, FundedNext, The5ers, E8. Works with TradingView, MT4 and MT5.">
+  <meta name="keywords" content="forex calculator, position size calculator, lot size calculator, forex risk calculator, gold lot size, prop firm calculator, ftmo calculator, fundingpips, fundednext, the5ers">
   <meta name="robots" content="index, follow">
   <meta name="author" content="TradeCalc">
-  <meta property="og:title" content="TradeCalc | Forex Risk Calculator">
-  <meta property="og:description" content="Simple and fast Forex risk calculator for traders.">
+  <meta property="og:title" content="TradeCalc | Forex, Gold & Indices Risk Calculator">
+  <meta property="og:description" content="Simple and fast risk calculator for traders: forex, metals, oil, indices + prop firm rules.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://trade-calc-gamma.vercel.app">
   <meta property="og:image" content="https://trade-calc-gamma.vercel.app/favicon.png">
@@ -82,7 +82,7 @@
     .stat-card .s-lbl{font-size:11px;color:var(--text-dim);margin-bottom:4px}
     .stat-card .s-val{font-size:18px;font-weight:500}
     /* PROP CHECKER */
-    .prop-firm-btns{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
+    .prop-firm-btns{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
     .prop-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;align-items:center;padding:10px 12px;background:var(--bg2);border-radius:8px;border-left:3px solid var(--border)}
     .prop-row.safe{border-left-color:var(--green)}
     .prop-row.warn{border-left-color:var(--yellow)}
@@ -100,6 +100,9 @@
     .prop-status.danger{background:#f8717111;border:1px solid #f8717144}
     .bar-wrap{background:var(--bg3);border-radius:4px;height:6px;margin-top:6px;overflow:hidden}
     .bar-fill{height:100%;border-radius:4px;transition:width 0.3s}
+    .rules-box{background:var(--bg2);border-radius:8px;padding:12px 14px;margin-bottom:12px;border-left:3px solid var(--accent);font-size:12px;line-height:1.7;color:var(--text-muted)}
+    .rules-box .rb-k{color:var(--text-dim)}
+    .rules-box .rb-v{color:var(--text);font-weight:500}
     #seo-text{max-width:480px;margin:32px auto 0 auto;color:var(--text-dim);font-size:13px;line-height:1.6}
     #seo-text p{margin-bottom:10px}
     @media(max-width:768px){
@@ -135,59 +138,27 @@
     <div class="pair-btn active" onclick="setLang('en')" id="lang-en">EN</div>
   </div>
 
-  <!-- category tabs -->
-  <div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap">
-    <div class="pair-btn active" onclick="showCat('forex')" id="cat-forex">Forex</div>
-    <div class="pair-btn" onclick="showCat('us')" id="cat-us">🇺🇸 US Indices</div>
-    <div class="pair-btn" onclick="showCat('eu')" id="cat-eu">🇪🇺 EU Indices</div>
-    <div class="pair-btn" onclick="openPayout()" id="cat-payout">💰 Payout</div>
-  </div>
+  <!-- category tabs (rendered by JS) -->
+  <div id="cat-row" style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap"></div>
 
-  <!-- FOREX pairs -->
-  <div class="pair-grid" id="pairs-forex">
-    <div class="pair-btn active" data-pair="EURUSD" data-pip="0.0001" data-pipval="10" data-type="forex" data-buffer="0.3">EURUSD</div>
-    <div class="pair-btn" data-pair="GBPUSD" data-pip="0.0001" data-pipval="10" data-type="forex" data-buffer="0.5">GBPUSD</div>
-    <div class="pair-btn" data-pair="AUDUSD" data-pip="0.0001" data-pipval="10" data-type="forex" data-buffer="0.5">AUDUSD</div>
-    <div class="pair-btn" data-pair="NZDUSD" data-pip="0.0001" data-pipval="10" data-type="forex" data-buffer="0.6">NZDUSD</div>
-    <div class="pair-btn" data-pair="USDJPY" data-pip="0.01" data-pipval="DYNAMIC" data-type="forex" data-buffer="0.5">USDJPY</div>
-    <div class="pair-btn" data-pair="USDCHF" data-pip="0.0001" data-pipval="DYNAMIC" data-type="forex" data-buffer="0.5">USDCHF</div>
-    <div class="pair-btn" data-pair="USDCAD" data-pip="0.0001" data-pipval="DYNAMIC" data-type="forex" data-buffer="0.6">USDCAD</div>
-    <div class="pair-btn" data-pair="GBPJPY" data-pip="0.01" data-pipval="DYNAMIC" data-type="forex" data-buffer="1.0">GBPJPY</div>
-  </div>
-
-  <!-- US INDICES -->
-  <div class="pair-grid" id="pairs-us" style="display:none">
-    <div class="pair-btn" data-pair="SP500" data-pip="1" data-pipval="INDEX" data-cs-ftmo="1" data-cs-fp="50" data-cs-e8="1" data-cur="USD" data-type="index" data-buffer="1.0" data-ott="17:00-18:00 / 20:30-22:00">US500.cash</div>
-    <div class="pair-btn" data-pair="NAS100" data-pip="1" data-pipval="INDEX" data-cs-ftmo="1" data-cs-fp="20" data-cs-e8="1" data-cur="USD" data-type="index" data-buffer="2.0" data-ott="17:00-18:00 / 20:30-22:00">US100.cash</div>
-    <div class="pair-btn" data-pair="DJ30" data-pip="1" data-pipval="INDEX" data-cs-ftmo="1" data-cs-fp="5" data-cs-e8="1" data-cur="USD" data-type="index" data-buffer="3.0" data-ott="17:00-18:00 / 20:30-22:00">US30.cash</div>
-  </div>
-
-  <!-- EU INDICES -->
-  <div class="pair-grid" id="pairs-eu" style="display:none">
-    <div class="pair-btn" data-pair="DAX40" data-pip="1" data-pipval="INDEX" data-cs-ftmo="1" data-cs-fp="25" data-cs-e8="1" data-cur="EUR" data-type="index" data-buffer="1.5" data-ott="10:00-18:30 Kyiv">GER40.cash</div>
-    <div class="pair-btn" data-pair="EU50" data-pip="1" data-pipval="INDEX" data-cs-ftmo="1" data-cs-fp="10" data-cs-e8="1" data-cur="EUR" data-type="index" data-buffer="1.2" data-ott="10:00-18:30 Kyiv">EU50.cash</div>
-    <div class="pair-btn" data-pair="FTSE100" data-pip="1" data-pipval="INDEX" data-cs-ftmo="1" data-cs-fp="10" data-cs-e8="1" data-cur="GBP" data-type="index" data-buffer="1.5" data-ott="10:00-18:30 / 16:30-23:00">UK100.cash</div>
-  </div>
+  <!-- instrument buttons (rendered by JS) -->
+  <div class="pair-grid" id="pair-grid"></div>
 
   <!-- broker selector for indices -->
-  <div id="broker-row" style="display:none;gap:6px;margin-bottom:8px;flex-wrap:wrap">
-    <div class="pair-btn active" onclick="selectBroker('ftmo')" id="br-ftmo">FTMO</div>
-    <div class="pair-btn" onclick="selectBroker('fp')" id="br-fp">Funding Pips</div>
-    <div class="pair-btn" onclick="selectBroker('e8')" id="br-e8">E8</div>
-    <div class="pair-btn" onclick="selectBroker('custom')" id="br-custom">Custom CS</div>
-    <input type="number" id="custom-cs" placeholder="Contract Size" style="display:none;width:120px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:6px 10px;color:var(--text);font-size:13px" oninput="calc()">
-  </div>
+  <div id="broker-label" style="font-size:12px;color:var(--text-muted);margin-bottom:6px">🏢 Prop firm / broker</div>
+  <div id="broker-row" style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap"></div>
+  <input type="number" id="custom-cs" placeholder="Contract Size" style="display:none;width:150px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--text);font-size:13px;margin-bottom:8px" oninput="onCustomCS()">
 
-  <!-- FX rate input for EUR/GBP indices -->
+  <!-- FX rate input for non-USD quote instruments -->
   <div id="fx-rate-row" style="display:none;gap:12px;margin-bottom:8px;align-items:center;background:var(--bg2);border-radius:8px;padding:10px 12px;border-left:3px solid var(--yellow)">
     <div style="flex:1">
-      <div style="font-size:12px;color:var(--text-muted);margin-bottom:4px" id="fx-rate-label">EURUSD rate (for lot conversion)</div>
-      <input type="number" id="fx-rate" value="1.10" step="0.0001" style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:8px 10px;color:var(--text);font-size:15px;outline:none" oninput="calc()">
+      <div style="font-size:12px;color:var(--text-muted);margin-bottom:4px" id="fx-rate-label">EURUSD rate</div>
+      <input type="number" id="fx-rate" value="1.10" step="0.0001" style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:8px 10px;color:var(--text);font-size:15px;outline:none" oninput="onRateInput()">
     </div>
-    <div style="font-size:12px;color:var(--text-dim)" id="fx-rate-note">Risk in USD ÷ rate = Risk in index currency</div>
+    <div style="font-size:11px;color:var(--text-dim);max-width:150px" id="fx-rate-note"></div>
   </div>
 
-  <!-- index info bar -->
+  <!-- instrument info bar -->
   <div id="index-info" style="display:none;font-size:12px;color:var(--text-muted);background:var(--bg2);border-radius:8px;padding:10px 12px;margin-bottom:8px;line-height:1.6"></div>
 
   <div class="settings">
@@ -314,31 +285,37 @@
     <div class="tab-content" id="tc-prop">
       <div class="section-title" id="prop-title">Prop Firm Checker</div>
 
-      <!-- firm selector -->
-      <div class="prop-firm-btns">
-        <div class="pair-btn active" onclick="selectFirm('ftmo')" id="pfb-ftmo">FTMO</div>
-        <div class="pair-btn" onclick="selectFirm('fundednext')" id="pfb-fundednext">FundedNext</div>
-        <div class="pair-btn" onclick="selectFirm('e8')" id="pfb-e8">E8</div>
-        <div class="pair-btn" onclick="selectFirm('custom')" id="pfb-custom" id="pfb-custom">Custom</div>
-      </div>
+      <!-- firm selector (rendered by JS) -->
+      <div class="prop-firm-btns" id="prop-firm-btns"></div>
 
-      <!-- account + phase -->
+      <!-- program + phase -->
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
         <div class="field">
-          <label id="lbl-pp-size">Account ($)</label>
-          <input type="number" id="pp-size" value="100000" oninput="renderProp()">
+          <label id="lbl-pp-program">Program</label>
+          <select id="pp-program" onchange="onProgramChange()"></select>
         </div>
         <div class="field">
           <label id="lbl-pp-phase">Phase</label>
-          <select id="pp-phase" oninput="onPhaseChange()">
-            <option value="1" id="opt-phase1">Phase 1</option>
-            <option value="2" id="opt-phase2">Phase 2</option>
-            <option value="funded" id="opt-funded">Funded</option>
-          </select>
+          <select id="pp-phase" onchange="onPhaseChange()"></select>
         </div>
       </div>
 
-      <!-- limits (editable for custom) -->
+      <!-- rules summary -->
+      <div class="rules-box" id="prop-rules"></div>
+
+      <!-- account -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+        <div class="field">
+          <label id="lbl-pp-size">Account ($)</label>
+          <input type="number" id="pp-size" value="100000" oninput="syncAccount()">
+        </div>
+        <div class="field">
+          <label id="lbl-pp-split">Profit split (%)</label>
+          <input type="number" id="pp-split" value="80" min="1" max="100" step="1" oninput="renderProp()">
+        </div>
+      </div>
+
+      <!-- limits (editable) -->
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px">
         <div class="field">
           <label id="lbl-pp-profit-target">Profit target (%)</label>
@@ -365,26 +342,17 @@
           <input type="number" id="pp-daily-used" value="0" step="0.1" oninput="renderProp()">
         </div>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
-        <div class="field">
-          <label id="lbl-pp-account">Account ($)</label>
-          <input type="number" id="pp-account" value="100000" oninput="renderProp()">
-        </div>
-        <div class="field">
-          <label id="lbl-pp-split">Profit split (%)</label>
-          <input type="number" id="pp-split" value="80" min="1" max="100" step="1" oninput="renderProp()">
-        </div>
-      </div>
 
       <!-- results -->
       <div id="prop-rows"></div>
       <div id="prop-status"></div>
       <div id="prop-payout" style="display:none;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px"></div>
+      <div class="info-box" id="prop-money" style="display:none"></div>
     </div>
 
-    <!-- TAB 6: PAYOUT (FundingPips consistency) -->
+    <!-- TAB 6: PAYOUT (consistency rule) -->
     <div class="tab-content" id="tc-payout">
-      <div class="section-title" id="pay-title">💰 FundingPips — проверка выплаты</div>
+      <div class="section-title" id="pay-title">💰 Payout check</div>
       <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
         <div class="pair-btn" id="payq-5000" onclick="setPayAcc(5000)">$5k</div>
         <div class="pair-btn" id="payq-10000" onclick="setPayAcc(10000)">$10k</div>
@@ -394,7 +362,11 @@
         <div class="pair-btn active" id="payq-100000" onclick="setPayAcc(100000)">$100k</div>
         <div class="pair-btn" id="payq-200000" onclick="setPayAcc(200000)">$200k</div>
       </div>
-      <div class="field" style="margin-bottom:12px"><label id="lbl-pay-acc">Account ($)</label><input type="number" id="pay-acc" value="100000" oninput="checkConsistency()"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px">
+        <div class="field"><label id="lbl-pay-acc">Account ($)</label><input type="number" id="pay-acc" value="100000" oninput="checkConsistency()"></div>
+        <div class="field"><label id="lbl-pay-cons">Consistency (%)</label><input type="number" id="pay-cons" value="35" step="1" oninput="checkConsistency()"></div>
+        <div class="field"><label id="lbl-pay-min">Min payout (%)</label><input type="number" id="pay-min" value="2" step="0.5" oninput="checkConsistency()"></div>
+      </div>
       <div id="lbl-pay-cycle" style="font-size:12px;color:var(--text-muted);margin-bottom:6px">Reward cycle:</div>
       <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:16px">
         <div class="pair-btn" id="cyc-weekly" onclick="selectCycle('weekly')">Weekly 60%</div>
@@ -429,66 +401,267 @@
     document.getElementById('tc-'+id).classList.add('active')
   }
 
-  /* ── PROP FIRMS DATA ── */
+  /* ════════ INSTRUMENTS ════════
+     pip     = minimum price step used for "points"
+     c       = contract size (units per 1 lot) — for indices it's the broker Contract Size
+     q       = quote currency (what 1 point is worth BEFORE conversion to USD)
+     b       = default spread/slippage buffer, in points of that instrument
+  */
+  const INSTR=[
+    // ── FX majors ──
+    {cat:'forex',p:'EURUSD',lbl:'EURUSD',pip:0.0001,c:100000,q:'USD',b:0.3},
+    {cat:'forex',p:'GBPUSD',lbl:'GBPUSD',pip:0.0001,c:100000,q:'USD',b:0.5},
+    {cat:'forex',p:'AUDUSD',lbl:'AUDUSD',pip:0.0001,c:100000,q:'USD',b:0.5},
+    {cat:'forex',p:'NZDUSD',lbl:'NZDUSD',pip:0.0001,c:100000,q:'USD',b:0.6},
+    {cat:'forex',p:'USDJPY',lbl:'USDJPY',pip:0.01,  c:100000,q:'JPY',b:0.5},
+    {cat:'forex',p:'USDCHF',lbl:'USDCHF',pip:0.0001,c:100000,q:'CHF',b:0.5},
+    {cat:'forex',p:'USDCAD',lbl:'USDCAD',pip:0.0001,c:100000,q:'CAD',b:0.6},
+    // ── FX crosses (no USD) ──
+    {cat:'cross',p:'EURGBP',lbl:'EURGBP',pip:0.0001,c:100000,q:'GBP',b:0.8},
+    {cat:'cross',p:'EURJPY',lbl:'EURJPY',pip:0.01,  c:100000,q:'JPY',b:0.8},
+    {cat:'cross',p:'GBPJPY',lbl:'GBPJPY',pip:0.01,  c:100000,q:'JPY',b:1.2},
+    {cat:'cross',p:'AUDJPY',lbl:'AUDJPY',pip:0.01,  c:100000,q:'JPY',b:1.0},
+    {cat:'cross',p:'CADJPY',lbl:'CADJPY',pip:0.01,  c:100000,q:'JPY',b:1.2},
+    {cat:'cross',p:'CHFJPY',lbl:'CHFJPY',pip:0.01,  c:100000,q:'JPY',b:1.5},
+    {cat:'cross',p:'EURCHF',lbl:'EURCHF',pip:0.0001,c:100000,q:'CHF',b:1.0},
+    {cat:'cross',p:'GBPCHF',lbl:'GBPCHF',pip:0.0001,c:100000,q:'CHF',b:1.5},
+    {cat:'cross',p:'EURAUD',lbl:'EURAUD',pip:0.0001,c:100000,q:'AUD',b:1.2},
+    {cat:'cross',p:'GBPAUD',lbl:'GBPAUD',pip:0.0001,c:100000,q:'AUD',b:2.0},
+    {cat:'cross',p:'EURCAD',lbl:'EURCAD',pip:0.0001,c:100000,q:'CAD',b:1.5},
+    {cat:'cross',p:'GBPCAD',lbl:'GBPCAD',pip:0.0001,c:100000,q:'CAD',b:2.5},
+    {cat:'cross',p:'EURNZD',lbl:'EURNZD',pip:0.0001,c:100000,q:'NZD',b:2.0},
+    {cat:'cross',p:'AUDNZD',lbl:'AUDNZD',pip:0.0001,c:100000,q:'NZD',b:1.5},
+    // ── Metals ── 1 lot gold = 100 oz, 1 lot silver = 5000 oz
+    {cat:'metal',p:'XAUUSD',lbl:'XAUUSD 🥇',pip:0.01, c:100, q:'USD',b:25,unit:'oz',
+      hint:{en:'1 lot = 100 oz · 1 point (0.01) = $1 · $1 move = $100',ru:'1 лот = 100 унций · 1 пункт (0.01) = $1 · движение на $1 = $100',ua:'1 лот = 100 унцій · 1 пункт (0.01) = $1 · рух на $1 = $100'}},
+    {cat:'metal',p:'XAGUSD',lbl:'XAGUSD 🥈',pip:0.001,c:5000,q:'USD',b:25,unit:'oz',
+      hint:{en:'1 lot = 5000 oz · 1 point (0.001) = $5',ru:'1 лот = 5000 унций · 1 пункт (0.001) = $5',ua:'1 лот = 5000 унцій · 1 пункт (0.001) = $5'}},
+    // ── Energy ── 1 lot = 1000 barrels
+    {cat:'energy',p:'USOIL',lbl:'USOIL / WTI',pip:0.01,c:1000,q:'USD',b:3,unit:'bbl',
+      hint:{en:'WTI · 1 lot = 1000 barrels · 1 point (0.01) = $10',ru:'WTI · 1 лот = 1000 баррелей · 1 пункт (0.01) = $10',ua:'WTI · 1 лот = 1000 барелів · 1 пункт (0.01) = $10'}},
+    {cat:'energy',p:'UKOIL',lbl:'UKOIL / Brent',pip:0.01,c:1000,q:'USD',b:3,unit:'bbl',
+      hint:{en:'Brent · 1 lot = 1000 barrels · 1 point (0.01) = $10',ru:'Brent · 1 лот = 1000 баррелей · 1 пункт (0.01) = $10',ua:'Brent · 1 лот = 1000 барелів · 1 пункт (0.01) = $10'}},
+    {cat:'energy',p:'NATGAS',lbl:'NATGAS',pip:0.001,c:10000,q:'USD',b:20,unit:'MMBtu',
+      hint:{en:'1 lot = 10 000 MMBtu · 1 point (0.001) = $10',ru:'1 лот = 10 000 MMBtu · 1 пункт (0.001) = $10',ua:'1 лот = 10 000 MMBtu · 1 пункт (0.001) = $10'}},
+    // ── US indices ──
+    {cat:'us',p:'SP500',lbl:'US500.cash',pip:1,q:'USD',b:1.0,idx:true,cs:{std:1,fp:50},tv:'ES1! (CME) / US500 (CapitalCom)'},
+    {cat:'us',p:'NAS100',lbl:'US100.cash',pip:1,q:'USD',b:2.0,idx:true,cs:{std:1,fp:20},tv:'NQ1! (CME) / US100 (CapitalCom)'},
+    {cat:'us',p:'DJ30',lbl:'US30.cash',pip:1,q:'USD',b:3.0,idx:true,cs:{std:1,fp:5},tv:'YM1! (CBOT) / US30 (CapitalCom)'},
+    // ── EU indices ──
+    {cat:'eu',p:'DAX40',lbl:'GER40.cash',pip:1,q:'EUR',b:1.5,idx:true,cs:{std:1,fp:25},tv:'FDAX1! (EUREX) / GER40'},
+    {cat:'eu',p:'EU50',lbl:'EU50.cash',pip:1,q:'EUR',b:1.2,idx:true,cs:{std:1,fp:10},tv:'FESX1! (EUREX) / EU50'},
+    {cat:'eu',p:'FTSE100',lbl:'UK100.cash',pip:1,q:'GBP',b:1.5,idx:true,cs:{std:1,fp:10},tv:'UKX / UK100'},
+    // ── Asia indices ──
+    {cat:'asia',p:'JP225',lbl:'JP225.cash',pip:1,q:'JPY',b:8,idx:true,cs:{std:100,fp:100},tv:'NKD1! / JP225',
+      hint:{en:'⚠ JPY index — check Contract Size in the symbol specification (100 is typical).',ru:'⚠ Индекс в JPY — проверь Contract Size в спецификации символа (обычно 100).',ua:'⚠ Індекс у JPY — перевір Contract Size у специфікації символу (зазвичай 100).'}},
+    {cat:'asia',p:'HK50',lbl:'HK50.cash',pip:1,q:'USD',b:8,idx:true,cs:{std:1,fp:1},tv:'HSI1! / HK50',
+      hint:{en:'⚠ Check Contract Size / quote currency at your broker.',ru:'⚠ Проверь Contract Size и валюту котировки у брокера.',ua:'⚠ Перевір Contract Size і валюту котирування у брокера.'}}
+  ]
+
+  const CATS=[
+    {id:'forex',k:'catForex'},
+    {id:'cross',k:'catCross'},
+    {id:'metal',k:'catMetals'},
+    {id:'energy',k:'catEnergy'},
+    {id:'us',k:'catUS'},
+    {id:'eu',k:'catEU'},
+    {id:'asia',k:'catAsia'}
+  ]
+
+  /* ════════ FX RATES (editable, used for non-USD quote instruments) ════════ */
+  const rates={EURUSD:1.1561,GBPUSD:1.3497,AUDUSD:0.7063,NZDUSD:0.5890,USDJPY:157.767,USDCHF:0.8075,USDCAD:1.3932}
+  const USD_BASE=['JPY','CHF','CAD']            // USD is the BASE => symbol is USDxxx
+  function rateSymbol(q){ return USD_BASE.indexOf(q)>=0 ? 'USD'+q : q+'USD' }
+
+  /* ════════ BROKERS / PROP FIRMS at the calculator ════════
+     cs = which contract-size key to use for indices
+     sp = typical spread multiplier vs the base (FTMO-like) spread — an ESTIMATE,
+          the buffer field stays editable, always check the real spread in MT5
+  */
+  const BROKERS={
+    ftmo:{name:'FTMO',cs:'std',sp:1.0},
+    fundingpips:{name:'FundingPips',cs:'fp',sp:1.2},
+    fundednext:{name:'FundedNext',cs:'std',sp:1.3},
+    the5ers:{name:'The5ers',cs:'std',sp:1.2},
+    e8:{name:'E8 Markets',cs:'std',sp:1.3},
+    alpha:{name:'Alpha Capital',cs:'std',sp:1.2},
+    maven:{name:'Maven',cs:'std',sp:1.3},
+    goat:{name:'Goat Funded',cs:'std',sp:1.4},
+    custom:{name:'Custom CS',cs:'custom',sp:1.0}
+  }
+
+  /* ── PROP FIRMS DATA (verify on the firm site — rules change) ── */
   const propFirms={
-    ftmo:{
-      name:'FTMO',split:80,
-      phases:{
-        1:{profitTarget:10,dailyLoss:5,maxDrawdown:10},
-        2:{profitTarget:5,dailyLoss:5,maxDrawdown:10},
-        funded:{profitTarget:null,dailyLoss:5,maxDrawdown:10}
-      }
-    },
-    fundednext:{
-      name:'FundedNext',split:90,
-      phases:{
-        1:{profitTarget:8,dailyLoss:5,maxDrawdown:10},
-        2:{profitTarget:5,dailyLoss:5,maxDrawdown:10},
-        funded:{profitTarget:null,dailyLoss:5,maxDrawdown:10}
-      }
-    },
-    e8:{
-      name:'E8 Markets',split:80,
-      phases:{
-        1:{profitTarget:8,dailyLoss:4,maxDrawdown:8},
-        2:{profitTarget:5,dailyLoss:4,maxDrawdown:8},
-        funded:{profitTarget:null,dailyLoss:4,maxDrawdown:8}
-      }
-    },
-    custom:{
-      name:'Custom',split:80,
-      phases:{
-        1:{profitTarget:10,dailyLoss:5,maxDrawdown:10},
-        2:{profitTarget:5,dailyLoss:5,maxDrawdown:10},
-        funded:{profitTarget:null,dailyLoss:5,maxDrawdown:10}
-      }
-    }
+    ftmo:{name:'FTMO',url:'https://ftmo.com/en/trading-objectives/',programs:{
+      p2:{name:'Challenge 2-Step',split:80,dd:'static',minDays:4,cons:null,consType:null,
+          ph:{'1':{t:10,d:5,m:10},'2':{t:5,d:5,m:10},'funded':{t:null,d:5,m:10}}},
+      p1:{name:'Challenge 1-Step',split:90,dd:'trailing',minDays:0,cons:50,consType:'day',
+          n:{en:'Trailing 10% resets to 90% of capital after every payout. Best Day Rule 50% is a soft check, not a breach.',ru:'Трейлинг 10% сбрасывается до 90% капитала после каждой выплаты. Best Day 50% — мягкое правило, не слив.',ua:'Трейлінг 10% скидається до 90% капіталу після кожної виплати. Best Day 50% — м\'яке правило, не злив.'},
+          ph:{'1':{t:10,d:3,m:10},'funded':{t:null,d:3,m:10}}}
+    }},
+    fundingpips:{name:'FundingPips',url:'https://help.fundingpips.com/',programs:{
+      s2:{name:'2 Step Standard',split:90,dd:'static',minDays:3,cons:35,consType:'day',
+          ph:{'1':{t:8,d:5,m:10},'2':{t:5,d:5,m:10},'funded':{t:null,d:5,m:10}}},
+      s1:{name:'1 Step',split:90,dd:'static',minDays:3,cons:35,consType:'day',
+          ph:{'1':{t:10,d:3,m:6},'funded':{t:null,d:3,m:6}}},
+      pro:{name:'2 Step Pro',split:90,dd:'static',minDays:3,cons:45,consType:'day',
+          ph:{'1':{t:6,d:3,m:6},'2':{t:6,d:3,m:6},'funded':{t:null,d:3,m:6}}},
+      zero:{name:'Zero (Instant)',split:90,dd:'trailing',minDays:3,cons:15,consType:'day',
+          n:{en:'15% consistency on EVERY payout. News trading prohibited. Trailing 5% from peak equity.',ru:'Консистентность 15% на КАЖДОЙ выплате. Торговля на новостях запрещена. Трейлинг 5% от пика эквити.',ua:'Консистентність 15% на КОЖНІЙ виплаті. Торгівля на новинах заборонена. Трейлінг 5% від піку еквіті.'},
+          ph:{'funded':{t:null,d:3,m:5}}}
+    }},
+    fundednext:{name:'FundedNext',url:'https://fundednext.com/',programs:{
+      s2:{name:'Stellar 2-Step',split:90,dd:'static',minDays:5,cons:50,consType:'trade',
+          n:{en:'You keep 15% of Phase 1 profits even if you fail. Weekend holding allowed.',ru:'15% прибыли Фазы 1 выплачивают даже если не прошёл челлендж. Перенос через выходные разрешён.',ua:'15% прибутку Фази 1 виплачують навіть якщо не пройшов челендж. Перенесення через вихідні дозволено.'},
+          ph:{'1':{t:8,d:5,m:10},'2':{t:5,d:5,m:10},'funded':{t:null,d:5,m:10}}},
+      s1:{name:'Stellar 1-Step',split:90,dd:'static',minDays:5,cons:null,consType:null,
+          ph:{'1':{t:10,d:3,m:6},'funded':{t:null,d:3,m:6}}},
+      lite:{name:'Stellar Lite',split:80,dd:'static',minDays:5,cons:null,consType:null,
+          ph:{'1':{t:8,d:4,m:8},'2':{t:5,d:4,m:8},'funded':{t:null,d:4,m:8}}},
+      inst:{name:'Instant / Express',split:80,dd:'trailing',minDays:5,cons:null,consType:null,
+          ph:{'funded':{t:null,d:5,m:5}}}
+    }},
+    the5ers:{name:'The5ers',url:'https://the5ers.com/',programs:{
+      hs:{name:'High Stakes 2-Step',split:80,dd:'static',minDays:3,cons:50,consType:'day',
+          ph:{'1':{t:10,d:5,m:10},'2':{t:5,d:5,m:10},'funded':{t:null,d:5,m:10}}},
+      hg:{name:'Hyper Growth 1-Step',split:50,dd:'static',minDays:0,cons:null,consType:null,pause:true,
+          n:{en:'3% daily only pauses the account until 00:00 server time. Only the 6% stop-out kills it. Split grows 50→100% with scaling.',ru:'3% дневного лимита только ставят аккаунт на паузу до 00:00 по серверу. Убивает только стоп-аут 6%. Сплит растёт 50→100% по мере скейлинга.',ua:'3% денного ліміту лише ставлять акаунт на паузу до 00:00 за сервером. Вбиває тільки стоп-аут 6%. Спліт росте 50→100% зі скейлінгом.'},
+          ph:{'1':{t:10,d:3,m:6},'funded':{t:null,d:3,m:6}}},
+      pg:{name:'Pro Growth 1-Step',split:75,dd:'static',minDays:3,cons:null,consType:null,
+          ph:{'1':{t:10,d:3,m:6},'funded':{t:null,d:3,m:6}}},
+      bc:{name:'Bootcamp 3-Step',split:50,dd:'static',minDays:0,cons:null,consType:null,
+          ph:{'1':{t:6,d:5,m:6},'2':{t:6,d:5,m:6},'3':{t:6,d:5,m:6},'funded':{t:null,d:3,m:6}}}
+    }},
+    e8:{name:'E8 Markets',url:'https://e8markets.com/',programs:{
+      e2:{name:'E8 Track 2-Step',split:80,dd:'static',minDays:0,cons:null,consType:null,
+          ph:{'1':{t:8,d:5,m:8},'2':{t:5,d:5,m:8},'funded':{t:null,d:5,m:8}}},
+      e1:{name:'ELEV8 1-Step',split:80,dd:'static',minDays:0,cons:null,consType:null,
+          ph:{'1':{t:8,d:4,m:8},'funded':{t:null,d:4,m:8}}}
+    }},
+    alpha:{name:'Alpha Capital',url:'https://help.alphacapitalgroup.uk/',programs:{
+      one:{name:'Alpha One 1-Step',split:80,dd:'trailing',minDays:1,cons:40,consType:'day',
+          n:{en:'Trailing 6% follows the high-water mark, then locks at the starting balance once you are +6%. 40% Best Day Rule on on-demand payouts only.',ru:'Трейлинг 6% идёт за максимумом баланса, а после +6% фиксируется на стартовом балансе. Правило 40% лучшего дня — только для выплат on-demand.',ua:'Трейлінг 6% йде за максимумом балансу, а після +6% фіксується на стартовому балансі. Правило 40% найкращого дня — тільки для виплат on-demand.'},
+          ph:{'1':{t:10,d:4,m:6},'funded':{t:null,d:4,m:6}}},
+      pro6:{name:'Alpha Pro 6%',split:80,dd:'static',minDays:3,cons:40,consType:'day',
+          n:{en:'Alpha Pro does NOT allow weekend holding on the funded stage.',ru:'На Alpha Pro нельзя держать позиции через выходные на фандед-стадии.',ua:'На Alpha Pro не можна тримати позиції через вихідні на фандед-стадії.'},
+          ph:{'1':{t:6,d:3,m:6},'2':{t:6,d:3,m:6},'funded':{t:null,d:3,m:6}}},
+      pro8:{name:'Alpha Pro 8%',split:80,dd:'static',minDays:3,cons:40,consType:'day',
+          ph:{'1':{t:8,d:4,m:8},'2':{t:5,d:4,m:8},'funded':{t:null,d:4,m:8}}},
+      pro10:{name:'Alpha Pro 10%',split:80,dd:'static',minDays:3,cons:40,consType:'day',
+          ph:{'1':{t:10,d:5,m:10},'2':{t:5,d:5,m:10},'funded':{t:null,d:5,m:10}}},
+      three:{name:'Alpha Three 3-Step',split:80,dd:'static',minDays:3,cons:40,consType:'day',
+          ph:{'1':{t:8,d:4,m:6},'2':{t:4,d:4,m:6},'3':{t:4,d:4,m:6},'funded':{t:null,d:4,m:6}}},
+      swing:{name:'Alpha Swing 2-Step',split:80,dd:'static',minDays:3,cons:40,consType:'day',
+          ph:{'1':{t:10,d:5,m:10},'2':{t:5,d:5,m:10},'funded':{t:null,d:5,m:10}}}
+    }},
+    maven:{name:'Maven Trading',url:'https://maventrading.com/',programs:{
+      m1:{name:'1-Step',split:80,dd:'trailing',minDays:0,cons:null,consType:null,
+          ph:{'1':{t:8,d:3,m:5},'funded':{t:null,d:3,m:5}}},
+      m2:{name:'2-Step',split:80,dd:'static',minDays:0,cons:null,consType:null,
+          ph:{'1':{t:8,d:4,m:8},'2':{t:5,d:4,m:8},'funded':{t:null,d:4,m:8}}},
+      mi:{name:'Instant',split:80,dd:'trailing',minDays:0,cons:null,consType:null,
+          ph:{'funded':{t:null,d:3,m:3}}}
+    }},
+    goat:{name:'Goat Funded',url:'https://goatfundedtrader.com/',programs:{
+      g2:{name:'2-Step',split:80,dd:'static',minDays:0,cons:null,consType:null,
+          ph:{'1':{t:8,d:5,m:10},'2':{t:5,d:5,m:10},'funded':{t:null,d:5,m:10}}},
+      g1:{name:'1-Step',split:80,dd:'static',minDays:0,cons:null,consType:null,
+          ph:{'1':{t:10,d:4,m:6},'funded':{t:null,d:4,m:6}}}
+    }},
+    custom:{name:'Custom',url:'',programs:{
+      c:{name:'Custom',split:80,dd:'static',minDays:0,cons:null,consType:null,
+          ph:{'1':{t:10,d:5,m:10},'2':{t:5,d:5,m:10},'funded':{t:null,d:5,m:10}}}
+    }}
   }
 
   let activeFirm='ftmo'
+  let activeProgram='p2'
   let isCustom=false
+
+  function renderFirmBtns(){
+    const box=document.getElementById('prop-firm-btns')
+    box.innerHTML=''
+    Object.keys(propFirms).forEach(k=>{
+      const div=document.createElement('div')
+      div.className='pair-btn'+(k===activeFirm?' active':'')
+      div.id='pfb-'+k
+      div.textContent=k==='custom'?(lang[currentLang].pfbCustom||'Custom'):propFirms[k].name
+      div.onclick=()=>selectFirm(k)
+      box.appendChild(div)
+    })
+  }
 
   function selectFirm(f){
     activeFirm=f
     isCustom=(f==='custom')
-    document.querySelectorAll('[id^="pfb-"]').forEach(b=>b.classList.remove('active'))
-    document.getElementById('pfb-'+f).classList.add('active')
-    if(!isCustom) document.getElementById('pp-split').value=propFirms[f].split||80
+    activeProgram=Object.keys(propFirms[f].programs)[0]
+    renderFirmBtns()
+    fillPrograms()
+  }
+
+  function fillPrograms(){
+    const sel=document.getElementById('pp-program')
+    const progs=propFirms[activeFirm].programs
+    sel.innerHTML=''
+    Object.keys(progs).forEach(k=>{
+      const o=document.createElement('option')
+      o.value=k; o.textContent=progs[k].name
+      sel.appendChild(o)
+    })
+    sel.value=activeProgram
+    onProgramChange()
+  }
+
+  function onProgramChange(){
+    activeProgram=document.getElementById('pp-program').value
+    const prog=propFirms[activeFirm].programs[activeProgram]
+    // phases
+    const ps=document.getElementById('pp-phase')
+    const prev=ps.value
+    ps.innerHTML=''
+    Object.keys(prog.ph).forEach(k=>{
+      const o=document.createElement('option')
+      o.value=k
+      o.textContent=(lang[currentLang].phases||{})[k]||k
+      ps.appendChild(o)
+    })
+    if(Object.keys(prog.ph).indexOf(prev)>=0) ps.value=prev
+    if(!isCustom) document.getElementById('pp-split').value=prog.split||80
     onPhaseChange()
   }
 
   function onPhaseChange(){
+    const prog=propFirms[activeFirm].programs[activeProgram]
     const phase=document.getElementById('pp-phase').value
-    const firm=propFirms[activeFirm]
-    const pd=firm.phases[phase]
+    const pd=prog.ph[phase]||{t:null,d:5,m:10}
     if(!isCustom){
-      document.getElementById('pp-profit-target').value=pd.profitTarget||''
-      document.getElementById('pp-daily').value=pd.dailyLoss
-      document.getElementById('pp-total').value=pd.maxDrawdown
-      document.getElementById('pp-profit-target').disabled=(pd.profitTarget===null)
+      document.getElementById('pp-profit-target').value=(pd.t===null||pd.t===undefined)?'':pd.t
+      document.getElementById('pp-daily').value=pd.d
+      document.getElementById('pp-total').value=pd.m
     }
+    document.getElementById('pp-profit-target').disabled=(!isCustom&&(pd.t===null||pd.t===undefined))
+    renderRules()
     renderProp()
   }
+
+  function renderRules(){
+    const d=lang[currentLang]
+    const firm=propFirms[activeFirm]
+    const prog=firm.programs[activeProgram]
+    const ddTxt=(d.ddTypes||{})[prog.dd]||prog.dd
+    const consTxt=prog.cons?prog.cons+'% ('+(((d.consTypes||{})[prog.consType])||prog.consType)+')':(d.rNone||'—')
+    const linkTxt=firm.url?` · <a href="${firm.url}" target="_blank" rel="noopener" style="color:var(--accent)">${d.rSite||'site'}</a>`:''
+    const pauseTxt=prog.pause?' <span style="color:var(--yellow)">('+(d.rPause||'daily = pause, not fail')+')</span>':''
+    document.getElementById('prop-rules').innerHTML=`
+      <div style="color:var(--text);font-weight:600;margin-bottom:6px">${firm.name} · ${prog.name}${linkTxt}</div>
+      <div><span class="rb-k">${d.rDD||'Drawdown'}:</span> <span class="rb-v">${ddTxt}</span> · <span class="rb-k">${d.rMinDays||'Min days'}:</span> <span class="rb-v">${prog.minDays||0}</span></div>
+      <div><span class="rb-k">${d.rCons||'Consistency'}:</span> <span class="rb-v">${consTxt}</span> · <span class="rb-k">${d.rSplit||'Split'}:</span> <span class="rb-v">${prog.split}%</span>${pauseTxt}</div>
+      ${prog.n?`<div style="margin-top:4px">${prog.n[currentLang]||prog.n.en}</div>`:''}
+      <div style="color:var(--yellow);margin-top:4px">${d.rVerify||'⚠ Rules change — always verify on the firm website.'}</div>
+    `
+  }
+
+  function syncAccount(){ renderProp() }
 
   function renderProp(){
     const d=lang[currentLang]
@@ -498,7 +671,6 @@
     const totalLimit=parseFloat(document.getElementById('pp-total').value)||10
     const currentProfit=parseFloat(document.getElementById('pp-profit').value)||0
     const dailyUsed=parseFloat(document.getElementById('pp-daily-used').value)||0
-    const phase=document.getElementById('pp-phase').value
 
     const dailyUsedPct=Math.abs(dailyUsed)
     const totalLossPct=currentProfit<0?Math.abs(currentProfit):0
@@ -519,34 +691,12 @@
     rows.innerHTML=''
 
     const items=[
-      {
-        label:d.propDailyLoss,
-        limit:dailyLimit+'%',
-        used:dailyUsedPct.toFixed(1)+'%',
-        left:dailyLeft+'%',
-        pct:dailyPct,
-        leftLabel:d.propLeft
-      },
-      {
-        label:d.propMaxDD,
-        limit:totalLimit+'%',
-        used:totalLossPct.toFixed(1)+'%',
-        left:totalLeft+'%',
-        pct:totalPct,
-        leftLabel:d.propLeft
-      }
+      {label:d.propDailyLoss,limit:dailyLimit+'%',used:dailyUsedPct.toFixed(1)+'%',left:dailyLeft+'%',pct:dailyPct,leftLabel:d.propLeft},
+      {label:d.propMaxDD,limit:totalLimit+'%',used:totalLossPct.toFixed(1)+'%',left:totalLeft+'%',pct:totalPct,leftLabel:d.propLeft}
     ]
 
     if(profitTarget>0){
-      items.push({
-        label:d.propTarget,
-        limit:profitTarget+'%',
-        used:currentProfit.toFixed(1)+'%',
-        left:profitLeft+'%',
-        pct:profitPct,
-        leftLabel:d.propNeeded,
-        isProfit:true
-      })
+      items.push({label:d.propTarget,limit:profitTarget+'%',used:currentProfit.toFixed(1)+'%',left:profitLeft+'%',pct:profitPct,leftLabel:d.propNeeded,isProfit:true})
     }
 
     items.forEach(item=>{
@@ -559,7 +709,7 @@
       div.innerHTML=`
         <div>
           <div class="p-label">${item.label}</div>
-          <div class="p-label" style="font-size:11px;margin-top:2px">${d.propLimit}: ${item.limit}</div>
+          <div class="p-label" style="font-size:11px;margin-top:2px">${d.propLimit}: ${item.limit} = $${Math.round(size*parseFloat(item.limit)/100).toLocaleString()}</div>
           <div class="bar-wrap"><div class="bar-fill" style="width:${barW.toFixed(0)}%;background:${bc}"></div></div>
         </div>
         <div class="p-vals">
@@ -570,9 +720,18 @@
       rows.appendChild(div)
     })
 
+    // money view of the limits
+    const money=document.getElementById('prop-money')
+    money.style.display='block'
+    money.innerHTML=`
+      <div class="buf-line"><span class="buf-l">${d.propDailyLoss}</span><span class="buf-v" style="color:var(--red)">$${Math.round(size*dailyLimit/100).toLocaleString()}</span></div>
+      <div class="buf-line"><span class="buf-l">${d.propMaxDD}</span><span class="buf-v" style="color:var(--red)">$${Math.round(size*totalLimit/100).toLocaleString()}</span></div>
+      ${profitTarget>0?`<div class="buf-line"><span class="buf-l">${d.propTarget}</span><span class="buf-v" style="color:var(--green)">$${Math.round(size*profitTarget/100).toLocaleString()}</span></div>`:''}
+      <div class="buf-line"><span class="buf-l">${d.propRisk1||'Risk 1% / 0.5%'}</span><span class="buf-v">$${Math.round(size*0.01).toLocaleString()} / $${Math.round(size*0.005).toLocaleString()}</span></div>
+    `
+
     // Overall status
     const statusDiv=document.getElementById('prop-status')
-    // don't show status if nothing entered yet
     if(currentProfit===0&&dailyUsed===0){
       statusDiv.innerHTML=''
       document.getElementById('prop-payout').style.display='none'
@@ -583,23 +742,10 @@
     const isComplete=profitTarget>0&&profitPct>=100
 
     let cls,icon,text,sub
-    if(isDanger){
-      cls='danger'; icon='🚨'
-      text=d.propStatusDanger
-      sub=d.propStatusDangerSub
-    } else if(isComplete){
-      cls='safe'; icon='🎯'
-      text=d.propStatusComplete
-      sub=d.propStatusCompleteSub
-    } else if(isWarn){
-      cls='warn'; icon='⚠️'
-      text=d.propStatusWarn
-      sub=d.propStatusWarnSub
-    } else {
-      cls='safe'; icon='✅'
-      text=d.propStatusSafe
-      sub=d.propStatusSafeSub
-    }
+    if(isDanger){ cls='danger'; icon='🚨'; text=d.propStatusDanger; sub=d.propStatusDangerSub }
+    else if(isComplete){ cls='safe'; icon='🎯'; text=d.propStatusComplete; sub=d.propStatusCompleteSub }
+    else if(isWarn){ cls='warn'; icon='⚠️'; text=d.propStatusWarn; sub=d.propStatusWarnSub }
+    else { cls='safe'; icon='✅'; text=d.propStatusSafe; sub=d.propStatusSafeSub }
 
     statusDiv.innerHTML=`
       <div class="prop-status ${cls}">
@@ -610,9 +756,8 @@
     `
 
     // Payout calculation
-    const account=parseFloat(document.getElementById('pp-account').value)||size
     const split=parseFloat(document.getElementById('pp-split').value)||80
-    const profitAmt=account*currentProfit/100
+    const profitAmt=size*currentProfit/100
     const myPayout=profitAmt*split/100
     const firmCut=profitAmt*(100-split)/100
 
@@ -645,8 +790,11 @@
       units:"Quantity (TradingView)",lots:"Lots (MT4 / MT5)",riskMoney:"Risk $",profit:"Profit $",rr:"R:R",pips:"Pips to Stop",
       note:"* Pip value depends on current price",
       seo1:"TradeCalc is a free trading position size calculator that helps traders calculate position size, risk percentage, stop distance and potential profit before opening a trade.",
-      seo2:"Supports Forex, crypto, indices and other leveraged markets used on platforms like TradingView, MT4 and MT5.",
-      tabScale:"📊 Scale",catForex:"Forex",catUS:"🇺🇸 US Indices",catEU:"🇪🇺 EU Indices",brCustom:"Custom CS",tabWR:"📈 WinRate",tabHier:"🧩 Risk",tabReport:"📋 Report",tabProp:"🏢 Prop",
+      seo2:"Supports Forex majors and crosses, gold, silver, oil, US, EU and Asian indices on TradingView, MT4 and MT5 — plus rules for FTMO, FundingPips, FundedNext, The5ers and E8.",
+      tabScale:"📊 Scale",tabWR:"📈 WinRate",tabHier:"🧩 Risk",tabReport:"📋 Report",tabProp:"🏢 Prop",
+      catForex:"Forex",catCross:"Crosses",catMetals:"🥇 Metals",catEnergy:"🛢 Energy",catUS:"🇺🇸 US Indices",catEU:"🇪🇺 EU Indices",catAsia:"🌏 Asia",brCustom:"Custom CS",
+      brokerLbl:"🏢 Prop firm / broker — sets contract size & typical spread",
+      csWarn:"⚠ Contract Size is an estimate — check the symbol specification in MT5 and use Custom CS if it differs.",
       scaleTitle:"Deposit scale — same system, different size",
       scRisk:"Risk per trade (%)",scRR:"R:R",
       shDep:"Deposit",shR1:"1R risk",sh3r:"Profit",shWR100:"WR 100%",shWR50:"WR 50%",shWR30:"WR 30%",
@@ -665,24 +813,48 @@
       periods:{day:"Day",week:"Week",month:"Month",quarter:"Quarter",half:"6 months",year:"Year"},
       stTrades:"Trades",stWins:"Profitable",stLosses:"Unprofitable",stWR:"WinRate",stTotalR:"Total R",stTotalPnl:"Total $",stPct:"% of dep",stRisk:"Risk/trade",stPerWin:"Profit/trade",
       propTitle:"Prop Firm Checker",
-      ppSize:"Account ($)",ppPhase:"Phase",ppProfitTarget:"Profit target (%)",ppDaily:"Daily loss (%)",ppTotal:"Max drawdown (%)",ppProfit:"Current profit (%)",ppDailyUsed:"Today loss (%)",
-      phases:{1:"Phase 1",2:"Phase 2",funded:"Funded"},
+      ppSize:"Account ($)",ppPhase:"Phase",ppProgram:"Program",ppProfitTarget:"Profit target (%)",ppDaily:"Daily loss (%)",ppTotal:"Max drawdown (%)",ppProfit:"Current profit (%)",ppDailyUsed:"Today loss (%)",
+      phases:{'1':"Phase 1",'2':"Phase 2",'3':"Phase 3",funded:"Funded"},
       pfbCustom:"Custom",
+      rDD:"Drawdown",rMinDays:"Min trading days",rCons:"Consistency",rSplit:"Split",rSite:"rules",rNone:"none",
+      rPause:"daily loss = pause, not termination",
+      rVerify:"⚠ Prop rules change often — always verify on the firm's website before trading.",
+      ddTypes:{static:"static (from start balance)",trailing:"trailing",eod:"EOD trailing"},
+      consTypes:{day:"per day",trade:"per trade"},
+      propRisk1:"Risk 1% / 0.5%",
       propDailyLoss:"Daily loss limit",propMaxDD:"Max drawdown",propTarget:"Profit target",
       propLimit:"Limit",propLeft:"Left",propNeeded:"Needed",
       propStatusSafe:"✅ You're safe",propStatusSafeSub:"Keep trading within the rules.",
       propStatusWarn:"⚠️ Approaching limits",propStatusWarnSub:"Slow down. Reduce risk per trade.",
       propStatusDanger:"🚨 Limit reached",propStatusDangerSub:"Stop trading. You risk losing the account.",
-      propStatusComplete:"🎯 Target reached!",propStatusCompleteSub:"You've hit the profit target. Request payout.",propGrossProfit:"Gross profit",propMyPayout:"Your payout",propFirmCut:"Firm cut",ppAccountLbl:"Account ($)",ppSplitLbl:"Profit split (%)",
-      bufLbl:"🛡 Spread/Slippage buffer (pt)",actualLbl:"Actual MT5 result ($) — optional",bufTitle:"🛡 Real risk & result (spread + slippage)",bufPlanHdr:"WHAT TO EXPECT WITH THIS LOT",bufMaxLoss:"Max loss (with slippage)",bufPlanRisk:"Planned risk (no buffer / TradingView)",bufEffStop:"Effective stop",bufSlipRisk:"Risk if slipped (same lot)",bufSafeLot:"Safe lot (risk = budget)",bufExpProfit:"Expected profit (after spread)",bufRealRR:"Real R:R",bufFactHdr:"ACTUAL (after trade)",bufActualLbl:"Actual MT5 result",bufDeviation:"Broker execution deviation",bufHint:"Buffer = your broker's spread + slippage (auto per instrument). It widens the stop (risk) and trims the TP (profit) so the numbers match MT5. For the deviation, set Risk % so the lot matches the size you actually traded.",bufAuto:"Auto",bufEditable:"editable",bufHintOff:"Off by default (= same as FundingPips). Type your broker spread to see the real fill.",bufUnitPt:"pt",bufUnitPip:"pip",bufPlanWord:"plan",bufSpreadShare:"Spread eats (of stop)",bufStopWarn:"Stop is tight — for an honest R:R use a stop ≥",verGood:"🟢 Good trade — spread barely matters, real ≈ plan",verOk:"🟡 Acceptable — spread eats a bit of the profit",verBad:"🔴 Spread eats {s}% of your stop — that's a lot. Just enter the smaller SAFE LOT below; keep your stop & TP exactly as drawn. If the real R:R isn't worth it, skip the trade.",mt5Hdr:"📋 Enter in MT5",mt5Vol:"Volume (lot)",mt5Price:"Entry price",mt5SL:"Stop Loss",mt5TP:"Take Profit",mt5Note:"Change only the Volume (= safe lot). Leave price, stop and TP exactly as on your chart — don't touch them.",tabPay:"💰 Payout",payTitle:"💰 FundingPips — payout check",payAccLbl:"Account ($)",paySplitLbl:"Profit split (%)",payDaysLbl:"Profit per day, comma-separated ($)",payYes:"✅ You can request a payout",payNo:"⛔ Not yet",payTooLow:"Profit too low: {t}. You need ≥2% = {m} to request a payout.",payViol:"35% breach: your best day {b} = {p}% of total. Daily cap {l}. Add profit on other days to lower its share.",payOk:"All rules met. Your payout (after split): {po}.",payTotal:"Total / % of account",payBest:"Best day (% of total)",payLimit:"35% cap / day",payNote:"35% rule: no single day may exceed 35% of total profit. Spread profit over ≥3 days (best day ≤35%), and you need ≥2% total to withdraw.",payCycleLbl:"Reward cycle (can't be changed later):",cycWeekly:"Weekly",cycBiweekly:"Bi-Weekly",cycOndemand:"On Demand",cycMonthly:"Monthly",payOkNoRule:"No 35% rule on this cycle. Your payout: {po} ({s}%).",payNoteNoRule:"This cycle has no 35% rule — at cycle end you simply withdraw whatever profit is in the account.",paySplitCard:"Split",payPayoutCard:"Your payout",payCompare:"Payout by cycle (same profit)",recStopLbl:"🔧 Optional — only if your stop is NOT structure-based: a wider-stop version (same R:R):",recStopBtn:"Use these",recRestore:"Restore my values"
+      propStatusComplete:"🎯 Target reached!",propStatusCompleteSub:"You've hit the profit target. Request payout.",
+      propGrossProfit:"Gross profit",propMyPayout:"Your payout",propFirmCut:"Firm cut",ppSplitLbl:"Profit split (%)",
+      bufLbl:"🛡 Spread/Slippage buffer (pt)",bufTitle:"🛡 Real risk & result (spread + slippage)",bufPlanHdr:"WHAT TO EXPECT WITH THIS LOT",bufMaxLoss:"Max loss (with slippage)",bufEffStop:"Effective stop",bufExpProfit:"Expected profit (after spread)",bufRealRR:"Real R:R",bufHint:"Buffer = your broker's spread + slippage (auto per instrument). It widens the stop (risk) and trims the TP (profit) so the numbers match MT5.",bufAuto:"Auto",bufEditable:"editable",bufUnitPt:"pt",bufUnitPip:"pip",bufSpreadShare:"Spread eats (of stop)",
+      mt5Hdr:"📋 Enter in MT5",mt5Vol:"Volume (lot)",mt5Price:"Entry price",mt5SL:"Stop Loss",mt5TP:"Take Profit",mt5Note:"Change only the Volume (= safe lot). Leave price, stop and TP exactly as on your chart — don't touch them.",
+      tabPay:"💰 Payout",payTitle:"💰 Payout check (consistency rule)",payAccLbl:"Account ($)",payConsLbl:"Consistency (%)",payMinLbl:"Min payout (%)",payDaysLbl:"Profit per day, comma-separated ($)",
+      payYes:"✅ You can request a payout",payNo:"⛔ Not yet",
+      payTooLow:"Profit too low: {t}. You need ≥{mp}% = {m} to request a payout.",
+      payViol:"{c}% breach: your best day {b} = {p}% of total. Daily cap {l}. Add profit on other days to lower its share.",
+      payOk:"All rules met. Your payout (after split): {po}.",
+      payTotal:"Total / % of account",payBest:"Best day (% of total)",payLimit:"{c}% cap / day",
+      payNote:"Consistency rule: no single day may exceed {c}% of total profit. Spread profit over ≥3 days, and you need ≥{mp}% total to withdraw.",
+      payCycleLbl:"Reward cycle (can't be changed later):",cycWeekly:"Weekly",cycBiweekly:"Bi-Weekly",cycOndemand:"On Demand",cycMonthly:"Monthly",
+      payOkNoRule:"No consistency rule on this cycle. Your payout: {po} ({s}%).",
+      payNoteNoRule:"This cycle has no consistency rule — at cycle end you simply withdraw whatever profit is in the account.",
+      paySplitCard:"Split",payPayoutCard:"Your payout",payCompare:"Payout by cycle (same profit)",
+      fxLbl:"{s} rate",fxNote:"Needed to convert 1 point into USD",
+      csLbl:"Contract Size",pipValLbl:"1 {u} ≈ ${v} per 1.00 lot"
     },
     ru:{
       balance:"Счёт ($)",risk:"Риск (%)",entry:"Вход",stop:"Стоп",tp:"Тейк",
       units:"Количество (TradingView)",lots:"Лоты (MT4 / MT5)",riskMoney:"Риск $",profit:"Прибыль $",rr:"R:R",pips:"Пипсов до стопа",
       note:"* Pip value зависит от текущей цены",
-      seo1:"TradeCalc — это бесплатный калькулятор размера позиции для трейдинга.",
-      seo2:"Подходит для Forex, криптовалют, индексов на платформах TradingView, MT4 и MT5.",
-      tabScale:"📊 Масштаб",catForex:"Forex",catUS:"🇺🇸 Індекси США",catEU:"🇪🇺 Індекси ЄС",brCustom:"Свій CS",catForex:"Forex",catUS:"🇺🇸 Индексы США",catEU:"🇪🇺 Индексы ЕС",brCustom:"Свой CS",tabWR:"📈 WinRate",tabHier:"🧩 Риск",tabReport:"📋 Отчёт",tabProp:"🏢 Проп",
+      seo1:"TradeCalc — бесплатный калькулятор размера позиции для трейдинга: лот, риск, стоп, R:R и прибыль до входа в сделку.",
+      seo2:"Работает с мажорами и кроссами Forex, золотом, серебром, нефтью, индексами США, ЕС и Азии на TradingView, MT4 и MT5 — плюс правила FTMO, FundingPips, FundedNext, The5ers и E8.",
+      tabScale:"📊 Масштаб",tabWR:"📈 WinRate",tabHier:"🧩 Риск",tabReport:"📋 Отчёт",tabProp:"🏢 Проп",
+      catForex:"Forex",catCross:"Кроссы",catMetals:"🥇 Металлы",catEnergy:"🛢 Нефть/газ",catUS:"🇺🇸 Индексы США",catEU:"🇪🇺 Индексы ЕС",catAsia:"🌏 Азия",brCustom:"Свой CS",
+      brokerLbl:"🏢 Проп / брокер — задаёт размер контракта и типичный спред",
+      csWarn:"⚠ Размер контракта — ориентир. Сверь спецификацию символа в MT5, если не совпало — жми Свой CS.",
       scaleTitle:"Масштаб депозита — одна система, разный размер",
       scRisk:"Риск на сделку (%)",scRR:"R:R",
       shDep:"Депозит",shR1:"Риск 1R",sh3r:"Профит",shWR100:"WR 100%",shWR50:"WR 50%",shWR30:"WR 30%",
@@ -701,24 +873,48 @@
       periods:{day:"День",week:"Неделя",month:"Месяц",quarter:"Квартал",half:"6 месяцев",year:"Год"},
       stTrades:"Сделок",stWins:"Прибыльных",stLosses:"Убыточных",stWR:"WinRate",stTotalR:"Итого R",stTotalPnl:"Итого $",stPct:"% к депо",stRisk:"Риск/сделка",stPerWin:"Профит/сделка",
       propTitle:"Проверка проп-фирмы",
-      ppSize:"Аккаунт ($)",ppPhase:"Фаза",ppProfitTarget:"Цель профита (%)",ppDaily:"Дневной лимит (%)",ppTotal:"Макс. просадка (%)",ppProfit:"Текущий профит (%)",ppDailyUsed:"Убыток сегодня (%)",
-      phases:{1:"Фаза 1",2:"Фаза 2",funded:"Фандед"},
+      ppSize:"Аккаунт ($)",ppPhase:"Фаза",ppProgram:"Программа",ppProfitTarget:"Цель профита (%)",ppDaily:"Дневной лимит (%)",ppTotal:"Макс. просадка (%)",ppProfit:"Текущий профит (%)",ppDailyUsed:"Убыток сегодня (%)",
+      phases:{'1':"Фаза 1",'2':"Фаза 2",'3':"Фаза 3",funded:"Фандед"},
       pfbCustom:"Свой",
+      rDD:"Просадка",rMinDays:"Мин. торговых дней",rCons:"Консистентность",rSplit:"Сплит",rSite:"правила",rNone:"нет",
+      rPause:"дневной лимит = пауза, не слив аккаунта",
+      rVerify:"⚠ Правила пропов часто меняются — перед покупкой сверь на сайте фирмы.",
+      ddTypes:{static:"статическая (от старта)",trailing:"трейлинг",eod:"EOD трейлинг"},
+      consTypes:{day:"на день",trade:"на сделку"},
+      propRisk1:"Риск 1% / 0.5%",
       propDailyLoss:"Дневной лимит",propMaxDD:"Макс. просадка",propTarget:"Цель профита",
       propLimit:"Лимит",propLeft:"Осталось",propNeeded:"Нужно",
       propStatusSafe:"✅ Всё в порядке",propStatusSafeSub:"Продолжай торговать в рамках правил.",
       propStatusWarn:"⚠️ Близко к лимиту",propStatusWarnSub:"Снизь риск. Будь осторожен.",
       propStatusDanger:"🚨 Лимит достигнут",propStatusDangerSub:"Прекрати торговлю. Риск потери аккаунта.",
-      propStatusComplete:"🎯 Цель достигнута!",propStatusCompleteSub:"Ты выполнил цель по прибыли. Запроси выплату.",propGrossProfit:"Валовая прибыль",propMyPayout:"Твоя выплата",propFirmCut:"Комиссия пропа",ppAccountLbl:"Аккаунт ($)",ppSplitLbl:"Сплит (%)",
-      bufLbl:"🛡 Буфер спреда/слиппеджа (пт)",actualLbl:"Факт. результат MT5 ($) — необязательно",bufTitle:"🛡 Риск и результат (спред + слиппедж)",bufPlanHdr:"ЧТО ОЖИДАТЬ С ЭТИМ ЛОТОМ",bufMaxLoss:"Макс. убыток (со слиппеджем)",bufPlanRisk:"Плановый риск (без буфера / TradingView)",bufEffStop:"Эфф. стоп",bufSlipRisk:"Риск при слиппедже (тем же лотом)",bufSafeLot:"Безопасный лот (риск = бюджет)",bufExpProfit:"Ожид. прибыль (с учётом спреда)",bufRealRR:"Реальный R:R",bufFactHdr:"ФАКТ (после сделки)",bufActualLbl:"Факт. результат MT5",bufDeviation:"Отклонение исполнения брокера",bufHint:"Буфер = спред + слиппедж твоего брокера (авто под инструмент). Он расширяет стоп (риск) и срезает тейк (прибыль), чтобы цифры сходились с MT5. Для отклонения выставь Риск %, чтобы лот совпал с тем, которым реально торговал.",bufAuto:"Авто",bufEditable:"можно менять",bufHintOff:"По умолчанию выключен (= как FundingPips). Впиши спред брокера, чтобы увидеть реальное исполнение.",bufUnitPt:"пт",bufUnitPip:"пип",bufPlanWord:"план",bufSpreadShare:"Спред съедает (от стопа)",bufStopWarn:"Стоп узкий — для честного R:R ставь стоп ≥",verGood:"🟢 Хорошая сделка — спред почти не мешает, реал ≈ план",verOk:"🟡 Терпимо — спред немного ест прибыль, но жить можно",verBad:"🔴 Спред съедает {s}% стопа — это много. Просто введи меньший БЕЗОПАСНЫЙ ЛОТ снизу; стоп и тейк не трогай. Если реальный R:R не устраивает — лучше пропусти сделку.",mt5Hdr:"📋 Впиши в MT5",mt5Vol:"Объём (лот)",mt5Price:"Цена открытия",mt5SL:"Стоп Лосс",mt5TP:"Тейк Профит",mt5Note:"Меняешь только Объём (= безопасный лот). Цену, стоп и тейк ставишь точно как на графике — не трогаешь.",tabPay:"💰 Выплата",payTitle:"💰 FundingPips — проверка выплаты",payAccLbl:"Аккаунт ($)",paySplitLbl:"Сплит (%)",payDaysLbl:"Прибыль по дням через запятую ($)",payYes:"✅ Можно запросить вывод",payNo:"⛔ Пока нельзя",payTooLow:"Мало прибыли: {t}. Для вывода нужно ≥2% = {m}.",payViol:"Нарушение 35%: лучший день {b} = {p}% от общей. Лимит на день {l}. Набери прибыль в другие дни, чтобы снизить его долю.",payOk:"Все правила соблюдены. Твоя выплата (после сплита): {po}.",payTotal:"Всего / % счёта",payBest:"Лучший день (% от общей)",payLimit:"Лимит 35% / день",payNote:"Правило 35%: ни один день не должен превышать 35% от общей прибыли. Раздели прибыль на ≥3 дня (лучший день ≤35%), и для вывода нужно ≥2% всего.",payCycleLbl:"Цикл выплат (потом нельзя поменять):",cycWeekly:"Неделя",cycBiweekly:"2 недели",cycOndemand:"On Demand",cycMonthly:"Месяц",payOkNoRule:"На этом цикле нет правила 35%. Твоя выплата: {po} ({s}%).",payNoteNoRule:"На этом цикле правила 35% нет — в конце цикла просто выводишь всю прибыль, что есть на счёте.",paySplitCard:"Сплит",payPayoutCard:"Твоя выплата",payCompare:"Выплата по циклам (та же прибыль)",recStopLbl:"🔧 Необязательно — только если стоп НЕ по структуре: вариант с широким стопом (тот же R:R):",recStopBtn:"Поставить стоп",recRestore:"Вернуть мои значения"
+      propStatusComplete:"🎯 Цель достигнута!",propStatusCompleteSub:"Ты выполнил цель по прибыли. Запроси выплату.",
+      propGrossProfit:"Валовая прибыль",propMyPayout:"Твоя выплата",propFirmCut:"Комиссия пропа",ppSplitLbl:"Сплит (%)",
+      bufLbl:"🛡 Буфер спреда/слиппеджа (пт)",bufTitle:"🛡 Риск и результат (спред + слиппедж)",bufPlanHdr:"ЧТО ОЖИДАТЬ С ЭТИМ ЛОТОМ",bufMaxLoss:"Макс. убыток (со слиппеджем)",bufEffStop:"Эфф. стоп",bufExpProfit:"Ожид. прибыль (с учётом спреда)",bufRealRR:"Реальный R:R",bufHint:"Буфер = спред + слиппедж твоего брокера (авто под инструмент). Он расширяет стоп (риск) и срезает тейк (прибыль), чтобы цифры сходились с MT5.",bufAuto:"Авто",bufEditable:"можно менять",bufUnitPt:"пт",bufUnitPip:"пип",bufSpreadShare:"Спред съедает (от стопа)",
+      mt5Hdr:"📋 Впиши в MT5",mt5Vol:"Объём (лот)",mt5Price:"Цена открытия",mt5SL:"Стоп Лосс",mt5TP:"Тейк Профит",mt5Note:"Меняешь только Объём (= безопасный лот). Цену, стоп и тейк ставишь точно как на графике — не трогаешь.",
+      tabPay:"💰 Выплата",payTitle:"💰 Проверка выплаты (правило консистентности)",payAccLbl:"Аккаунт ($)",payConsLbl:"Консистентность (%)",payMinLbl:"Мин. вывод (%)",payDaysLbl:"Прибыль по дням через запятую ($)",
+      payYes:"✅ Можно запросить вывод",payNo:"⛔ Пока нельзя",
+      payTooLow:"Мало прибыли: {t}. Для вывода нужно ≥{mp}% = {m}.",
+      payViol:"Нарушение {c}%: лучший день {b} = {p}% от общей. Лимит на день {l}. Набери прибыль в другие дни, чтобы снизить его долю.",
+      payOk:"Все правила соблюдены. Твоя выплата (после сплита): {po}.",
+      payTotal:"Всего / % счёта",payBest:"Лучший день (% от общей)",payLimit:"Лимит {c}% / день",
+      payNote:"Правило консистентности: ни один день не должен превышать {c}% от общей прибыли. Раздели прибыль на ≥3 дня, и для вывода нужно ≥{mp}% всего.",
+      payCycleLbl:"Цикл выплат (потом нельзя поменять):",cycWeekly:"Неделя",cycBiweekly:"2 недели",cycOndemand:"On Demand",cycMonthly:"Месяц",
+      payOkNoRule:"На этом цикле нет правила консистентности. Твоя выплата: {po} ({s}%).",
+      payNoteNoRule:"На этом цикле правила консистентности нет — в конце цикла просто выводишь всю прибыль, что есть на счёте.",
+      paySplitCard:"Сплит",payPayoutCard:"Твоя выплата",payCompare:"Выплата по циклам (та же прибыль)",
+      fxLbl:"Курс {s}",fxNote:"Нужен, чтобы перевести 1 пункт в USD",
+      csLbl:"Размер контракта",pipValLbl:"1 {u} ≈ ${v} на 1.00 лот"
     },
     ua:{
       balance:"Рахунок ($)",risk:"Ризик (%)",entry:"Вхід",stop:"Стоп",tp:"Тейк",
       units:"Кількість (TradingView)",lots:"Лоти (MT4 / MT5)",riskMoney:"Ризик $",profit:"Прибуток $",rr:"R:R",pips:"Піпсів до стопу",
       note:"* Pip value залежить від поточної ціни",
-      seo1:"TradeCalc — безкоштовний калькулятор розміру позиції для трейдингу.",
-      seo2:"Підходить для Forex, криптовалют, індексів на платформах TradingView, MT4 та MT5.",
+      seo1:"TradeCalc — безкоштовний калькулятор розміру позиції для трейдингу: лот, ризик, стоп, R:R і прибуток до входу.",
+      seo2:"Працює з мажорами та кросами Forex, золотом, сріблом, нафтою, індексами США, ЄС та Азії на TradingView, MT4 і MT5 — плюс правила FTMO, FundingPips, FundedNext, The5ers та E8.",
       tabScale:"📊 Масштаб",tabWR:"📈 WinRate",tabHier:"🧩 Ризик",tabReport:"📋 Звіт",tabProp:"🏢 Проп",
+      catForex:"Forex",catCross:"Кроси",catMetals:"🥇 Метали",catEnergy:"🛢 Нафта/газ",catUS:"🇺🇸 Індекси США",catEU:"🇪🇺 Індекси ЄС",catAsia:"🌏 Азія",brCustom:"Свій CS",
+      brokerLbl:"🏢 Проп / брокер — задає розмір контракту і типовий спред",
+      csWarn:"⚠ Розмір контракту — орієнтир. Звір специфікацію символу в MT5, якщо не збіглось — тисни Свій CS.",
       scaleTitle:"Масштаб депозиту — одна система, різний розмір",
       scRisk:"Ризик на угоду (%)",scRR:"R:R",
       shDep:"Депозит",shR1:"Ризик 1R",sh3r:"Профіт",shWR100:"WR 100%",shWR50:"WR 50%",shWR30:"WR 30%",
@@ -737,16 +933,37 @@
       periods:{day:"День",week:"Тиждень",month:"Місяць",quarter:"Квартал",half:"6 місяців",year:"Рік"},
       stTrades:"Угод",stWins:"Прибуткових",stLosses:"Збиткових",stWR:"WinRate",stTotalR:"Разом R",stTotalPnl:"Разом $",stPct:"% до депо",stRisk:"Ризик/угода",stPerWin:"Профіт/угода",
       propTitle:"Перевірка проп-фірми",
-      ppSize:"Акаунт ($)",ppPhase:"Фаза",ppProfitTarget:"Ціль профіту (%)",ppDaily:"Денний ліміт (%)",ppTotal:"Макс. просадка (%)",ppProfit:"Поточний профіт (%)",ppDailyUsed:"Збиток сьогодні (%)",
-      phases:{1:"Фаза 1",2:"Фаза 2",funded:"Фандед"},
+      ppSize:"Акаунт ($)",ppPhase:"Фаза",ppProgram:"Програма",ppProfitTarget:"Ціль профіту (%)",ppDaily:"Денний ліміт (%)",ppTotal:"Макс. просадка (%)",ppProfit:"Поточний профіт (%)",ppDailyUsed:"Збиток сьогодні (%)",
+      phases:{'1':"Фаза 1",'2':"Фаза 2",'3':"Фаза 3",funded:"Фандед"},
       pfbCustom:"Свій",
+      rDD:"Просадка",rMinDays:"Мін. торгових днів",rCons:"Консистентність",rSplit:"Спліт",rSite:"правила",rNone:"немає",
+      rPause:"денний ліміт = пауза, не злив акаунту",
+      rVerify:"⚠ Правила пропів часто змінюються — перед покупкою звір на сайті фірми.",
+      ddTypes:{static:"статична (від старту)",trailing:"трейлінг",eod:"EOD трейлінг"},
+      consTypes:{day:"на день",trade:"на угоду"},
+      propRisk1:"Ризик 1% / 0.5%",
       propDailyLoss:"Денний ліміт",propMaxDD:"Макс. просадка",propTarget:"Ціль профіту",
       propLimit:"Ліміт",propLeft:"Залишилось",propNeeded:"Потрібно",
       propStatusSafe:"✅ Все гаразд",propStatusSafeSub:"Продовжуй торгувати в межах правил.",
       propStatusWarn:"⚠️ Близько до ліміту",propStatusWarnSub:"Знизь ризик. Будь обережний.",
       propStatusDanger:"🚨 Ліміт досягнуто",propStatusDangerSub:"Зупини торгівлю. Ризик втрати акаунту.",
-      propStatusComplete:"🎯 Ціль досягнута!",propStatusCompleteSub:"Ти виконав ціль з прибутку. Запроси виплату.",propGrossProfit:"Валовий прибуток",propMyPayout:"Твоя виплата",propFirmCut:"Комісія пропа",ppAccountLbl:"Акаунт ($)",ppSplitLbl:"Спліт (%)",
-      bufLbl:"🛡 Буфер спреду/сліпеджу (пт)",actualLbl:"Факт. результат MT5 ($) — необов'язково",bufTitle:"🛡 Ризик і результат (спред + сліпедж)",bufPlanHdr:"ЩО ОЧІКУВАТИ З ЦИМ ЛОТОМ",bufMaxLoss:"Макс. збиток (зі сліпеджем)",bufPlanRisk:"Плановий ризик (без буфера / TradingView)",bufEffStop:"Еф. стоп",bufSlipRisk:"Ризик при сліпеджі (тим же лотом)",bufSafeLot:"Безпечний лот (ризик = бюджет)",bufExpProfit:"Очік. прибуток (з урахуванням спреду)",bufRealRR:"Реальний R:R",bufFactHdr:"ФАКТ (після угоди)",bufActualLbl:"Факт. результат MT5",bufDeviation:"Відхилення виконання брокера",bufHint:"Буфер = спред + сліпедж твого брокера (авто під інструмент). Він розширює стоп (ризик) і зрізає тейк (прибуток), щоб цифри збігались з MT5. Для відхилення встав Ризик %, щоб лот збігся з тим, яким реально торгував.",bufAuto:"Авто",bufEditable:"можна змінювати",bufHintOff:"За замовчуванням вимкнено (= як FundingPips). Впиши спред брокера, щоб побачити реальне виконання.",bufUnitPt:"пт",bufUnitPip:"піп",bufPlanWord:"план",bufSpreadShare:"Спред з'їдає (від стопу)",bufStopWarn:"Стоп вузький — для чесного R:R став стоп ≥",verGood:"🟢 Хороша угода — спред майже не заважає, реал ≈ план",verOk:"🟡 Терпимо — спред трохи з'їдає прибуток",verBad:"🔴 Спред з'їдає {s}% стопу — це багато. Просто введи менший БЕЗПЕЧНИЙ ЛОТ знизу; стоп і тейк не чіпай. Якщо реальний R:R не влаштовує — краще пропусти угоду.",mt5Hdr:"📋 Впиши в MT5",mt5Vol:"Об'єм (лот)",mt5Price:"Ціна відкриття",mt5SL:"Стоп Лосс",mt5TP:"Тейк Профіт",mt5Note:"Змінюєш тільки Об'єм (= безпечний лот). Ціну, стоп і тейк ставиш точно як на графіку — не чіпаєш.",tabPay:"💰 Виплата",payTitle:"💰 FundingPips — перевірка виплати",payAccLbl:"Акаунт ($)",paySplitLbl:"Спліт (%)",payDaysLbl:"Прибуток по днях через кому ($)",payYes:"✅ Можна запросити виплату",payNo:"⛔ Поки не можна",payTooLow:"Мало прибутку: {t}. Для виплати потрібно ≥2% = {m}.",payViol:"Порушення 35%: найкращий день {b} = {p}% від загального. Ліміт на день {l}. Набери прибуток в інші дні, щоб знизити його частку.",payOk:"Усі правила дотримані. Твоя виплата (після спліту): {po}.",payTotal:"Всього / % рахунку",payBest:"Найкращий день (% від заг.)",payLimit:"Ліміт 35% / день",payNote:"Правило 35%: жоден день не повинен перевищувати 35% від загального прибутку. Розділи прибуток на ≥3 дні (найкращий день ≤35%), і для виплати потрібно ≥2% всього.",payCycleLbl:"Цикл виплат (потім не змінити):",cycWeekly:"Тиждень",cycBiweekly:"2 тижні",cycOndemand:"On Demand",cycMonthly:"Місяць",payOkNoRule:"На цьому циклі немає правила 35%. Твоя виплата: {po} ({s}%).",payNoteNoRule:"На цьому циклі правила 35% немає — в кінці циклу просто виводиш весь прибуток, що є на рахунку.",paySplitCard:"Спліт",payPayoutCard:"Твоя виплата",payCompare:"Виплата по циклах (той же прибуток)",recStopLbl:"🔧 Необов'язково — тільки якщо стоп НЕ за структурою: варіант з широким стопом (той же R:R):",recStopBtn:"Поставити стоп",recRestore:"Повернути мої значення"
+      propStatusComplete:"🎯 Ціль досягнута!",propStatusCompleteSub:"Ти виконав ціль з прибутку. Запроси виплату.",
+      propGrossProfit:"Валовий прибуток",propMyPayout:"Твоя виплата",propFirmCut:"Комісія пропа",ppSplitLbl:"Спліт (%)",
+      bufLbl:"🛡 Буфер спреду/сліпеджу (пт)",bufTitle:"🛡 Ризик і результат (спред + сліпедж)",bufPlanHdr:"ЩО ОЧІКУВАТИ З ЦИМ ЛОТОМ",bufMaxLoss:"Макс. збиток (зі сліпеджем)",bufEffStop:"Еф. стоп",bufExpProfit:"Очік. прибуток (з урахуванням спреду)",bufRealRR:"Реальний R:R",bufHint:"Буфер = спред + сліпедж твого брокера (авто під інструмент). Він розширює стоп (ризик) і зрізає тейк (прибуток), щоб цифри збігались з MT5.",bufAuto:"Авто",bufEditable:"можна змінювати",bufUnitPt:"пт",bufUnitPip:"піп",bufSpreadShare:"Спред з'їдає (від стопу)",
+      mt5Hdr:"📋 Впиши в MT5",mt5Vol:"Об'єм (лот)",mt5Price:"Ціна відкриття",mt5SL:"Стоп Лосс",mt5TP:"Тейк Профіт",mt5Note:"Змінюєш тільки Об'єм (= безпечний лот). Ціну, стоп і тейк ставиш точно як на графіку — не чіпаєш.",
+      tabPay:"💰 Виплата",payTitle:"💰 Перевірка виплати (правило консистентності)",payAccLbl:"Акаунт ($)",payConsLbl:"Консистентність (%)",payMinLbl:"Мін. виплата (%)",payDaysLbl:"Прибуток по днях через кому ($)",
+      payYes:"✅ Можна запросити виплату",payNo:"⛔ Поки не можна",
+      payTooLow:"Мало прибутку: {t}. Для виплати потрібно ≥{mp}% = {m}.",
+      payViol:"Порушення {c}%: найкращий день {b} = {p}% від загального. Ліміт на день {l}. Набери прибуток в інші дні, щоб знизити його частку.",
+      payOk:"Усі правила дотримані. Твоя виплата (після спліту): {po}.",
+      payTotal:"Всього / % рахунку",payBest:"Найкращий день (% від заг.)",payLimit:"Ліміт {c}% / день",
+      payNote:"Правило консистентності: жоден день не повинен перевищувати {c}% від загального прибутку. Розділи прибуток на ≥3 дні, і для виплати потрібно ≥{mp}% всього.",
+      payCycleLbl:"Цикл виплат (потім не змінити):",cycWeekly:"Тиждень",cycBiweekly:"2 тижні",cycOndemand:"On Demand",cycMonthly:"Місяць",
+      payOkNoRule:"На цьому циклі немає правила консистентності. Твоя виплата: {po} ({s}%).",
+      payNoteNoRule:"На цьому циклі правила консистентності немає — в кінці циклу просто виводиш весь прибуток, що є на рахунку.",
+      paySplitCard:"Спліт",payPayoutCard:"Твоя виплата",payCompare:"Виплата по циклах (той же прибуток)",
+      fxLbl:"Курс {s}",fxNote:"Потрібен, щоб перевести 1 пункт у USD",
+      csLbl:"Розмір контракту",pipValLbl:"1 {u} ≈ ${v} на 1.00 лот"
     }
   }
 
@@ -868,7 +1085,7 @@
     summary.textContent=`${wins}W / ${losses}L · WR ${wr}% · ${totalR>=0?'+':''}${totalR.toFixed(1)}R · ${totalPnl>=0?'+':''}$${Math.round(totalPnl).toLocaleString()} · ${pctGain>=0?'+':''}${pctGain.toFixed(2)}%`
   }
 
-  /* FUNDINGPIPS PAYOUT / REWARD CYCLES */
+  /* PAYOUT / REWARD CYCLES (FundingPips-style, consistency % is editable) */
   const cycles={
     weekly:{split:60,rule:false,key:'cycWeekly'},
     biweekly:{split:80,rule:false,key:'cycBiweekly'},
@@ -885,19 +1102,23 @@
   function checkConsistency(){
     const d=lang[currentLang]
     const acc=parseFloat(document.getElementById('pay-acc').value)||0
+    const consPct=parseFloat(document.getElementById('pay-cons').value)||35
+    const minPct=parseFloat(document.getElementById('pay-min').value)||2
     const cyc=cycles[activeCycle]||cycles.ondemand
     const split=cyc.split
     const raw=document.getElementById('pay-days-input').value||''
     const days=raw.split(/[,;\s]+/).map(s=>parseFloat(s)).filter(v=>!isNaN(v))
     const res=document.getElementById('pay-result')
     const note=document.getElementById('pay-note')
-    if(note) note.textContent = cyc.rule ? (d.payNote||'') : (d.payNoteNoRule||'')
+    if(note) note.textContent = cyc.rule
+      ? (d.payNote||'').replace('{c}',consPct).replace('{mp}',minPct)
+      : (d.payNoteNoRule||'')
     if(!res) return
     if(!acc||days.length===0){res.innerHTML='';return}
     const total=days.reduce((a,b)=>a+b,0)
     const best=Math.max(...days)
-    const limit35=total*0.35
-    const minProfit=acc*0.02
+    const limitCons=total*consPct/100
+    const minProfit=acc*minPct/100
     const totalPct=acc>0?total/acc*100:0
     const bestPct=total>0?best/total*100:0
     const payout=total*split/100
@@ -905,10 +1126,10 @@
     if(cyc.rule){
       if(total<minProfit){
         col='var(--red)';bg='#f8717111';head=d.payNo
-        msg=(d.payTooLow||'').replace('{t}','$'+Math.round(total)).replace('{m}','$'+Math.round(minProfit))
-      } else if(best>limit35+0.01){
+        msg=(d.payTooLow||'').replace('{t}','$'+Math.round(total)).replace('{mp}',minPct).replace('{m}','$'+Math.round(minProfit))
+      } else if(best>limitCons+0.01){
         col='var(--yellow)';bg='#fbbf2411';head=d.payNo
-        msg=(d.payViol||'').replace('{b}','$'+Math.round(best)).replace('{p}',bestPct.toFixed(0)).replace('{l}','$'+Math.round(limit35))
+        msg=(d.payViol||'').replace('{c}',consPct).replace('{b}','$'+Math.round(best)).replace('{p}',bestPct.toFixed(0)).replace('{l}','$'+Math.round(limitCons))
       } else {
         col='var(--green)';bg='#4ade8011';head=d.payYes
         msg=(d.payOk||'').replace('{po}','$'+Math.round(payout))
@@ -919,11 +1140,11 @@
     }
     const cmp=['weekly','biweekly','ondemand','monthly'].map(k=>{
       const c=cycles[k], p=total*c.split/100, sel=k===activeCycle
-      const flag=c.rule?' <span style="color:var(--yellow)">⚠️35%</span>':''
+      const flag=c.rule?' <span style="color:var(--yellow)">⚠️'+consPct+'%</span>':''
       return `<div class="buf-line"${sel?' style="font-weight:700"':''}><span class="buf-l">${d[c.key]||k} ${c.split}%${sel?' ◄':''}</span><span class="buf-v">$${Math.round(p)}${flag}</span></div>`
     }).join('')
     const cards = cyc.rule
-      ? `<div class="stat-card"><div class="s-lbl">${d.payBest}</div><div class="s-val" style="color:${bestPct>35?'var(--red)':'var(--green)'}">${bestPct.toFixed(0)}%</div></div><div class="stat-card"><div class="s-lbl">${d.payLimit}</div><div class="s-val">$${Math.round(limit35)}</div></div>`
+      ? `<div class="stat-card"><div class="s-lbl">${d.payBest}</div><div class="s-val" style="color:${bestPct>consPct?'var(--red)':'var(--green)'}">${bestPct.toFixed(0)}%</div></div><div class="stat-card"><div class="s-lbl">${(d.payLimit||'').replace('{c}',consPct)}</div><div class="s-val">$${Math.round(limitCons)}</div></div>`
       : `<div class="stat-card"><div class="s-lbl">${d.paySplitCard||'Split'}</div><div class="s-val">${split}%</div></div><div class="stat-card"><div class="s-lbl">${d.payPayoutCard||'Payout'}</div><div class="s-val" style="color:var(--green)">$${Math.round(payout)}</div></div>`
     res.innerHTML=`
       <div style="border-radius:8px;padding:14px;background:${bg};border:1px solid ${col}55;margin-bottom:12px">
@@ -931,7 +1152,7 @@
         <div style="font-size:13px;color:var(--text-muted);line-height:1.5">${msg}</div>
       </div>
       <div class="stat-grid">
-        <div class="stat-card"><div class="s-lbl">${d.payTotal}</div><div class="s-val">$${Math.round(total)} <span style="font-size:12px;color:${totalPct>=2?'var(--green)':'var(--red)'}">(${totalPct.toFixed(2)}%)</span></div></div>
+        <div class="stat-card"><div class="s-lbl">${d.payTotal}</div><div class="s-val">$${Math.round(total)} <span style="font-size:12px;color:${totalPct>=minPct?'var(--green)':'var(--red)'}">(${totalPct.toFixed(2)}%)</span></div></div>
         ${cards}
       </div>
       <div style="background:var(--bg2);border-radius:8px;padding:12px 14px;margin-top:12px">
@@ -941,16 +1162,312 @@
     `
   }
 
-  function openPayout(){
-    switchTab('payout')
-    const el=document.getElementById('tab-payout')||document.getElementById('tc-payout')
-    if(el) el.scrollIntoView({behavior:'smooth',block:'center'})
-  }
   function setPayAcc(v){
     document.getElementById('pay-acc').value=v
     document.querySelectorAll('[id^="payq-"]').forEach(b=>b.classList.remove('active'))
     const b=document.getElementById('payq-'+v); if(b) b.classList.add('active')
     checkConsistency()
+  }
+
+  /* ════════ INSTRUMENT STATE ════════ */
+  let activeCat='forex'
+  let activePair='EURUSD'
+  let activePip=0.0001
+  let activeContract=100000
+  let activeQuote='USD'
+  let activeType='forex'
+  let activeBroker='ftmo'
+  let customCS=null
+
+  function instr(p){ return INSTR.filter(i=>i.p===p)[0] }
+
+  function renderCats(){
+    const d=lang[currentLang]
+    const row=document.getElementById('cat-row')
+    row.innerHTML=''
+    CATS.forEach(c=>{
+      const div=document.createElement('div')
+      div.className='pair-btn'+(c.id===activeCat?' active':'')
+      div.id='cat-'+c.id
+      div.textContent=d[c.k]||c.id
+      div.onclick=()=>showCat(c.id)
+      row.appendChild(div)
+    })
+  }
+
+  function renderPairs(){
+    const grid=document.getElementById('pair-grid')
+    grid.innerHTML=''
+    INSTR.filter(i=>i.cat===activeCat).forEach(i=>{
+      const div=document.createElement('div')
+      div.className='pair-btn'+(i.p===activePair?' active':'')
+      div.textContent=i.lbl
+      div.onclick=()=>selectPair(i.p)
+      grid.appendChild(div)
+    })
+  }
+
+  function showCat(cat){
+    activeCat=cat
+    renderCats()
+    const list=INSTR.filter(i=>i.cat===cat)
+    if(list.length&&list.map(i=>i.p).indexOf(activePair)<0){
+      selectPair(list[0].p)
+      return
+    }
+    renderPairs()
+  }
+
+  function selectPair(p){
+    const i=instr(p); if(!i) return
+    activePair=p
+    activeCat=i.cat
+    activePip=i.pip
+    activeQuote=i.q
+    activeType=i.idx?'index':'forex'
+    activeContract=i.idx?getCS(i):i.c
+    renderCats(); renderPairs(); renderBrokers()
+    document.getElementById('custom-cs').style.display=(activeBroker==='custom'&&i.idx)?'inline-block':'none'
+    const nb=brokerBuffer(i)
+    document.getElementById('buffer').value=nb
+    updateRateRow()
+    updateInfo()
+    updateBufferNote(nb)
+    calc()
+  }
+
+  function getCS(i){
+    if(!i.idx) return i.c
+    const br=BROKERS[activeBroker]||BROKERS.ftmo
+    if(br.cs==='custom') return parseFloat(document.getElementById('custom-cs').value)||1
+    return (i.cs&&(i.cs[br.cs]!==undefined?i.cs[br.cs]:i.cs.std))||1
+  }
+
+  /* spread/slippage buffer suggested for the selected firm */
+  function brokerBuffer(i){
+    const br=BROKERS[activeBroker]||BROKERS.ftmo
+    const v=(i.b||0)*(br.sp||1)
+    return v>=10?Math.round(v):Math.round(v*10)/10
+  }
+
+  function renderBrokers(){
+    const row=document.getElementById('broker-row')
+    row.innerHTML=''
+    Object.keys(BROKERS).forEach(k=>{
+      const div=document.createElement('div')
+      div.className='pair-btn'+(k===activeBroker?' active':'')
+      div.id='br-'+k
+      div.textContent=k==='custom'?(lang[currentLang].brCustom||'Custom CS'):BROKERS[k].name
+      div.onclick=()=>selectBroker(k)
+      row.appendChild(div)
+    })
+  }
+
+  function selectBroker(b){
+    activeBroker=b
+    renderBrokers()
+    const i=instr(activePair)
+    document.getElementById('custom-cs').style.display=(b==='custom'&&i&&i.idx)?'inline-block':'none'
+    if(i){
+      if(i.idx) activeContract=getCS(i)
+      const nb=brokerBuffer(i)
+      document.getElementById('buffer').value=nb
+      updateBufferNote(nb)
+    }
+    updateInfo(); calc()
+  }
+  function onCustomCS(){
+    const i=instr(activePair)
+    if(i&&i.idx) activeContract=getCS(i)
+    updateInfo(); calc()
+  }
+
+  /* ── FX rate row ── */
+  function neededRate(){
+    if(activeQuote==='USD') return null
+    // for USDxxx instruments the entry price itself IS the rate
+    if(activePair.length===6&&activePair.slice(0,3)==='USD'&&activePair.slice(3,6)===activeQuote) return null
+    return rateSymbol(activeQuote)
+  }
+  function updateRateRow(){
+    const d=lang[currentLang]
+    const row=document.getElementById('fx-rate-row')
+    const sym=neededRate()
+    if(!sym){ row.style.display='none'; return }
+    row.style.display='flex'
+    document.getElementById('fx-rate-label').textContent=(d.fxLbl||'{s} rate').replace('{s}',sym)
+    document.getElementById('fx-rate-note').textContent=d.fxNote||''
+    document.getElementById('fx-rate').value=rates[sym]
+  }
+  function onRateInput(){
+    const sym=neededRate(); if(!sym) return
+    const v=parseFloat(document.getElementById('fx-rate').value)
+    if(v>0) rates[sym]=v
+    updateInfo(); calc()
+  }
+
+  /* ── quote currency -> USD multiplier ── */
+  function quoteToUSD(entry){
+    const q=activeQuote
+    if(q==='USD') return 1
+    if(activePair.length===6&&activePair.slice(0,3)==='USD'&&activePair.slice(3,6)===q){
+      return entry>0?1/entry:0
+    }
+    const sym=rateSymbol(q)
+    const r=rates[sym]||1
+    return USD_BASE.indexOf(q)>=0 ? 1/r : r
+  }
+
+  /* value in USD of 1 point (activePip) for 1.00 lot */
+  function perPointUSD(entry){
+    return activeContract*activePip*quoteToUSD(entry)
+  }
+
+  const OTT={
+    us:{tr:{en:'✅ AM OTT: 17:00-18:00 · PM OTT: 20:30-22:00 (Kyiv)',ru:'✅ AM OTT: 17:00-18:00 · PM OTT: 20:30-22:00 (Киев)',ua:'✅ AM OTT: 17:00-18:00 · PM OTT: 20:30-22:00 (Київ)'},
+        av:{en:'⛔ Avoid: Pre-Market 15:30-16:30 · Lunch 19:00-20:00',ru:'⛔ Избегать: Pre-Market 15:30-16:30 · Ланч 19:00-20:00',ua:'⛔ Уникати: Pre-Market 15:30-16:30 · Ланч 19:00-20:00'},
+        ca:{en:'⚠️ Caution: Last Hour 22:00-23:00 (volatile)',ru:'⚠️ Осторожно: Last Hour 22:00-23:00 (волатильно)',ua:'⚠️ Обережно: Last Hour 22:00-23:00 (волатильно)'}},
+    eu:{tr:{en:'✅ Trade: 10:00-18:30 Kyiv (Xetra) · Best: 10:00-15:00',ru:'✅ Торговать: 10:00-18:30 Киев (Xetra) · Лучшее: 10:00-15:00',ua:'✅ Торгувати: 10:00-18:30 Київ (Xetra) · Краще: 10:00-15:00'},
+        av:{en:'⛔ Avoid: after 18:30 (cash session closed)',ru:'⛔ Избегать: после 18:30 (кэш-сессия закрыта)',ua:'⛔ Уникати: після 18:30 (кеш-сесія закрита)'},
+        ca:{en:'⚠️ Non-USD index — lots converted via FX rate',ru:'⚠️ Индекс не в USD — лоты конвертируются по курсу',ua:'⚠️ Індекс не в USD — лоти конвертуються за курсом'}},
+    asia:{tr:{en:'✅ Tokyo: 03:00-09:00 Kyiv · US session moves it too',ru:'✅ Токио: 03:00-09:00 Киев · Двигается и в сессию США',ua:'✅ Токіо: 03:00-09:00 Київ · Рухається і в сесію США'},
+        av:{en:'⛔ Avoid: lunch break 05:30-06:30',ru:'⛔ Избегать: обеденный перерыв 05:30-06:30',ua:'⛔ Уникати: обідня перерва 05:30-06:30'},
+        ca:{en:'⚠️ Non-USD index — check Contract Size',ru:'⚠️ Индекс не в USD — проверь Contract Size',ua:'⚠️ Індекс не в USD — перевір Contract Size'}},
+    metal:{tr:{en:'✅ Best: London 10:00-13:00 · NY 15:30-19:00 (Kyiv)',ru:'✅ Лучшее: Лондон 10:00-13:00 · Нью-Йорк 15:30-19:00 (Киев)',ua:'✅ Краще: Лондон 10:00-13:00 · Нью-Йорк 15:30-19:00 (Київ)'},
+        av:{en:'⛔ Avoid: Asian chop 02:00-09:00',ru:'⛔ Избегать: азиатский флэт 02:00-09:00',ua:'⛔ Уникати: азійський флет 02:00-09:00'},
+        ca:{en:'⚠️ High volatility on CPI / NFP / FOMC',ru:'⚠️ Высокая волатильность на CPI / NFP / FOMC',ua:'⚠️ Висока волатильність на CPI / NFP / FOMC'}},
+    energy:{tr:{en:'✅ Best: 15:30-20:00 Kyiv (NY pit) · API/EIA moves',ru:'✅ Лучшее: 15:30-20:00 Киев (сессия NY) · Отчёты API/EIA',ua:'✅ Краще: 15:30-20:00 Київ (сесія NY) · Звіти API/EIA'},
+        av:{en:'⛔ Avoid: thin Asian session',ru:'⛔ Избегать: тонкая азиатская сессия',ua:'⛔ Уникати: тонка азійська сесія'},
+        ca:{en:'⚠️ EIA inventories Wed 17:30 Kyiv — huge spikes',ru:'⚠️ Запасы EIA среда 17:30 Киев — резкие движения',ua:'⚠️ Запаси EIA середа 17:30 Київ — різкі рухи'}}
+  }
+
+  function updateInfo(){
+    const d=lang[currentLang]
+    const l=currentLang
+    const info=document.getElementById('index-info')
+    const i=instr(activePair)
+    if(!i){info.style.display='none';return}
+    const ott=OTT[i.cat]
+    const entry=parseFloat(document.getElementById('entry').value)||0
+    const pv=perPointUSD(entry||1)
+    const unit=activeType==='index'||i.cat!=='forex'&&i.cat!=='cross'?d.bufUnitPt:d.bufUnitPip
+    const pvTxt=(activeQuote!=='USD'&&!entry&&neededRate()===null)?'':(d.pipValLbl||'').replace('{u}',unit).replace('{v}',pv?pv.toFixed(2):'—')
+    const brName=(BROKERS[activeBroker]||{}).name||''
+    const csTxt=i.idx?`${brName} ${d.csLbl||'Contract Size'}: <strong>${activeContract}</strong> · `:''
+    const curTxt=activeQuote!=='USD'?` <span style="color:var(--yellow)">⚠ ${activeQuote}</span>`:' <span style="color:var(--green)">USD</span>'
+    const hint=i.hint?`<div style="color:var(--yellow);margin-top:4px">${i.hint[l]||i.hint.en}</div>`:''
+    if(!ott&&!i.idx&&!i.hint&&i.cat!=='forex'&&i.cat!=='cross'){info.style.display='none';return}
+    info.style.display='block'
+    info.innerHTML=`
+      <div style="margin-bottom:4px"><strong>${i.lbl}</strong> · ${csTxt}${pvTxt}${curTxt}</div>
+      ${i.tv?`<div style="color:var(--text-dim);font-size:11px;margin-bottom:2px">TradingView: ${i.tv}</div>`:''}
+      ${ott?`<div style="color:var(--green)">${ott.tr[l]}</div><div style="color:var(--red)">${ott.av[l]}</div><div style="color:var(--yellow)">${ott.ca[l]}</div>`:''}
+      ${hint}
+      ${i.idx?`<div style="color:var(--text-dim);margin-top:4px">${d.csWarn||''}</div>`:''}
+    `
+  }
+
+  function updateBufferNote(buf){
+    const note=document.getElementById('buffer-auto-note')
+    if(!note) return
+    const d=lang[currentLang]
+    const i=instr(activePair)
+    const isPip=i&&(i.cat==='forex'||i.cat==='cross')
+    const unit=isPip?d.bufUnitPip:d.bufUnitPt
+    const brName=(BROKERS[activeBroker]||{}).name||''
+    note.textContent=(d.bufAuto||'Auto')+': '+brName+' · '+activePair+' = '+buf+' '+unit+' · '+(d.bufEditable||'editable')
+  }
+
+  // Spread/Slippage buffer + real risk/result
+  function renderBuffer(stopPoints,tpPoints,nominalLot,riskMoney,ppUSD){
+    const panel=document.getElementById('buffer-panel')
+    if(!panel) return
+    const mt5=document.getElementById('mt5-block')
+    const d=lang[currentLang]
+    const buf=parseFloat(document.getElementById('buffer').value)||0
+    if(!isFinite(ppUSD)||ppUSD<=0){panel.style.display='none';if(mt5)mt5.style.display='none';return}
+    const i=instr(activePair)
+    const isPip=i&&(i.cat==='forex'||i.cat==='cross')
+    const unit=isPip?d.bufUnitPip:d.bufUnitPt
+    const effStop=stopPoints+buf
+    const effTp=Math.max(tpPoints-buf,0)
+    const safeLot=riskMoney/(effStop*ppUSD)
+    const expProfit=safeLot*effTp*ppUSD
+    const effRR=effStop>0?effTp/effStop:0
+    const spreadShare=stopPoints>0?buf/stopPoints*100:0
+    const shCol=spreadShare<10?'var(--green)':spreadShare<25?'var(--yellow)':'var(--red)'
+
+    if(mt5){
+      const eV=document.getElementById('entry').value
+      const sV=document.getElementById('stop').value
+      const tV=document.getElementById('tp').value
+      mt5.style.display='block'
+      mt5.innerHTML=`
+        <div style="font-weight:600;margin-bottom:10px">${d.mt5Hdr}</div>
+        <div class="buf-line"><span class="buf-l">${d.mt5Vol}</span><span class="buf-v"><strong style="color:var(--accent)">${safeLot.toFixed(2)}</strong></span></div>
+        <div class="buf-line"><span class="buf-l">${d.mt5Price}</span><span class="buf-v">${eV}</span></div>
+        <div class="buf-line"><span class="buf-l">${d.mt5SL}</span><span class="buf-v">${sV}</span></div>
+        <div class="buf-line"><span class="buf-l">${d.mt5TP}</span><span class="buf-v">${tV}</span></div>
+        <div style="font-size:11px;color:var(--text-dim);margin-top:10px;line-height:1.5">${d.mt5Note}</div>
+      `
+    }
+
+    if(buf<=0){ panel.style.display='none'; return }
+
+    panel.style.display='block'
+    panel.innerHTML=`
+      <div style="font-weight:600;margin-bottom:10px">${d.bufTitle}</div>
+      <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px">${d.bufPlanHdr}</div>
+      <div class="buf-line"><span class="buf-l">${d.bufEffStop}</span><span class="buf-v">${stopPoints.toFixed(1)} + ${buf.toFixed(1)} = <strong>${effStop.toFixed(1)} ${unit}</strong></span></div>
+      <div class="buf-line"><span class="buf-l">${d.bufMaxLoss}</span><span class="buf-v" style="color:var(--red)"><strong>$${Math.round(riskMoney)}</strong></span></div>
+      <div class="buf-line"><span class="buf-l">${d.bufExpProfit}</span><span class="buf-v" style="color:var(--green)"><strong>$${Math.round(expProfit)}</strong></span></div>
+      <div class="buf-line"><span class="buf-l">${d.bufRealRR}</span><span class="buf-v">1 : ${effRR.toFixed(2)}</span></div>
+      <div class="buf-line"><span class="buf-l">${d.bufSpreadShare}</span><span class="buf-v" style="color:${shCol}"><strong>${spreadShare.toFixed(0)}%</strong></span></div>
+      <div style="font-size:11px;color:var(--text-dim);margin-top:10px;line-height:1.5">${d.bufHint}</div>
+    `
+  }
+
+  function calc(){
+    const balance=parseFloat(document.getElementById("balance").value)
+    const riskPct=parseFloat(document.getElementById("risk").value)
+    const entry=parseFloat(document.getElementById("entry").value)
+    const stop=parseFloat(document.getElementById("stop").value)
+    const tp=parseFloat(document.getElementById("tp").value)
+    const results=document.getElementById("results")
+    updateInfo()
+    if(!balance||!riskPct||!entry||!stop||!tp){
+      results.style.display="none"
+      document.getElementById("buffer-panel").style.display="none"
+      document.getElementById("mt5-block").style.display="none"
+      return
+    }
+    const stopDist=Math.abs(entry-stop)
+    const tpDist=Math.abs(tp-entry)
+    if(stopDist===0)return
+    const riskMoney=balance*riskPct/100
+    const stopPoints=stopDist/activePip
+    const tpPoints=tpDist/activePip
+    const rr=tpDist/stopDist
+
+    const ppUSD=perPointUSD(entry)
+    if(!isFinite(ppUSD)||ppUSD<=0){results.style.display="none";return}
+
+    const lots=riskMoney/(stopPoints*ppUSD)
+    const profit=lots*tpPoints*ppUSD
+
+    if(activeType==='index'){
+      document.getElementById("r-units").textContent=lots.toFixed(2)+' lots'
+    } else {
+      document.getElementById("r-units").textContent=Math.round(lots*activeContract).toLocaleString()
+    }
+    document.getElementById("r-lots").textContent=lots.toFixed(2)
+    document.getElementById("r-risk").textContent="$"+Math.round(riskMoney)
+    document.getElementById("r-profit").textContent="$"+Math.round(profit)
+    document.getElementById("r-rr").textContent="1 : "+rr.toFixed(2)
+    document.getElementById("r-pips").textContent=Math.round(stopPoints)
+    results.style.display="grid"
+
+    renderBuffer(stopPoints,tpPoints,lots,riskMoney,ppUSD)
   }
 
   /* SET LANG */
@@ -972,12 +1489,13 @@
     document.getElementById("lbl-pips").textContent=d.pips
     document.getElementById("seo1").textContent=d.seo1
     document.getElementById("seo2").textContent=d.seo2
-    if(activePipVal===null) document.getElementById("note").textContent=d.note
     document.getElementById('tab-scale').textContent=d.tabScale
     document.getElementById('tab-winrate').textContent=d.tabWR
     document.getElementById('tab-hierarchy').textContent=d.tabHier
     document.getElementById('tab-report').textContent=d.tabReport
     document.getElementById('tab-prop').textContent=d.tabProp
+    document.getElementById('tab-payout').textContent=d.tabPay
+    document.getElementById('broker-label').textContent=d.brokerLbl||'🏢 Prop firm / broker'
     document.getElementById('scale-title').textContent=d.scaleTitle
     document.getElementById('lbl-sc-risk').textContent=d.scRisk
     document.getElementById('lbl-sc-rr').textContent=d.scRR
@@ -1010,307 +1528,53 @@
     document.getElementById('prop-title').textContent=d.propTitle
     document.getElementById('lbl-pp-size').textContent=d.ppSize
     document.getElementById('lbl-pp-phase').textContent=d.ppPhase
+    document.getElementById('lbl-pp-program').textContent=d.ppProgram
     document.getElementById('lbl-pp-profit-target').textContent=d.ppProfitTarget
     document.getElementById('lbl-pp-daily').textContent=d.ppDaily
     document.getElementById('lbl-pp-total').textContent=d.ppTotal
     document.getElementById('lbl-pp-profit').textContent=d.ppProfit
     document.getElementById('lbl-pp-daily-used').textContent=d.ppDailyUsed
-    document.getElementById('pfb-custom').textContent=d.pfbCustom
-    document.getElementById('lbl-pp-account').textContent=d.ppAccountLbl||'Account ($)'
-    document.getElementById('lbl-pp-split').textContent=d.ppSplitLbl||'Profit split (%)'
-    document.getElementById('opt-phase1').textContent=d.phases[1]
-    document.getElementById('opt-phase2').textContent=d.phases[2]
-    document.getElementById('opt-funded').textContent=d.phases.funded
+    document.getElementById('lbl-pp-split').textContent=d.ppSplitLbl
     Object.keys(d.periods).forEach(k=>{
       const el=document.getElementById('opt-'+k)
       if(el) el.textContent=d.periods[k]
     })
-    renderHier()
-    renderScale()
-    renderWR()
-    renderReport()
-    renderProp()
-    if(activeType==='index') updateIndexInfo()
-    document.getElementById("lbl-buffer").textContent=d.bufLbl
-    document.getElementById('tab-payout').textContent=d.tabPay
-    document.getElementById('cat-payout').textContent=d.tabPay
     document.getElementById('pay-title').textContent=d.payTitle
     document.getElementById('lbl-pay-acc').textContent=d.payAccLbl
-    document.getElementById('lbl-pay-cycle').textContent=d.payCycleLbl||'Reward cycle:'
+    document.getElementById('lbl-pay-cons').textContent=d.payConsLbl
+    document.getElementById('lbl-pay-min').textContent=d.payMinLbl
+    document.getElementById('lbl-pay-cycle').textContent=d.payCycleLbl
     document.getElementById('cyc-weekly').textContent=(d.cycWeekly||'Weekly')+' 60%'
     document.getElementById('cyc-biweekly').textContent=(d.cycBiweekly||'Bi-Weekly')+' 80%'
     document.getElementById('cyc-ondemand').textContent=(d.cycOndemand||'On Demand')+' 90%'
     document.getElementById('cyc-monthly').textContent=(d.cycMonthly||'Monthly')+' 100%'
     document.getElementById('lbl-pay-days').textContent=d.payDaysLbl
+    document.getElementById("lbl-buffer").textContent=d.bufLbl
+    renderCats(); renderPairs(); renderBrokers()
+    renderFirmBtns()
+    // refresh phase option labels
+    const ps=document.getElementById('pp-phase')
+    Array.prototype.forEach.call(ps.options,o=>{o.textContent=(d.phases||{})[o.value]||o.value})
+    renderRules()
+    renderHier()
+    renderScale()
+    renderWR()
+    renderReport()
+    renderProp()
+    updateRateRow()
     updateBufferNote(document.getElementById('buffer').value)
     checkConsistency()
     calc()
   }
 
-  /* CALC */
-  let activePip=0.0001,activePipVal=10,activePair='EURUSD'
-  let activeType='forex',activeBroker='ftmo',activeCS=null,activeCur='USD'
-  let activeOTT=''
-  // FTMO broker symbol names (display only; internal keys stay the same)
-  const brokerNames={SP500:'US500.cash',NAS100:'US100.cash',DJ30:'US30.cash',DAX40:'GER40.cash',EU50:'EU50.cash',FTSE100:'UK100.cash'}
-
-  function showCat(cat){
-    document.querySelectorAll('[id^="cat-"]').forEach(b=>b.classList.remove('active'))
-    document.getElementById('cat-'+cat).classList.add('active')
-    document.getElementById('pairs-forex').style.display=cat==='forex'?'grid':'none'
-    document.getElementById('pairs-us').style.display=cat==='us'?'grid':'none'
-    document.getElementById('pairs-eu').style.display=cat==='eu'?'grid':'none'
-    document.getElementById('broker-row').style.display=cat!=='forex'?'flex':'none'
-    if(cat==='forex'){
-      document.getElementById('index-info').style.display='none'
-      document.getElementById('fx-rate-row').style.display='none'
-      activeType='forex'
-    }
-    const d=lang[currentLang]
-    if(d.catForex) document.getElementById('cat-forex').textContent=d.catForex
-    if(d.catUS) document.getElementById('cat-us').textContent=d.catUS
-    if(d.catEU) document.getElementById('cat-eu').textContent=d.catEU
-  }
-
-  function selectBroker(b){
-    activeBroker=b
-    document.querySelectorAll('[id^="br-"]').forEach(x=>x.classList.remove('active'))
-    document.getElementById('br-'+b).classList.add('active')
-    document.getElementById('custom-cs').style.display=b==='custom'?'inline-block':'none'
-    updateIndexInfo()
-    calc()
-  }
-
-  const indexData={
-    SP500:{
-      tv:'ES1! (CME) / US500 (CapitalCom)',
-      ott_trade:{en:'AM OTT: 17:00-18:00 · PM OTT: 20:30-22:00',ru:'AM OTT: 17:00-18:00 · PM OTT: 20:30-22:00',ua:'AM OTT: 17:00-18:00 · PM OTT: 20:30-22:00'},
-      ott_avoid:{en:'⛔ Avoid: Pre-Market 15:30-16:30 · Lunch 19:00-20:00',ru:'⛔ Избегать: Pre-Market 15:30-16:30 · Ланч 19:00-20:00',ua:'⛔ Уникати: Pre-Market 15:30-16:30 · Ланч 19:00-20:00'},
-      ott_caution:{en:'⚠️ Caution: Last Hour 22:00-23:00 (volatile)',ru:'⚠️ Осторожно: Last Hour 22:00-23:00 (волатильно)',ua:'⚠️ Обережно: Last Hour 22:00-23:00 (волатильно)'}
-    },
-    NAS100:{
-      tv:'NQ1! (CME) / US100 (CapitalCom)',
-      ott_trade:{en:'AM OTT: 17:00-18:00 · PM OTT: 20:30-22:00',ru:'AM OTT: 17:00-18:00 · PM OTT: 20:30-22:00',ua:'AM OTT: 17:00-18:00 · PM OTT: 20:30-22:00'},
-      ott_avoid:{en:'⛔ Avoid: Pre-Market 15:30-16:30 · Lunch 19:00-20:00',ru:'⛔ Избегать: 15:30-16:30 · Ланч 19:00-20:00',ua:'⛔ Уникати: 15:30-16:30 · Ланч 19:00-20:00'},
-      ott_caution:{en:'⚠️ Caution: Last Hour 22:00-23:00',ru:'⚠️ Осторожно: 22:00-23:00',ua:'⚠️ Обережно: 22:00-23:00'}
-    },
-    DJ30:{
-      tv:'YM1! (CBOT) / US30 (CapitalCom)',
-      ott_trade:{en:'AM OTT: 17:00-18:00 · PM OTT: 20:30-22:00',ru:'AM OTT: 17:00-18:00 · PM OTT: 20:30-22:00',ua:'AM OTT: 17:00-18:00 · PM OTT: 20:30-22:00'},
-      ott_avoid:{en:'⛔ Avoid: Pre-Market 15:30-16:30 · Lunch 19:00-20:00',ru:'⛔ Избегать: 15:30-16:30 · Ланч 19:00-20:00',ua:'⛔ Уникати: 15:30-16:30 · Ланч 19:00-20:00'},
-      ott_caution:{en:'⚠️ Caution: Last Hour 22:00-23:00',ru:'⚠️ Осторожно: 22:00-23:00',ua:'⚠️ Обережно: 22:00-23:00'}
-    },
-    DAX40:{
-      tv:'FDAX1! (EUREX) / GER40 (Forex.com)',
-      ott_trade:{en:'✅ Trade: 10:00-18:30 Kyiv (Xetra hours) · Best: 10:00-15:00',ru:'✅ Торговать: 10:00-18:30 Киев (часы Xetra) · Лучшее: 10:00-15:00',ua:'✅ Торгувати: 10:00-18:30 Київ (години Xetra) · Краще: 10:00-15:00'},
-      ott_avoid:{en:'⛔ Avoid: after 18:30 (Xetra closed)',ru:'⛔ Избегать: после 18:30 (Xetra закрыта)',ua:'⛔ Уникати: після 18:30 (Xetra закрита)'},
-      ott_caution:{en:'⚠️ Note: EUR index — lots converted from USD',ru:'⚠️ Важно: индекс в EUR — лоты конвертируются из USD',ua:'⚠️ Важливо: індекс в EUR — лоти конвертуються з USD'}
-    },
-    EU50:{
-      tv:'FESX1! (EUREX) / EU50 (Forex.com)',
-      ott_trade:{en:'✅ Trade: 10:00-18:30 Kyiv · Best: 10:00-15:00',ru:'✅ Торговать: 10:00-18:30 Киев · Лучшее: 10:00-15:00',ua:'✅ Торгувати: 10:00-18:30 Київ · Краще: 10:00-15:00'},
-      ott_avoid:{en:'⛔ Avoid: after 18:30',ru:'⛔ Избегать: после 18:30',ua:'⛔ Уникати: після 18:30'},
-      ott_caution:{en:'⚠️ Note: EUR index — lots converted from USD',ru:'⚠️ Важно: индекс в EUR — конвертация из USD',ua:'⚠️ Важливо: індекс в EUR — конвертація з USD'}
-    },
-    FTSE100:{
-      tv:'UKX / UK100 (Forex.com)',
-      ott_trade:{en:'✅ London: 10:00-18:30 · AM OTT: 17:00-18:00 · PM OTT: 20:30-22:00',ru:'✅ Лондон: 10:00-18:30 · AM OTT: 17:00-18:00 · PM OTT: 20:30-22:00',ua:'✅ Лондон: 10:00-18:30 · AM OTT: 17:00-18:00 · PM OTT: 20:30-22:00'},
-      ott_avoid:{en:'⛔ Avoid: Lunch 19:00-20:00',ru:'⛔ Избегать: Ланч 19:00-20:00',ua:'⛔ Уникати: Ланч 19:00-20:00'},
-      ott_caution:{en:'⚠️ Note: GBP index — lots converted from USD',ru:'⚠️ Важно: индекс в GBP — конвертация из USD',ua:'⚠️ Важливо: індекс в GBP — конвертація з USD'}
-    }
-  }
-
-  function updateIndexInfo(){
-    const info=document.getElementById('index-info')
-    if(activeType!=='index'){info.style.display='none';return}
-    const btn=document.querySelector('.pair-btn[data-pair="'+activePair+'"]')
-    if(!btn)return
-    const csKey='data-cs-'+activeBroker
-    const cs=activeBroker==='custom'?(parseFloat(document.getElementById('custom-cs').value)||1):parseFloat(btn.getAttribute(csKey)||'1')
-    activeCS=cs
-    activeCur=btn.getAttribute('data-cur')||'USD'
-    const l=currentLang
-    const d=indexData[activePair]||{}
-    const curNote=activeCur!=='USD'?` <span style="color:var(--yellow)">⚠ ${activeCur}</span>`:'<span style="color:var(--green)">USD</span>'
-    const csNote={en:'Contract Size',ru:'Размер контракта',ua:'Розмір контракту'}
-    const tvNote={en:'TradingView',ru:'TradingView',ua:'TradingView'}
-    info.style.display='block'
-    info.innerHTML=`
-      <div style="margin-bottom:6px"><strong>${brokerNames[activePair]||activePair}</strong> &nbsp;·&nbsp; ${csNote[l]}: <strong>${cs}</strong> &nbsp;·&nbsp; 1 lot × 1pt = $${cs} &nbsp;·&nbsp; ${curNote}</div>
-      <div style="margin-bottom:4px;color:var(--text-dim);font-size:11px">${tvNote[l]}: ${d.tv||''}</div>
-      <div style="color:var(--green);margin-bottom:2px">${(d.ott_trade||{})[l]||''}</div>
-      <div style="color:var(--red);margin-bottom:2px">${(d.ott_avoid||{})[l]||''}</div>
-      <div style="color:var(--yellow)">${(d.ott_caution||{})[l]||''}</div>
-    `
-
-    // show/hide FX rate field
-    const fxRow=document.getElementById('fx-rate-row')
-    if(activeCur!=='USD'){
-      fxRow.style.display='flex'
-      const pair=activeCur==='EUR'?'EURUSD':'GBPUSD'
-      const fxLabels={en:`${pair} rate (for lot conversion)`,ru:`Курс ${pair} (для конвертации лотов)`,ua:`Курс ${pair} (для конвертації лотів)`}
-      const fxNotes={en:`Risk $USD ÷ ${pair} = Risk in ${activeCur}`,ru:`Риск $USD ÷ ${pair} = Риск в ${activeCur}`,ua:`Ризик $USD ÷ ${pair} = Ризик в ${activeCur}`}
-      document.getElementById('fx-rate-label').textContent=fxLabels[l]
-      document.getElementById('fx-rate-note').textContent=fxNotes[l]
-    } else {
-      fxRow.style.display='none'
-    }
-  }
-
-  document.querySelectorAll('.pair-btn[data-pair]').forEach(btn=>{
-    btn.addEventListener('click',function(){
-      document.querySelectorAll('.pair-btn[data-pair]').forEach(b=>b.classList.remove('active'))
-      this.classList.add('active')
-      activePair=this.dataset.pair
-      activePip=parseFloat(this.dataset.pip)||1
-      activeType=this.dataset.type||'forex'
-      if(activeType==='index'){
-        activePipVal='INDEX'
-        document.getElementById("note").textContent=''
-        updateIndexInfo()
-      } else {
-        activePipVal=this.dataset.pipval==="DYNAMIC"?null:parseFloat(this.dataset.pipval)
-        document.getElementById("note").textContent=activePipVal===null?lang[currentLang].note:""
-        document.getElementById('index-info').style.display='none'
-      }
-      // auto-fill per-instrument spread/slippage buffer
-      if(this.dataset.buffer!==undefined){
-        document.getElementById('buffer').value=this.dataset.buffer
-        updateBufferNote(this.dataset.buffer)
-      }
-      calc()
-    })
-  })
-
-  function getPipValue(pair,entry){
-    if(activePipVal!==null)return activePipVal
-    if(pair.includes("JPY"))return 1000/entry
-    if(pair.endsWith("USD"))return 10
-    if(pair.startsWith("USD"))return 10/entry
-    return 10
-  }
-
-  function updateBufferNote(buf){
-    const note=document.getElementById('buffer-auto-note')
-    if(!note) return
-    const d=lang[currentLang]
-    const unit=activeType==='index'?d.bufUnitPt:d.bufUnitPip
-    const nm=brokerNames[activePair]||activePair
-    note.textContent=(d.bufAuto||'Auto')+': '+nm+' = '+buf+' '+unit+' · '+(d.bufEditable||'editable')
-  }
-
-  // Spread/Slippage buffer + real risk/result — additive, does NOT change the 6 cards above
-  function renderBuffer(stopPoints,tpPoints,nominalLot,riskMoney,perPointUSD){
-    const panel=document.getElementById('buffer-panel')
-    if(!panel) return
-    const mt5=document.getElementById('mt5-block')
-    const d=lang[currentLang]
-    const buf=parseFloat(document.getElementById('buffer').value)||0
-    if(!isFinite(perPointUSD)||perPointUSD<=0){panel.style.display='none';if(mt5)mt5.style.display='none';return}
-    const unit=activeType==='index'?d.bufUnitPt:d.bufUnitPip
-    const lotUnit=activeType==='index'?' lots':''
-    const effStop=stopPoints+buf                          // stop fills worse by spread+slippage
-    const effTp=Math.max(tpPoints-buf,0)                  // TP also gives up ~spread on exit
-    const plannedRisk=nominalLot*stopPoints*perPointUSD   // ideal (TradingView), no costs
-    const slipRisk=nominalLot*effStop*perPointUSD         // same lot, but slipped on the stop
-    const safeLot=riskMoney/(effStop*perPointUSD)         // resized so worst-case risk = budget
-    const expProfit=safeLot*effTp*perPointUSD             // realistic profit with the SAFE lot you actually enter
-    const effRR=effStop>0?effTp/effStop:0
-    const planProfit=nominalLot*tpPoints*perPointUSD      // TradingView ideal (no costs)
-    const profGapPct=planProfit>0?(expProfit-planProfit)/planProfit*100:0
-    const spreadShare=stopPoints>0?buf/stopPoints*100:0   // how much of the stop the spread eats
-    const shCol=spreadShare<10?'var(--green)':spreadShare<25?'var(--yellow)':'var(--red)'
-    const minStop=Math.ceil(buf*10)
-
-
-    // ── 📋 ready-to-enter MT5 values (always shown) ──
-    if(mt5){
-      const eV=document.getElementById('entry').value
-      const sV=document.getElementById('stop').value
-      const tV=document.getElementById('tp').value
-      mt5.style.display='block'
-      mt5.innerHTML=`
-        <div style="font-weight:600;margin-bottom:10px">${d.mt5Hdr}</div>
-        <div class="buf-line"><span class="buf-l">${d.mt5Vol}</span><span class="buf-v"><strong style="color:var(--accent)">${safeLot.toFixed(2)}</strong>${lotUnit}</span></div>
-        <div class="buf-line"><span class="buf-l">${d.mt5Price}</span><span class="buf-v">${eV}</span></div>
-        <div class="buf-line"><span class="buf-l">${d.mt5SL}</span><span class="buf-v">${sV}</span></div>
-        <div class="buf-line"><span class="buf-l">${d.mt5TP}</span><span class="buf-v">${tV}</span></div>
-        <div style="font-size:11px;color:var(--text-dim);margin-top:10px;line-height:1.5">${d.mt5Note}</div>
-      `
-    }
-
-    if(buf<=0){ panel.style.display='none'; return }
-
-    // optional: actual MT5 result -> execution deviation %
-    panel.style.display='block'
-    panel.innerHTML=`
-      <div style="font-weight:600;margin-bottom:10px">${d.bufTitle}</div>
-      <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px">${d.bufPlanHdr}</div>
-      <div class="buf-line"><span class="buf-l">${d.bufEffStop}</span><span class="buf-v">${stopPoints.toFixed(1)} + ${buf.toFixed(1)} = <strong>${effStop.toFixed(1)} ${unit}</strong></span></div>
-      <div class="buf-line"><span class="buf-l">${d.bufMaxLoss}</span><span class="buf-v" style="color:var(--red)"><strong>$${Math.round(riskMoney)}</strong></span></div>
-      <div class="buf-line"><span class="buf-l">${d.bufExpProfit}</span><span class="buf-v" style="color:var(--green)"><strong>$${Math.round(expProfit)}</strong></span></div>
-      <div class="buf-line"><span class="buf-l">${d.bufRealRR}</span><span class="buf-v">1 : ${effRR.toFixed(2)}</span></div>
-      <div class="buf-line"><span class="buf-l">${d.bufSpreadShare}</span><span class="buf-v" style="color:${shCol}"><strong>${spreadShare.toFixed(0)}%</strong></span></div>
-      <div style="font-size:11px;color:var(--text-dim);margin-top:10px;line-height:1.5">${d.bufHint}</div>
-    `
-  }
-
-  function calc(){
-    const balance=parseFloat(document.getElementById("balance").value)
-    const riskPct=parseFloat(document.getElementById("risk").value)
-    const entry=parseFloat(document.getElementById("entry").value)
-    const stop=parseFloat(document.getElementById("stop").value)
-    const tp=parseFloat(document.getElementById("tp").value)
-    const results=document.getElementById("results")
-    if(!balance||!riskPct||!entry||!stop||!tp){results.style.display="none";document.getElementById("buffer-panel").style.display="none";document.getElementById("mt5-block").style.display="none";return}
-    const stopDist=Math.abs(entry-stop)
-    const tpDist=Math.abs(tp-entry)
-    if(stopDist===0)return
-    const riskMoney=balance*riskPct/100
-    const stopPoints=stopDist/activePip
-    const tpPoints=tpDist/activePip
-    const rr=tpDist/stopDist
-    let lots,units,profit,pipVal,perPointUSD
-
-    if(activeType==='index'){
-      const cs=activeCS||1
-      // For EUR/GBP indices: convert riskMoney from USD to index currency
-      let riskInCur=riskMoney
-      let fxRate=1
-      if(activeCur!=='USD'){
-        fxRate=parseFloat(document.getElementById('fx-rate').value)||1
-        riskInCur=riskMoney/fxRate  // USD / EURUSD = EUR, USD / GBPUSD = GBP
-      }
-      lots=riskInCur/(cs*stopPoints)
-      profit=lots*cs*tpPoints*fxRate
-      perPointUSD=cs*fxRate  // USD value of 1 point per 1 lot
-      document.getElementById("r-units").textContent=lots.toFixed(2)+' lots'
-      document.getElementById("r-lots").textContent=lots.toFixed(2)
-    } else {
-      pipVal=getPipValue(activePair,entry)
-      lots=riskMoney/(stopPoints*pipVal)
-      units=Math.round(lots*100000)
-      profit=lots*tpPoints*pipVal
-      perPointUSD=pipVal  // USD value of 1 pip per 1 lot
-      document.getElementById("r-units").textContent=units.toLocaleString()
-      document.getElementById("r-lots").textContent=lots.toFixed(2)
-    }
-
-    document.getElementById("r-risk").textContent="$"+Math.round(riskMoney)
-    document.getElementById("r-profit").textContent="$"+Math.round(profit)
-    document.getElementById("r-rr").textContent="1 : "+rr.toFixed(2)
-    document.getElementById("r-pips").textContent=Math.round(stopPoints)
-    results.style.display="grid"
-
-    renderBuffer(stopPoints,tpPoints,lots,riskMoney,perPointUSD)
-  }
-
-  ["balance","risk","entry","stop","tp","buffer"].forEach(id=>{
+  ;["balance","risk","entry","stop","tp","buffer"].forEach(id=>{
     document.getElementById(id).addEventListener("input",calc)
   })
 
-  // init prop
+  // init
   selectFirm('ftmo')
+  selectBroker('ftmo')
+  selectPair('EURUSD')
   setLang("en")
 </script>
 </body>
