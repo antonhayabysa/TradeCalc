@@ -147,7 +147,28 @@
   <!-- broker selector for indices -->
   <div id="broker-label" style="font-size:12px;color:var(--text-muted);margin-bottom:6px">🏢 Prop firm / broker</div>
   <div id="broker-row" style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap"></div>
-  <input type="number" id="custom-cs" placeholder="Contract Size" style="display:none;width:150px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;color:var(--text);font-size:13px;margin-bottom:8px" oninput="onCustomCS()">
+  <div id="cs-row" style="display:none;margin-bottom:8px;background:var(--bg2);border-radius:8px;padding:10px 12px;border-left:3px solid var(--yellow)">
+    <div style="font-size:12px;color:var(--text-muted);margin-bottom:4px" id="cs-label">Contract Size</div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <input type="number" id="cs-input" step="0.01" style="flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:8px 10px;color:var(--text);font-size:15px;outline:none" oninput="onCSInput()">
+      <div class="pair-btn" id="cs-reset" onclick="resetCS()" style="padding:8px 12px">↺</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
+      <div>
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px" id="pv-label">$ per point / 1.00 lot</div>
+        <input type="number" id="pv-input" step="0.01" style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:8px 10px;color:var(--text);font-size:14px;outline:none" oninput="onPVInput()">
+      </div>
+      <div>
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px" id="comm-label">Commission $ / lot (round turn)</div>
+        <input type="number" id="comm-input" step="0.5" value="0" style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:8px 10px;color:var(--text);font-size:14px;outline:none" oninput="onCommInput()">
+      </div>
+      <div>
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:4px" id="lev-label">Leverage 1:</div>
+        <input type="number" id="lev-input" step="1" value="100" style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:8px 10px;color:var(--text);font-size:14px;outline:none" oninput="onLevInput()">
+      </div>
+    </div>
+    <div style="font-size:11px;color:var(--text-dim);margin-top:6px;line-height:1.5" id="cs-hint"></div>
+  </div>
 
   <!-- FX rate input for non-USD quote instruments -->
   <div id="fx-rate-row" style="display:none;gap:12px;margin-bottom:8px;align-items:center;background:var(--bg2);border-radius:8px;padding:10px 12px;border-left:3px solid var(--yellow)">
@@ -185,6 +206,7 @@
     <div class="card"><div class="lbl" id="lbl-profit">Profit $</div><div class="val green" id="r-profit">—</div></div>
     <div class="card"><div class="lbl" id="lbl-rr">R:R</div><div class="val" id="r-rr">—</div></div>
     <div class="card"><div class="lbl" id="lbl-pips">Pips to Stop</div><div class="val" id="r-pips">—</div></div>
+    <div class="card" style="grid-column:1 / -1"><div class="lbl" id="lbl-margin">Est. Margin</div><div class="val" id="r-margin">—</div></div>
   </div>
 
   <div id="mt5-block" style="display:none;background:var(--bg2);border-radius:8px;padding:14px;margin-top:10px;border:1px solid var(--accent)"></div>
@@ -478,16 +500,64 @@
      sp = typical spread multiplier vs the base (FTMO-like) spread — an ESTIMATE,
           the buffer field stays editable, always check the real spread in MT5
   */
+  /*  c  = contract size used for the calculation
+      v  = which of those numbers the firm actually publishes (everything else is the
+           standard CFD default of 1 per point and is flagged as such in the UI)      */
   const BROKERS={
-    ftmo:{name:'FTMO',cs:'std',sp:1.0},
-    fundingpips:{name:'FundingPips',cs:'fp',sp:1.2},
-    fundednext:{name:'FundedNext',cs:'std',sp:1.3},
-    the5ers:{name:'The5ers',cs:'std',sp:1.2},
-    e8:{name:'E8 Markets',cs:'std',sp:1.3},
-    alpha:{name:'Alpha Capital',cs:'std',sp:1.2},
-    maven:{name:'Maven',cs:'std',sp:1.3},
-    goat:{name:'Goat Funded',cs:'std',sp:1.4},
-    custom:{name:'Custom CS',cs:'custom',sp:1.0}
+    ftmo:{name:'FTMO',sp:1.0,ipip:1,
+      src:'https://ftmo.com/en/trading-instruments/',
+      c:{us:1,eu:1,JP225:100,HK50:1,XAUUSD:100,XAGUSD:5000},
+      v:['us','eu','XAUUSD','XAGUSD'],
+      comm:{forex:3,cross:3,metal:3},
+      lev:{forex:100,cross:100,metal:33,us:20,eu:20,asia:20,energy:10},
+      sym:{SP500:'US500.cash',NAS100:'US100.cash',DJ30:'US30.cash',DAX40:'GER40.cash',EU50:'EU50.cash',FTSE100:'UK100.cash',JP225:'JP225.cash'}},
+    fundingpips:{name:'FundingPips',sp:1.0,ipip:0.1,
+      src:'https://fundingpips.com/tools/risk-calculator',
+      c:{SP500:50,NAS100:20,DJ30:5,DAX40:25,EU50:10,FTSE100:10,JP225:100,HK50:1,XAUUSD:100,XAGUSD:5000},
+      v:['SP500','NAS100','DJ30','DAX40','EU50','FTSE100','XAUUSD','XAGUSD'],
+      comm:{forex:3,cross:3,metal:3},
+      lev:{forex:100,cross:100,metal:50,us:20,eu:20,asia:20,energy:20},
+      sym:{SP500:'SPX500',NAS100:'NAS100',DJ30:'US30',DAX40:'GER40',EU50:'EU50',FTSE100:'UK100',JP225:'JPN225'}},
+    fundednext:{name:'FundedNext',sp:1.3,ipip:1,
+      src:'https://help.fundednext.com/en/articles/8020350-what-is-the-contract-size-of-the-instruments',
+      c:{us:10,eu:10,asia:10,XAUUSD:100,XAGUSD:5000,energy:100},
+      v:['us','eu','asia','XAUUSD','XAGUSD','energy'],
+      comm:{forex:3,cross:3,metal:3},
+      lev:{forex:100,cross:100,metal:50,us:20,eu:20,asia:20,energy:20},
+      sym:{SP500:'SP500',NAS100:'NAS100',DJ30:'US30'}},
+    e8:{name:'E8 Markets',sp:1.3,ipip:1,
+      src:'https://help.e8markets.com/en/articles/9453488-what-are-the-contract-sizes',
+      c:{SP500:20,NAS100:5,DJ30:5,eu:1,JP225:100,HK50:1,XAUUSD:100,XAGUSD:5000},
+      v:['SP500','NAS100','DJ30','XAUUSD','XAGUSD'],
+      comm:{forex:5,cross:5,metal:5},
+      lev:{forex:100,cross:100,metal:50,us:20,eu:20,asia:20,energy:20},
+      sym:{SP500:'SP500',NAS100:'NAS100',DJ30:'US30'}},
+    the5ers:{name:'The5ers',sp:1.2,ipip:1,
+      src:'https://the5ers.com/asset-specifications/',
+      c:{us:1,eu:1,JP225:100,HK50:1,XAUUSD:100,XAGUSD:5000},
+      v:['NAS100','XAUUSD','XAGUSD'],
+      comm:{forex:4,cross:4,metal:4,us:0,eu:0,asia:0,energy:0},
+      lev:{forex:100,cross:100,metal:20,us:25,eu:25,asia:25,energy:10},
+      sym:{SP500:'SP500',NAS100:'NAS100',DJ30:'US30',DAX40:'DAX40',FTSE100:'UK100',JP225:'JPN225'}},
+    alpha:{name:'Alpha Capital',sp:1.2,ipip:1,
+      src:'https://help.alphacapitalgroup.uk/en/articles/8786240-tradeable-assets',
+      c:{us:1,eu:1,JP225:100,HK50:1,XAUUSD:100,XAGUSD:5000},
+      v:[],
+      comm:{forex:0,cross:0,metal:0,us:0,eu:0,asia:0,energy:0},
+      lev:{forex:100,cross:100,metal:30,us:20,eu:20,asia:20,energy:10},
+      sym:{SP500:'US500',NAS100:'NAS100',DJ30:'US30',DAX40:'GER30',EU50:'EUSTX50',FTSE100:'UK100',JP225:'JPN225',USOIL:'USOIL',UKOIL:'UKOIL'}},
+    maven:{name:'Maven',sp:1.3,ipip:1,
+      src:'https://maventrading.com/',
+      c:{us:1,eu:1,JP225:100,HK50:1,XAUUSD:100,XAGUSD:5000},
+      v:[],
+      comm:{forex:4,cross:4,metal:6,energy:6,us:0,eu:0,asia:0},
+      lev:{forex:75,cross:75,metal:20,us:20,eu:20,asia:20,energy:20}},
+    goat:{name:'Goat Funded',sp:1.4,ipip:1,
+      src:'https://help.goatfundedtrader.com/en/articles/10742044-how-does-the-commission-work-for-different-trading-instruments',
+      c:{us:1,eu:1,JP225:100,HK50:1,XAUUSD:100,XAGUSD:5000},
+      v:[],
+      comm:{forex:5,cross:5,metal:5,us:0,eu:0,asia:0,energy:0},
+      lev:{forex:100,cross:100,metal:30,us:50,eu:50,asia:50,energy:30}}
   }
 
   /* ── PROP FIRMS DATA (verify on the firm site — rules change) ── */
@@ -794,7 +864,18 @@
       tabScale:"📊 Scale",tabWR:"📈 WinRate",tabHier:"🧩 Risk",tabReport:"📋 Report",tabProp:"🏢 Prop",
       catForex:"Forex",catCross:"Crosses",catMetals:"🥇 Metals",catEnergy:"🛢 Energy",catUS:"🇺🇸 US Indices",catEU:"🇪🇺 EU Indices",catAsia:"🌏 Asia",brCustom:"Custom CS",
       brokerLbl:"🏢 Prop firm / broker — sets contract size & typical spread",
-      csWarn:"⚠ Contract Size is an estimate — check the symbol specification in MT5 and use Custom CS if it differs.",
+      csRowLbl:"Contract Size — {b} (editable, saved)",
+      csHow:"MT5 → Market Watch → right-click the symbol → Specification → Contract Size. Type it once and this browser remembers it for this firm + instrument. ↺ resets to default.",
+      csSrc:"firm's official spec",
+      pvLbl:"$ per {u} / 1.00 lot",
+      levLbl:"Leverage 1:",marginLbl:"Est. Margin",
+      pvHow:"Don't know the Contract Size? Type what your firm's own calculator shows as pip/point value for 1 lot — CS is worked out from it.",
+      commLbl:"Commission $ / lot (round turn)",
+      bufComm:"Commission",
+      csIndustry:"◐ Not published by the firm — industry-standard CFD default. Check it in MT5 (30 seconds) and it will be saved.",
+      csSaved:"✅ Saved for this firm — used instead of the default.",
+      csUnverified:"⚠ Not published by this firm — generic default. Check MT5 and type the real value.",
+      csVerified:"✔ From the firm's official specification",
       scaleTitle:"Deposit scale — same system, different size",
       scRisk:"Risk per trade (%)",scRR:"R:R",
       shDep:"Deposit",shR1:"1R risk",sh3r:"Profit",shWR100:"WR 100%",shWR50:"WR 50%",shWR30:"WR 30%",
@@ -830,7 +911,7 @@
       propStatusComplete:"🎯 Target reached!",propStatusCompleteSub:"You've hit the profit target. Request payout.",
       propGrossProfit:"Gross profit",propMyPayout:"Your payout",propFirmCut:"Firm cut",ppSplitLbl:"Profit split (%)",
       bufLbl:"🛡 Spread/Slippage buffer (pt)",bufTitle:"🛡 Real risk & result (spread + slippage)",bufPlanHdr:"WHAT TO EXPECT WITH THIS LOT",bufMaxLoss:"Max loss (with slippage)",bufEffStop:"Effective stop",bufExpProfit:"Expected profit (after spread)",bufRealRR:"Real R:R",bufHint:"Buffer = your broker's spread + slippage (auto per instrument). It widens the stop (risk) and trims the TP (profit) so the numbers match MT5.",bufAuto:"Auto",bufEditable:"editable",bufUnitPt:"pt",bufUnitPip:"pip",bufSpreadShare:"Spread eats (of stop)",
-      mt5Hdr:"📋 Enter in MT5",mt5Vol:"Volume (lot)",mt5Price:"Entry price",mt5SL:"Stop Loss",mt5TP:"Take Profit",mt5Note:"Change only the Volume (= safe lot). Leave price, stop and TP exactly as on your chart — don't touch them.",
+      mt5Hdr:"📋 Enter in MT5",mt5Vol:"Volume (lot)",mt5Price:"Entry price",mt5SL:"Stop Loss",mt5TP:"Take Profit",mt5Note:"Change only the Volume (= safe lot). Leave price, stop and TP exactly as on your chart — don't touch them.",mt5MinLot:"⚠ Below the usual 0.01 minimum lot — reduce risk %, widen the stop, or use a smaller account.",
       tabPay:"💰 Payout",payTitle:"💰 Payout check (consistency rule)",payAccLbl:"Account ($)",payConsLbl:"Consistency (%)",payMinLbl:"Min payout (%)",payDaysLbl:"Profit per day, comma-separated ($)",
       payYes:"✅ You can request a payout",payNo:"⛔ Not yet",
       payTooLow:"Profit too low: {t}. You need ≥{mp}% = {m} to request a payout.",
@@ -854,7 +935,18 @@
       tabScale:"📊 Масштаб",tabWR:"📈 WinRate",tabHier:"🧩 Риск",tabReport:"📋 Отчёт",tabProp:"🏢 Проп",
       catForex:"Forex",catCross:"Кроссы",catMetals:"🥇 Металлы",catEnergy:"🛢 Нефть/газ",catUS:"🇺🇸 Индексы США",catEU:"🇪🇺 Индексы ЕС",catAsia:"🌏 Азия",brCustom:"Свой CS",
       brokerLbl:"🏢 Проп / брокер — задаёт размер контракта и типичный спред",
-      csWarn:"⚠ Размер контракта — ориентир. Сверь спецификацию символа в MT5, если не совпало — жми Свой CS.",
+      csRowLbl:"Размер контракта — {b} (можно менять, сохраняется)",
+      csHow:"MT5 → Обзор рынка → правый клик по символу → Спецификация → Contract Size. Впиши один раз — браузер запомнит для этой фирмы и инструмента. ↺ вернёт значение по умолчанию.",
+      csSrc:"официальная спецификация фирмы",
+      pvLbl:"$ за 1 {u} на 1.00 лот",
+      levLbl:"Плечо 1:",marginLbl:"Маржа (примерно)",
+      pvHow:"Не знаешь Contract Size? Впиши сюда pip/point value, который показывает калькулятор самой фирмы для 1 лота — CS посчитается сам.",
+      commLbl:"Комиссия $ / лот (туда-обратно)",
+      bufComm:"Комиссия",
+      csIndustry:"◐ Фирма не публикует — стоит стандартный для CFD дефолт. Сверь в MT5 (30 секунд), значение сохранится.",
+      csSaved:"✅ Сохранено для этой фирмы — используется вместо значения по умолчанию.",
+      csUnverified:"⚠ Фирма не публикует это значение — стоит общий дефолт. Сверь в MT5 и впиши своё.",
+      csVerified:"✔ Из официальной спецификации фирмы",
       scaleTitle:"Масштаб депозита — одна система, разный размер",
       scRisk:"Риск на сделку (%)",scRR:"R:R",
       shDep:"Депозит",shR1:"Риск 1R",sh3r:"Профит",shWR100:"WR 100%",shWR50:"WR 50%",shWR30:"WR 30%",
@@ -890,7 +982,7 @@
       propStatusComplete:"🎯 Цель достигнута!",propStatusCompleteSub:"Ты выполнил цель по прибыли. Запроси выплату.",
       propGrossProfit:"Валовая прибыль",propMyPayout:"Твоя выплата",propFirmCut:"Комиссия пропа",ppSplitLbl:"Сплит (%)",
       bufLbl:"🛡 Буфер спреда/слиппеджа (пт)",bufTitle:"🛡 Риск и результат (спред + слиппедж)",bufPlanHdr:"ЧТО ОЖИДАТЬ С ЭТИМ ЛОТОМ",bufMaxLoss:"Макс. убыток (со слиппеджем)",bufEffStop:"Эфф. стоп",bufExpProfit:"Ожид. прибыль (с учётом спреда)",bufRealRR:"Реальный R:R",bufHint:"Буфер = спред + слиппедж твоего брокера (авто под инструмент). Он расширяет стоп (риск) и срезает тейк (прибыль), чтобы цифры сходились с MT5.",bufAuto:"Авто",bufEditable:"можно менять",bufUnitPt:"пт",bufUnitPip:"пип",bufSpreadShare:"Спред съедает (от стопа)",
-      mt5Hdr:"📋 Впиши в MT5",mt5Vol:"Объём (лот)",mt5Price:"Цена открытия",mt5SL:"Стоп Лосс",mt5TP:"Тейк Профит",mt5Note:"Меняешь только Объём (= безопасный лот). Цену, стоп и тейк ставишь точно как на графике — не трогаешь.",
+      mt5Hdr:"📋 Впиши в MT5",mt5Vol:"Объём (лот)",mt5Price:"Цена открытия",mt5SL:"Стоп Лосс",mt5TP:"Тейк Профит",mt5Note:"Меняешь только Объём (= безопасный лот). Цену, стоп и тейк ставишь точно как на графике — не трогаешь.",mt5MinLot:"⚠ Меньше обычного минимального лота 0.01 — снизь риск %, расширь стоп или возьми счёт меньше.",
       tabPay:"💰 Выплата",payTitle:"💰 Проверка выплаты (правило консистентности)",payAccLbl:"Аккаунт ($)",payConsLbl:"Консистентность (%)",payMinLbl:"Мин. вывод (%)",payDaysLbl:"Прибыль по дням через запятую ($)",
       payYes:"✅ Можно запросить вывод",payNo:"⛔ Пока нельзя",
       payTooLow:"Мало прибыли: {t}. Для вывода нужно ≥{mp}% = {m}.",
@@ -914,7 +1006,18 @@
       tabScale:"📊 Масштаб",tabWR:"📈 WinRate",tabHier:"🧩 Ризик",tabReport:"📋 Звіт",tabProp:"🏢 Проп",
       catForex:"Forex",catCross:"Кроси",catMetals:"🥇 Метали",catEnergy:"🛢 Нафта/газ",catUS:"🇺🇸 Індекси США",catEU:"🇪🇺 Індекси ЄС",catAsia:"🌏 Азія",brCustom:"Свій CS",
       brokerLbl:"🏢 Проп / брокер — задає розмір контракту і типовий спред",
-      csWarn:"⚠ Розмір контракту — орієнтир. Звір специфікацію символу в MT5, якщо не збіглось — тисни Свій CS.",
+      csRowLbl:"Розмір контракту — {b} (можна змінювати, зберігається)",
+      csHow:"MT5 → Огляд ринку → правий клік по символу → Специфікація → Contract Size. Впиши один раз — браузер запам'ятає для цієї фірми та інструмента. ↺ поверне значення за замовчуванням.",
+      csSrc:"офіційна специфікація фірми",
+      pvLbl:"$ за 1 {u} на 1.00 лот",
+      levLbl:"Плече 1:",marginLbl:"Маржа (приблизно)",
+      pvHow:"Не знаєш Contract Size? Впиши сюди pip/point value, який показує калькулятор самої фірми для 1 лота — CS порахується сам.",
+      commLbl:"Комісія $ / лот (туди-назад)",
+      bufComm:"Комісія",
+      csIndustry:"◐ Фірма не публікує — стоїть стандартний для CFD дефолт. Звір у MT5 (30 секунд), значення збережеться.",
+      csSaved:"✅ Збережено для цієї фірми — використовується замість значення за замовчуванням.",
+      csUnverified:"⚠ Фірма не публікує це значення — стоїть загальний дефолт. Звір у MT5 і впиши своє.",
+      csVerified:"✔ З офіційної специфікації фірми",
       scaleTitle:"Масштаб депозиту — одна система, різний розмір",
       scRisk:"Ризик на угоду (%)",scRR:"R:R",
       shDep:"Депозит",shR1:"Ризик 1R",sh3r:"Профіт",shWR100:"WR 100%",shWR50:"WR 50%",shWR30:"WR 30%",
@@ -950,7 +1053,7 @@
       propStatusComplete:"🎯 Ціль досягнута!",propStatusCompleteSub:"Ти виконав ціль з прибутку. Запроси виплату.",
       propGrossProfit:"Валовий прибуток",propMyPayout:"Твоя виплата",propFirmCut:"Комісія пропа",ppSplitLbl:"Спліт (%)",
       bufLbl:"🛡 Буфер спреду/сліпеджу (пт)",bufTitle:"🛡 Ризик і результат (спред + сліпедж)",bufPlanHdr:"ЩО ОЧІКУВАТИ З ЦИМ ЛОТОМ",bufMaxLoss:"Макс. збиток (зі сліпеджем)",bufEffStop:"Еф. стоп",bufExpProfit:"Очік. прибуток (з урахуванням спреду)",bufRealRR:"Реальний R:R",bufHint:"Буфер = спред + сліпедж твого брокера (авто під інструмент). Він розширює стоп (ризик) і зрізає тейк (прибуток), щоб цифри збігались з MT5.",bufAuto:"Авто",bufEditable:"можна змінювати",bufUnitPt:"пт",bufUnitPip:"піп",bufSpreadShare:"Спред з'їдає (від стопу)",
-      mt5Hdr:"📋 Впиши в MT5",mt5Vol:"Об'єм (лот)",mt5Price:"Ціна відкриття",mt5SL:"Стоп Лосс",mt5TP:"Тейк Профіт",mt5Note:"Змінюєш тільки Об'єм (= безпечний лот). Ціну, стоп і тейк ставиш точно як на графіку — не чіпаєш.",
+      mt5Hdr:"📋 Впиши в MT5",mt5Vol:"Об'єм (лот)",mt5Price:"Ціна відкриття",mt5SL:"Стоп Лосс",mt5TP:"Тейк Профіт",mt5Note:"Змінюєш тільки Об'єм (= безпечний лот). Ціну, стоп і тейк ставиш точно як на графіку — не чіпаєш.",mt5MinLot:"⚠ Менше звичайного мінімального лота 0.01 — знизь ризик %, розшир стоп або візьми рахунок менший.",
       tabPay:"💰 Виплата",payTitle:"💰 Перевірка виплати (правило консистентності)",payAccLbl:"Акаунт ($)",payConsLbl:"Консистентність (%)",payMinLbl:"Мін. виплата (%)",payDaysLbl:"Прибуток по днях через кому ($)",
       payYes:"✅ Можна запросити виплату",payNo:"⛔ Поки не можна",
       payTooLow:"Мало прибутку: {t}. Для виплати потрібно ≥{mp}% = {m}.",
@@ -968,6 +1071,18 @@
   }
 
   let currentLang='en'
+
+  /* lots need more decimals when the contract size is large (e.g. FundingPips indices) */
+  function fmtLot(v){
+    if(!isFinite(v)) return '—'
+    if(v<0.01) return v.toFixed(4)
+    if(v<0.1)  return v.toFixed(3)
+    return v.toFixed(2)
+  }
+  function fmtPts(v){
+    if(!isFinite(v)) return '—'
+    return (Math.abs(v-Math.round(v))<0.05?Math.round(v):v.toFixed(1)).toLocaleString()
+  }
 
   function fmt(n){
     if(Math.abs(n)>=1000000) return '$'+(n/1000000).toFixed(1)+'M'
@@ -1180,6 +1295,11 @@
   let customCS=null
 
   function instr(p){ return INSTR.filter(i=>i.p===p)[0] }
+  /* the firm's own symbol name, when we know it */
+  function symName(i){
+    const m=(BROKERS[activeBroker]||{}).sym||{}
+    return m[i.p]||i.lbl
+  }
 
   function renderCats(){
     const d=lang[currentLang]
@@ -1201,7 +1321,7 @@
     INSTR.filter(i=>i.cat===activeCat).forEach(i=>{
       const div=document.createElement('div')
       div.className='pair-btn'+(i.p===activePair?' active':'')
-      div.textContent=i.lbl
+      div.textContent=symName(i)
       div.onclick=()=>selectPair(i.p)
       grid.appendChild(div)
     })
@@ -1222,12 +1342,11 @@
     const i=instr(p); if(!i) return
     activePair=p
     activeCat=i.cat
-    activePip=i.pip
     activeQuote=i.q
     activeType=i.idx?'index':'forex'
-    activeContract=i.idx?getCS(i):i.c
-    renderCats(); renderPairs(); renderBrokers()
-    document.getElementById('custom-cs').style.display=(activeBroker==='custom'&&i.idx)?'inline-block':'none'
+    activePip=activePipFor(i)
+    activeContract=getCS(i)
+    renderCats(); renderPairs(); renderBrokers(); updateCSRow()
     const nb=brokerBuffer(i)
     document.getElementById('buffer').value=nb
     updateRateRow()
@@ -1236,18 +1355,142 @@
     calc()
   }
 
-  function getCS(i){
-    if(!i.idx) return i.c
+  /* ── saved per firm + instrument (this browser only) ── */
+  function lsGet(k){try{return window.localStorage.getItem(k)}catch(e){return null}}
+  function lsSet(k,v){try{window.localStorage.setItem(k,v)}catch(e){}}
+  function lsDel(k){try{window.localStorage.removeItem(k)}catch(e){}}
+  function csKey(){return 'tc_cs_'+activeBroker+'_'+activePair}
+  function spKey(){return 'tc_sp_'+activeBroker+'_'+activePair}
+
+  /* official contract size for this firm, if published; otherwise the generic default */
+  function defaultCS(i){
     const br=BROKERS[activeBroker]||BROKERS.ftmo
-    if(br.cs==='custom') return parseFloat(document.getElementById('custom-cs').value)||1
-    return (i.cs&&(i.cs[br.cs]!==undefined?i.cs[br.cs]:i.cs.std))||1
+    const m=br.c||{}
+    if(m[i.p]!==undefined) return m[i.p]
+    if(m[i.cat]!==undefined) return m[i.cat]
+    return i.idx?((i.cs&&i.cs.std)||1):i.c
+  }
+  /* true when the firm publishes this number, false when we fall back to a guess */
+  function csIsOfficial(i){
+    const v=(BROKERS[activeBroker]||{}).v||[]
+    return v.indexOf(i.p)>=0||v.indexOf(i.cat)>=0
+  }
+  function getCS(i){
+    const saved=parseFloat(lsGet(csKey()))
+    if(saved>0) return saved
+    return defaultCS(i)
+  }
+  /* index point size depends on the firm: FundingPips quotes indices in 0.1 pips */
+  function activePipFor(i){
+    if(!i.idx) return i.pip
+    return (BROKERS[activeBroker]||{}).ipip||1
   }
 
   /* spread/slippage buffer suggested for the selected firm */
   function brokerBuffer(i){
+    const saved=parseFloat(lsGet(spKey()))
+    if(saved>=0&&lsGet(spKey())!==null) return saved
     const br=BROKERS[activeBroker]||BROKERS.ftmo
-    const v=(i.b||0)*(br.sp||1)
+    let v=(i.b||0)*(br.sp||1)
+    if(i.idx) v=v/((br.ipip)||1)          // same spread, expressed in the firm's pips
     return v>=10?Math.round(v):Math.round(v*10)/10
+  }
+
+  function commKey(){return 'tc_cm_'+activeBroker+'_'+activePair}
+  function defaultComm(i){
+    const m=(BROKERS[activeBroker]||{}).comm||{}
+    if(m[i.p]!==undefined) return m[i.p]
+    if(m[i.cat]!==undefined) return m[i.cat]
+    return 0
+  }
+  function getComm(){
+    const v=parseFloat(lsGet(commKey()))
+    if(v>=0&&lsGet(commKey())!==null) return v
+    const i=instr(activePair)
+    return i?defaultComm(i):0
+  }
+  /* one full point (1.0) for indices/metals/energy, one pip for FX */
+  function unitStep(i){return i.idx?1:i.pip}
+  function pointValueUSD(i){
+    const entry=parseFloat(document.getElementById('entry').value)||1
+    return getCS(i)*unitStep(i)*quoteToUSD(entry)
+  }
+  function onPVInput(){
+    const i=instr(activePair); if(!i) return
+    const pv=parseFloat(document.getElementById('pv-input').value)
+    const entry=parseFloat(document.getElementById('entry').value)||1
+    const f=unitStep(i)*quoteToUSD(entry)
+    if(pv>0&&f>0){
+      const cs=pv/f
+      lsSet(csKey(),cs)
+      document.getElementById('cs-input').value=Math.round(cs*10000)/10000
+      activeContract=getCS(i); activePip=activePipFor(i)
+      updateInfo(); calc(); updateCSRow()
+    }
+  }
+  function levKey(){return 'tc_lv_'+activeBroker+'_'+activePair}
+  function defaultLev(i){
+    const m=(BROKERS[activeBroker]||{}).lev||{}
+    return m[i.p]||m[i.cat]||100
+  }
+  function getLev(){
+    const v=parseFloat(lsGet(levKey()))
+    if(v>0) return v
+    const i=instr(activePair)
+    return i?defaultLev(i):100
+  }
+  function onLevInput(){
+    const v=parseFloat(document.getElementById('lev-input').value)
+    if(v>0) lsSet(levKey(),v); else lsDel(levKey())
+    calc()
+  }
+  function onCommInput(){
+    const v=parseFloat(document.getElementById('comm-input').value)
+    if(v>0) lsSet(commKey(),v); else lsDel(commKey())
+    calc()
+  }
+
+  function updateCSRow(){
+    const d=lang[currentLang]
+    const row=document.getElementById('cs-row')
+    const i=instr(activePair)
+    if(!i){row.style.display='none';return}
+    const br=BROKERS[activeBroker]||{}
+    row.style.display='block'
+    document.getElementById('cs-label').textContent=(d.csRowLbl||'Contract Size — {b}').replace('{b}',br.name||'')
+    document.getElementById('cs-input').value=getCS(i)
+    const saved=parseFloat(lsGet(csKey()))>0
+    const link=br.src?` · <a href="${br.src}" target="_blank" rel="noopener" style="color:var(--accent)">${d.csSrc||'firm spec'}</a>`:''
+    document.getElementById('cs-hint').innerHTML=(saved?'<span style="color:var(--green)">'+(d.csSaved||'')+'</span><br>':'')+(d.csHow||'')+'<br>'+(d.pvHow||'')+link
+    const unitTxt=i.idx||i.cat==='metal'||i.cat==='energy'?(d.bufUnitPt||'pt'):(d.bufUnitPip||'pip')
+    document.getElementById('pv-label').textContent=(d.pvLbl||'$ per {u} / 1.00 lot').replace('{u}',unitTxt)
+    document.getElementById('pv-input').value=Math.round(pointValueUSD(i)*10000)/10000
+    document.getElementById('comm-label').textContent=d.commLbl||'Commission $ / lot (round turn)'
+    document.getElementById('comm-input').value=getComm()
+    document.getElementById('lev-label').textContent=(d.levLbl||'Leverage 1:')
+    document.getElementById('lev-input').value=getLev()
+  }
+  function onCSInput(){
+    const v=parseFloat(document.getElementById('cs-input').value)
+    const i=instr(activePair); if(!i) return
+    if(v>0) lsSet(csKey(),v); else lsDel(csKey())
+    activeContract=getCS(i)
+    activePip=activePipFor(i)
+    updateInfo(); calc(); updateCSRow()
+  }
+  function resetCS(){
+    lsDel(csKey()); lsDel(spKey()); lsDel(commKey()); lsDel(levKey())
+    const i=instr(activePair); if(!i) return
+    activeContract=getCS(i)
+    activePip=activePipFor(i)
+    const nb=brokerBuffer(i)
+    document.getElementById('buffer').value=nb
+    updateBufferNote(nb); updateCSRow(); updateInfo(); calc()
+  }
+  function saveBuffer(){
+    const v=parseFloat(document.getElementById('buffer').value)
+    if(v>=0) lsSet(spKey(),v)
+    updateBufferNote(document.getElementById('buffer').value)
   }
 
   function renderBrokers(){
@@ -1265,21 +1508,16 @@
 
   function selectBroker(b){
     activeBroker=b
-    renderBrokers()
+    renderBrokers(); renderPairs()
     const i=instr(activePair)
-    document.getElementById('custom-cs').style.display=(b==='custom'&&i&&i.idx)?'inline-block':'none'
     if(i){
-      if(i.idx) activeContract=getCS(i)
+      activePip=activePipFor(i)
+      activeContract=getCS(i)
       const nb=brokerBuffer(i)
       document.getElementById('buffer').value=nb
       updateBufferNote(nb)
     }
-    updateInfo(); calc()
-  }
-  function onCustomCS(){
-    const i=instr(activePair)
-    if(i&&i.idx) activeContract=getCS(i)
-    updateInfo(); calc()
+    updateCSRow(); updateInfo(); calc()
   }
 
   /* ── FX rate row ── */
@@ -1341,6 +1579,14 @@
         ca:{en:'⚠️ EIA inventories Wed 17:30 Kyiv — huge spikes',ru:'⚠️ Запасы EIA среда 17:30 Киев — резкие движения',ua:'⚠️ Запаси EIA середа 17:30 Київ — різкі рухи'}}
   }
 
+  /* is the contract size for this firm verified, guessed, or user-set? */
+  function csStatus(i,d){
+    if(parseFloat(lsGet(csKey()))>0) return `<span style="color:var(--green)">${d.csSaved||''}</span>`
+    return csIsOfficial(i)
+      ? `<span style="color:var(--green)">${d.csVerified||''}</span>`
+      : `<span style="color:var(--yellow)">${d.csIndustry||''}</span>`
+  }
+
   function updateInfo(){
     const d=lang[currentLang]
     const l=currentLang
@@ -1359,11 +1605,11 @@
     if(!ott&&!i.idx&&!i.hint&&i.cat!=='forex'&&i.cat!=='cross'){info.style.display='none';return}
     info.style.display='block'
     info.innerHTML=`
-      <div style="margin-bottom:4px"><strong>${i.lbl}</strong> · ${csTxt}${pvTxt}${curTxt}</div>
+      <div style="margin-bottom:4px"><strong>${symName(i)}</strong> · ${csTxt}${pvTxt}${curTxt}</div>
       ${i.tv?`<div style="color:var(--text-dim);font-size:11px;margin-bottom:2px">TradingView: ${i.tv}</div>`:''}
       ${ott?`<div style="color:var(--green)">${ott.tr[l]}</div><div style="color:var(--red)">${ott.av[l]}</div><div style="color:var(--yellow)">${ott.ca[l]}</div>`:''}
       ${hint}
-      ${i.idx?`<div style="color:var(--text-dim);margin-top:4px">${d.csWarn||''}</div>`:''}
+      <div style="margin-top:4px">${csStatus(i,d)}</div>
     `
   }
 
@@ -1391,9 +1637,10 @@
     const unit=isPip?d.bufUnitPip:d.bufUnitPt
     const effStop=stopPoints+buf
     const effTp=Math.max(tpPoints-buf,0)
-    const safeLot=riskMoney/(effStop*ppUSD)
-    const expProfit=safeLot*effTp*ppUSD
-    const effRR=effStop>0?effTp/effStop:0
+    const comm=getComm()
+    const safeLot=riskMoney/(effStop*ppUSD+comm)     // commission is part of the loss
+    const expProfit=safeLot*(effTp*ppUSD-comm)      // and is paid out of the profit too
+    const effRR=(effStop*ppUSD+comm)>0?(effTp*ppUSD-comm)/(effStop*ppUSD+comm):0
     const spreadShare=stopPoints>0?buf/stopPoints*100:0
     const shCol=spreadShare<10?'var(--green)':spreadShare<25?'var(--yellow)':'var(--red)'
 
@@ -1404,11 +1651,11 @@
       mt5.style.display='block'
       mt5.innerHTML=`
         <div style="font-weight:600;margin-bottom:10px">${d.mt5Hdr}</div>
-        <div class="buf-line"><span class="buf-l">${d.mt5Vol}</span><span class="buf-v"><strong style="color:var(--accent)">${safeLot.toFixed(2)}</strong></span></div>
+        <div class="buf-line"><span class="buf-l">${d.mt5Vol}</span><span class="buf-v"><strong style="color:var(--accent)">${fmtLot(safeLot)}</strong></span></div>
         <div class="buf-line"><span class="buf-l">${d.mt5Price}</span><span class="buf-v">${eV}</span></div>
         <div class="buf-line"><span class="buf-l">${d.mt5SL}</span><span class="buf-v">${sV}</span></div>
         <div class="buf-line"><span class="buf-l">${d.mt5TP}</span><span class="buf-v">${tV}</span></div>
-        <div style="font-size:11px;color:var(--text-dim);margin-top:10px;line-height:1.5">${d.mt5Note}</div>
+        <div style="font-size:11px;color:var(--text-dim);margin-top:10px;line-height:1.5">${d.mt5Note}${safeLot<0.01?'<br>'+(d.mt5MinLot||''):''}</div>
       `
     }
 
@@ -1418,11 +1665,12 @@
     panel.innerHTML=`
       <div style="font-weight:600;margin-bottom:10px">${d.bufTitle}</div>
       <div style="font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px">${d.bufPlanHdr}</div>
-      <div class="buf-line"><span class="buf-l">${d.bufEffStop}</span><span class="buf-v">${stopPoints.toFixed(1)} + ${buf.toFixed(1)} = <strong>${effStop.toFixed(1)} ${unit}</strong></span></div>
+      <div class="buf-line"><span class="buf-l">${d.bufEffStop}</span><span class="buf-v">${fmtPts(stopPoints)} + ${buf} = <strong>${fmtPts(effStop)} ${unit}</strong></span></div>
       <div class="buf-line"><span class="buf-l">${d.bufMaxLoss}</span><span class="buf-v" style="color:var(--red)"><strong>$${Math.round(riskMoney)}</strong></span></div>
       <div class="buf-line"><span class="buf-l">${d.bufExpProfit}</span><span class="buf-v" style="color:var(--green)"><strong>$${Math.round(expProfit)}</strong></span></div>
       <div class="buf-line"><span class="buf-l">${d.bufRealRR}</span><span class="buf-v">1 : ${effRR.toFixed(2)}</span></div>
       <div class="buf-line"><span class="buf-l">${d.bufSpreadShare}</span><span class="buf-v" style="color:${shCol}"><strong>${spreadShare.toFixed(0)}%</strong></span></div>
+      ${comm>0?`<div class="buf-line"><span class="buf-l">${d.bufComm||'Commission'}</span><span class="buf-v" style="color:var(--red)">−$${(safeLot*comm).toFixed(2)}</span></div>`:''}
       <div style="font-size:11px;color:var(--text-dim);margin-top:10px;line-height:1.5">${d.bufHint}</div>
     `
   }
@@ -1456,16 +1704,23 @@
     const profit=lots*tpPoints*ppUSD
 
     if(activeType==='index'){
-      document.getElementById("r-units").textContent=lots.toFixed(2)+' lots'
+      document.getElementById("r-units").textContent=fmtLot(lots)+' lots'
     } else {
       document.getElementById("r-units").textContent=Math.round(lots*activeContract).toLocaleString()
     }
-    document.getElementById("r-lots").textContent=lots.toFixed(2)
+    document.getElementById("r-lots").textContent=fmtLot(lots)
     document.getElementById("r-risk").textContent="$"+Math.round(riskMoney)
     document.getElementById("r-profit").textContent="$"+Math.round(profit)
     document.getElementById("r-rr").textContent="1 : "+rr.toFixed(2)
-    document.getElementById("r-pips").textContent=Math.round(stopPoints)
+    document.getElementById("r-pips").textContent=fmtPts(stopPoints)
     results.style.display="grid"
+
+    // estimated margin: notional value of the position ÷ leverage
+    const lev=getLev()
+    const shownLot=parseFloat(fmtLot(lots))||lots
+    const notional=shownLot*activeContract*entry*quoteToUSD(entry)
+    const margin=lev>0?notional/lev:0
+    document.getElementById("r-margin").textContent='$'+Math.round(margin).toLocaleString()+' · 1:'+lev
 
     renderBuffer(stopPoints,tpPoints,lots,riskMoney,ppUSD)
   }
@@ -1487,6 +1742,7 @@
     document.getElementById("lbl-profit").textContent=d.profit
     document.getElementById("lbl-rr").textContent=d.rr
     document.getElementById("lbl-pips").textContent=d.pips
+    document.getElementById("lbl-margin").textContent=d.marginLbl||"Est. Margin"
     document.getElementById("seo1").textContent=d.seo1
     document.getElementById("seo2").textContent=d.seo2
     document.getElementById('tab-scale').textContent=d.tabScale
@@ -1562,6 +1818,7 @@
     renderReport()
     renderProp()
     updateRateRow()
+    updateCSRow()
     updateBufferNote(document.getElementById('buffer').value)
     checkConsistency()
     calc()
@@ -1570,6 +1827,7 @@
   ;["balance","risk","entry","stop","tp","buffer"].forEach(id=>{
     document.getElementById(id).addEventListener("input",calc)
   })
+  document.getElementById("buffer").addEventListener("input",saveBuffer)
 
   // init
   selectFirm('ftmo')
