@@ -147,6 +147,7 @@
   <!-- broker selector for indices -->
   <div id="broker-label" style="font-size:12px;color:var(--text-muted);margin-bottom:6px">🏢 Prop firm / broker</div>
   <div id="broker-row" style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap"></div>
+  <div id="cs-toggle" onclick="toggleCS()" style="display:none;font-size:11px;color:var(--text-dim);margin-bottom:8px;cursor:pointer;user-select:none">⚙ <span id="cs-toggle-txt">Contract size / commission / leverage</span></div>
   <div id="cs-row" style="display:none;margin-bottom:8px;background:var(--bg2);border-radius:8px;padding:10px 12px;border-left:3px solid var(--yellow)">
     <div style="font-size:12px;color:var(--text-muted);margin-bottom:4px" id="cs-label">Contract Size</div>
     <div style="display:flex;gap:8px;align-items:center">
@@ -206,7 +207,6 @@
     <div class="card"><div class="lbl" id="lbl-profit">Profit $</div><div class="val green" id="r-profit">—</div></div>
     <div class="card"><div class="lbl" id="lbl-rr">R:R</div><div class="val" id="r-rr">—</div></div>
     <div class="card"><div class="lbl" id="lbl-pips">Pips to Stop</div><div class="val" id="r-pips">—</div></div>
-    <div class="card" style="grid-column:1 / -1"><div class="lbl" id="lbl-margin">Est. Margin</div><div class="val" id="r-margin">—</div></div>
   </div>
 
   <div id="mt5-block" style="display:none;background:var(--bg2);border-radius:8px;padding:14px;margin-top:10px;border:1px solid var(--accent)"></div>
@@ -863,19 +863,19 @@
       seo2:"Supports Forex majors and crosses, gold, silver, oil, US, EU and Asian indices on TradingView, MT4 and MT5 — plus rules for FTMO, FundingPips, FundedNext, The5ers and E8.",
       tabScale:"📊 Scale",tabWR:"📈 WinRate",tabHier:"🧩 Risk",tabReport:"📋 Report",tabProp:"🏢 Prop",
       catForex:"Forex",catCross:"Crosses",catMetals:"🥇 Metals",catEnergy:"🛢 Energy",catUS:"🇺🇸 US Indices",catEU:"🇪🇺 EU Indices",catAsia:"🌏 Asia",brCustom:"Custom CS",
-      brokerLbl:"🏢 Prop firm / broker — sets contract size & typical spread",
+      brokerLbl:"🏢 Prop firm / broker",
       csRowLbl:"Contract Size — {b} (editable, saved)",
       csHow:"MT5 → Market Watch → right-click the symbol → Specification → Contract Size. Type it once and this browser remembers it for this firm + instrument. ↺ resets to default.",
       csSrc:"firm's official spec",
       pvLbl:"$ per {u} / 1.00 lot",
-      levLbl:"Leverage 1:",marginLbl:"Est. Margin",
+      levLbl:"Leverage 1:",marginLbl:"Est. Margin",csToggle:"Contract size / commission / leverage",
       pvHow:"Don't know the Contract Size? Type what your firm's own calculator shows as pip/point value for 1 lot — CS is worked out from it.",
       commLbl:"Commission $ / lot (round turn)",
       bufComm:"Commission",
-      csIndustry:"◐ Not published by the firm — industry-standard CFD default. Check it in MT5 (30 seconds) and it will be saved.",
+      csIndustry:"◐ standard CFD default — check in MT5 (⚙ below)",
       csSaved:"✅ Saved for this firm — used instead of the default.",
       csUnverified:"⚠ Not published by this firm — generic default. Check MT5 and type the real value.",
-      csVerified:"✔ From the firm's official specification",
+      csVerified:"✔ official spec",
       scaleTitle:"Deposit scale — same system, different size",
       scRisk:"Risk per trade (%)",scRR:"R:R",
       shDep:"Deposit",shR1:"1R risk",sh3r:"Profit",shWR100:"WR 100%",shWR50:"WR 50%",shWR30:"WR 30%",
@@ -934,19 +934,19 @@
       seo2:"Работает с мажорами и кроссами Forex, золотом, серебром, нефтью, индексами США, ЕС и Азии на TradingView, MT4 и MT5 — плюс правила FTMO, FundingPips, FundedNext, The5ers и E8.",
       tabScale:"📊 Масштаб",tabWR:"📈 WinRate",tabHier:"🧩 Риск",tabReport:"📋 Отчёт",tabProp:"🏢 Проп",
       catForex:"Forex",catCross:"Кроссы",catMetals:"🥇 Металлы",catEnergy:"🛢 Нефть/газ",catUS:"🇺🇸 Индексы США",catEU:"🇪🇺 Индексы ЕС",catAsia:"🌏 Азия",brCustom:"Свой CS",
-      brokerLbl:"🏢 Проп / брокер — задаёт размер контракта и типичный спред",
+      brokerLbl:"🏢 Проп / брокер",
       csRowLbl:"Размер контракта — {b} (можно менять, сохраняется)",
       csHow:"MT5 → Обзор рынка → правый клик по символу → Спецификация → Contract Size. Впиши один раз — браузер запомнит для этой фирмы и инструмента. ↺ вернёт значение по умолчанию.",
       csSrc:"официальная спецификация фирмы",
       pvLbl:"$ за 1 {u} на 1.00 лот",
-      levLbl:"Плечо 1:",marginLbl:"Маржа (примерно)",
+      levLbl:"Плечо 1:",marginLbl:"Маржа (примерно)",csToggle:"Размер контракта / комиссия / плечо",
       pvHow:"Не знаешь Contract Size? Впиши сюда pip/point value, который показывает калькулятор самой фирмы для 1 лота — CS посчитается сам.",
       commLbl:"Комиссия $ / лот (туда-обратно)",
       bufComm:"Комиссия",
-      csIndustry:"◐ Фирма не публикует — стоит стандартный для CFD дефолт. Сверь в MT5 (30 секунд), значение сохранится.",
+      csIndustry:"◐ стандартный дефолт CFD — сверь в MT5 (⚙ ниже)",
       csSaved:"✅ Сохранено для этой фирмы — используется вместо значения по умолчанию.",
       csUnverified:"⚠ Фирма не публикует это значение — стоит общий дефолт. Сверь в MT5 и впиши своё.",
-      csVerified:"✔ Из официальной спецификации фирмы",
+      csVerified:"✔ официальная спецификация",
       scaleTitle:"Масштаб депозита — одна система, разный размер",
       scRisk:"Риск на сделку (%)",scRR:"R:R",
       shDep:"Депозит",shR1:"Риск 1R",sh3r:"Профит",shWR100:"WR 100%",shWR50:"WR 50%",shWR30:"WR 30%",
@@ -1005,19 +1005,19 @@
       seo2:"Працює з мажорами та кросами Forex, золотом, сріблом, нафтою, індексами США, ЄС та Азії на TradingView, MT4 і MT5 — плюс правила FTMO, FundingPips, FundedNext, The5ers та E8.",
       tabScale:"📊 Масштаб",tabWR:"📈 WinRate",tabHier:"🧩 Ризик",tabReport:"📋 Звіт",tabProp:"🏢 Проп",
       catForex:"Forex",catCross:"Кроси",catMetals:"🥇 Метали",catEnergy:"🛢 Нафта/газ",catUS:"🇺🇸 Індекси США",catEU:"🇪🇺 Індекси ЄС",catAsia:"🌏 Азія",brCustom:"Свій CS",
-      brokerLbl:"🏢 Проп / брокер — задає розмір контракту і типовий спред",
+      brokerLbl:"🏢 Проп / брокер",
       csRowLbl:"Розмір контракту — {b} (можна змінювати, зберігається)",
       csHow:"MT5 → Огляд ринку → правий клік по символу → Специфікація → Contract Size. Впиши один раз — браузер запам'ятає для цієї фірми та інструмента. ↺ поверне значення за замовчуванням.",
       csSrc:"офіційна специфікація фірми",
       pvLbl:"$ за 1 {u} на 1.00 лот",
-      levLbl:"Плече 1:",marginLbl:"Маржа (приблизно)",
+      levLbl:"Плече 1:",marginLbl:"Маржа (приблизно)",csToggle:"Розмір контракту / комісія / плече",
       pvHow:"Не знаєш Contract Size? Впиши сюди pip/point value, який показує калькулятор самої фірми для 1 лота — CS порахується сам.",
       commLbl:"Комісія $ / лот (туди-назад)",
       bufComm:"Комісія",
-      csIndustry:"◐ Фірма не публікує — стоїть стандартний для CFD дефолт. Звір у MT5 (30 секунд), значення збережеться.",
+      csIndustry:"◐ стандартний дефолт CFD — звір у MT5 (⚙ нижче)",
       csSaved:"✅ Збережено для цієї фірми — використовується замість значення за замовчуванням.",
       csUnverified:"⚠ Фірма не публікує це значення — стоїть загальний дефолт. Звір у MT5 і впиши своє.",
-      csVerified:"✔ З офіційної специфікації фірми",
+      csVerified:"✔ офіційна специфікація",
       scaleTitle:"Масштаб депозиту — одна система, різний розмір",
       scRisk:"Ризик на угоду (%)",scRR:"R:R",
       shDep:"Депозит",shR1:"Ризик 1R",sh3r:"Профіт",shWR100:"WR 100%",shWR50:"WR 50%",shWR30:"WR 30%",
@@ -1450,13 +1450,22 @@
     calc()
   }
 
+  let csOpen=false
+  function toggleCS(){
+    csOpen=!csOpen
+    document.getElementById('cs-row').style.display=csOpen?'block':'none'
+    if(csOpen) updateCSRow()
+  }
   function updateCSRow(){
     const d=lang[currentLang]
     const row=document.getElementById('cs-row')
+    const tog=document.getElementById('cs-toggle')
     const i=instr(activePair)
-    if(!i){row.style.display='none';return}
+    if(!i){row.style.display='none';tog.style.display='none';return}
+    tog.style.display='block'
+    document.getElementById('cs-toggle-txt').textContent=d.csToggle||'Contract size / commission / leverage'
+    if(!csOpen){row.style.display='none';return}
     const br=BROKERS[activeBroker]||{}
-    row.style.display='block'
     document.getElementById('cs-label').textContent=(d.csRowLbl||'Contract Size — {b}').replace('{b}',br.name||'')
     document.getElementById('cs-input').value=getCS(i)
     const saved=parseFloat(lsGet(csKey()))>0
@@ -1609,7 +1618,7 @@
       ${i.tv?`<div style="color:var(--text-dim);font-size:11px;margin-bottom:2px">TradingView: ${i.tv}</div>`:''}
       ${ott?`<div style="color:var(--green)">${ott.tr[l]}</div><div style="color:var(--red)">${ott.av[l]}</div><div style="color:var(--yellow)">${ott.ca[l]}</div>`:''}
       ${hint}
-      <div style="margin-top:4px">${csStatus(i,d)}</div>
+      <div style="margin-top:2px;font-size:11px">${csStatus(i,d)}</div>
     `
   }
 
@@ -1655,6 +1664,7 @@
         <div class="buf-line"><span class="buf-l">${d.mt5Price}</span><span class="buf-v">${eV}</span></div>
         <div class="buf-line"><span class="buf-l">${d.mt5SL}</span><span class="buf-v">${sV}</span></div>
         <div class="buf-line"><span class="buf-l">${d.mt5TP}</span><span class="buf-v">${tV}</span></div>
+        <div class="buf-line"><span class="buf-l">${d.marginLbl||'Est. Margin'}</span><span class="buf-v" style="color:var(--text-muted)">$${Math.round(lastMargin).toLocaleString()} · 1:${lastLev}</span></div>
         <div style="font-size:11px;color:var(--text-dim);margin-top:10px;line-height:1.5">${d.mt5Note}${safeLot<0.01?'<br>'+(d.mt5MinLot||''):''}</div>
       `
     }
@@ -1675,6 +1685,7 @@
     `
   }
 
+  let lastMargin=0,lastLev=100
   function calc(){
     const balance=parseFloat(document.getElementById("balance").value)
     const riskPct=parseFloat(document.getElementById("risk").value)
@@ -1720,7 +1731,7 @@
     const shownLot=parseFloat(fmtLot(lots))||lots
     const notional=shownLot*activeContract*entry*quoteToUSD(entry)
     const margin=lev>0?notional/lev:0
-    document.getElementById("r-margin").textContent='$'+Math.round(margin).toLocaleString()+' · 1:'+lev
+    lastMargin=margin; lastLev=lev
 
     renderBuffer(stopPoints,tpPoints,lots,riskMoney,ppUSD)
   }
@@ -1742,7 +1753,6 @@
     document.getElementById("lbl-profit").textContent=d.profit
     document.getElementById("lbl-rr").textContent=d.rr
     document.getElementById("lbl-pips").textContent=d.pips
-    document.getElementById("lbl-margin").textContent=d.marginLbl||"Est. Margin"
     document.getElementById("seo1").textContent=d.seo1
     document.getElementById("seo2").textContent=d.seo2
     document.getElementById('tab-scale').textContent=d.tabScale
