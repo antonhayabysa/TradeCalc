@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TradeCalc | Position Size Calculator for Forex, Gold, Oil, Indices & Prop Firms</title>
-  <meta name="description" content="Free position size calculator for Forex, gold, silver, oil, US & EU indices. Calculate lot size, risk, pips, R:R and profit before opening a trade. Prop firm rules for FTMO, FundingPips, FundedNext, The5ers, E8. Works with TradingView, MT4 and MT5.">
+  <title>TradeCalc | Position Size Calculator for Forex, Gold, Oil, Indices &amp; Prop Firms</title>
+  <meta name="description" content="Free position size calculator for Forex, gold, silver, oil, US &amp; EU indices. Calculate lot size, risk, pips, R:R and profit before opening a trade. Prop firm rules for FTMO, FundingPips, FundedNext, The5ers, E8. Works with TradingView, MT4 and MT5.">
   <meta name="keywords" content="forex calculator, position size calculator, lot size calculator, forex risk calculator, gold lot size, prop firm calculator, ftmo calculator, fundingpips, fundednext, the5ers">
   <meta name="robots" content="index, follow">
   <meta name="author" content="TradeCalc">
-  <meta property="og:title" content="TradeCalc | Forex, Gold & Indices Risk Calculator">
+  <meta property="og:title" content="TradeCalc | Forex, Gold &amp; Indices Risk Calculator">
   <meta property="og:description" content="Simple and fast risk calculator for traders: forex, metals, oil, indices + prop firm rules.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://trade-calc-gamma.vercel.app">
@@ -886,6 +886,8 @@
       csSaved:"✅ Saved for this firm — used instead of the default.",
       csUnverified:"⚠ Not published by this firm — generic default. Check MT5 and type the real value.",
       csVerified:"✔ official spec",
+      mt5OfPlanned:"of planned",
+      mt5LotCut:"⚠ Lot step {s} cuts the position — the real risk is lower than planned. Shorten the stop or use a smaller step.",
       scaleTitle:"Deposit scale — same system, different size",
       scRisk:"Risk per trade (%)",scRR:"R:R",
       shDep:"Deposit",shR1:"1R risk",sh3r:"Profit",shWR100:"WR 100%",shWR50:"WR 50%",shWR30:"WR 30%",
@@ -959,6 +961,8 @@
       csSaved:"✅ Сохранено для этой фирмы — используется вместо значения по умолчанию.",
       csUnverified:"⚠ Фирма не публикует это значение — стоит общий дефолт. Сверь в MT5 и впиши своё.",
       csVerified:"✔ официальная спецификация",
+      mt5OfPlanned:"от плана",
+      mt5LotCut:"⚠ Шаг лота {s} урезает позицию — реальный риск меньше запланированного. Сократи стоп или возьми меньший шаг.",
       scaleTitle:"Масштаб депозита — одна система, разный размер",
       scRisk:"Риск на сделку (%)",scRR:"R:R",
       shDep:"Депозит",shR1:"Риск 1R",sh3r:"Профит",shWR100:"WR 100%",shWR50:"WR 50%",shWR30:"WR 30%",
@@ -1032,6 +1036,8 @@
       csSaved:"✅ Збережено для цієї фірми — використовується замість значення за замовчуванням.",
       csUnverified:"⚠ Фірма не публікує це значення — стоїть загальний дефолт. Звір у MT5 і впиши своє.",
       csVerified:"✔ офіційна специфікація",
+      mt5OfPlanned:"від плану",
+      mt5LotCut:"⚠ Крок лота {s} зрізає позицію — реальний ризик менший за запланований. Скороти стоп або візьми менший крок.",
       scaleTitle:"Масштаб депозиту — одна система, різний розмір",
       scRisk:"Ризик на угоду (%)",scRR:"R:R",
       shDep:"Депозит",shR1:"Ризик 1R",sh3r:"Профіт",shWR100:"WR 100%",shWR50:"WR 50%",shWR30:"WR 30%",
@@ -1701,6 +1707,8 @@
     const safeLot=roundLot(safeLotExact)              // what MT5 will actually accept
     const expProfit=safeLot*(effTp*ppUSD-comm)        // and is paid out of the profit too
     const realRisk=safeLot*(effStop*ppUSD+comm)
+    const lotLossPct=safeLotExact>0?(1-safeLot/safeLotExact)*100:0
+    const realRiskPct=riskMoney>0?realRisk/riskMoney*100:0
     const effRR=(effStop*ppUSD+comm)>0?(effTp*ppUSD-comm)/(effStop*ppUSD+comm):0
     const spreadShare=stopPoints>0?buf/stopPoints*100:0
     const shCol=spreadShare<10?'var(--green)':spreadShare<25?'var(--yellow)':'var(--red)'
@@ -1716,9 +1724,9 @@
         <div class="buf-line"><span class="buf-l">${d.mt5Price}</span><span class="buf-v">${eV}</span></div>
         <div class="buf-line"><span class="buf-l">${d.mt5SL}</span><span class="buf-v">${sV}</span></div>
         <div class="buf-line"><span class="buf-l">${d.mt5TP}</span><span class="buf-v">${tV}</span></div>
-        <div class="buf-line"><span class="buf-l">${d.mt5RealRisk||'Risk with this volume'}</span><span class="buf-v" style="color:var(--red)">$${Math.round(realRisk).toLocaleString()}</span></div>
+        <div class="buf-line"><span class="buf-l">${d.mt5RealRisk||'Risk with this volume'}</span><span class="buf-v" style="color:var(--red)">$${Math.round(realRisk).toLocaleString()}${lotLossPct>15?` <span style="color:var(--yellow);font-size:11px">(${realRiskPct.toFixed(0)}% ${d.mt5OfPlanned||'of planned'})</span>`:''}</span></div>
         <div class="buf-line"><span class="buf-l">${d.marginLbl||'Est. Margin'}</span><span class="buf-v" style="color:var(--text-muted)">$${Math.round(lastMargin).toLocaleString()} · 1:${lastLev}</span></div>
-        <div style="font-size:11px;color:var(--text-dim);margin-top:10px;line-height:1.5">${d.mt5Note}${safeLot<=0?'<br>'+(d.mt5MinLot||''):''}</div>
+        <div style="font-size:11px;color:var(--text-dim);margin-top:10px;line-height:1.5">${d.mt5Note}${safeLot<=0?'<br>'+(d.mt5MinLot||''):''}${lotLossPct>15&&safeLot>0?'<br><span style="color:var(--yellow)">'+(d.mt5LotCut||'').replace('{s}',fmtStepLot(getStep()))+'</span>':''}</div>
       `
     }
 
@@ -1781,7 +1789,7 @@
     if(activeType==='index'){
       document.getElementById("r-units").textContent=fmtLot(lots)+' lots'
     } else {
-      document.getElementById("r-units").textContent=Math.round(lots*activeContract).toLocaleString()
+      document.getElementById("r-units").textContent=Math.floor(lots*activeContract).toLocaleString()
     }
     document.getElementById("r-lots").textContent=tradable>0?fmtStepLot(tradable):'< '+fmtStepLot(getStep())
     document.getElementById("r-risk").textContent="$"+Math.round(riskMoney)
