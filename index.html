@@ -457,11 +457,13 @@
     {cat:'cross',p:'GBPCAD',lbl:'GBPCAD',pip:0.0001,c:100000,q:'CAD',b:2.5},
     {cat:'cross',p:'EURNZD',lbl:'EURNZD',pip:0.0001,c:100000,q:'NZD',b:2.0},
     {cat:'cross',p:'AUDNZD',lbl:'AUDNZD',pip:0.0001,c:100000,q:'NZD',b:1.5},
-    // ── Metals ── 1 lot gold = 100 oz, 1 lot silver = 5000 oz
+    // ── Metals ── 1 lot gold = 100 oz, 1 lot silver = 5000 oz, 1 lot platinum = 100 oz
     {cat:'metal',p:'XAUUSD',lbl:'XAUUSD 🥇',pip:0.01, c:100, q:'USD',b:25,unit:'oz',
       hint:{en:'1 lot = 100 oz · 1 point (0.01) = $1 · $1 move = $100',ru:'1 лот = 100 унций · 1 пункт (0.01) = $1 · движение на $1 = $100',ua:'1 лот = 100 унцій · 1 пункт (0.01) = $1 · рух на $1 = $100'}},
     {cat:'metal',p:'XAGUSD',lbl:'XAGUSD 🥈',pip:0.001,c:5000,q:'USD',b:25,unit:'oz',
       hint:{en:'1 lot = 5000 oz · 1 point (0.001) = $5',ru:'1 лот = 5000 унций · 1 пункт (0.001) = $5',ua:'1 лот = 5000 унцій · 1 пункт (0.001) = $5'}},
+    {cat:'metal',p:'XPTUSD',lbl:'XPTUSD ⚪',pip:0.01, c:100, q:'USD',b:150,unit:'oz',
+      hint:{en:'Platinum · 1 lot = 100 oz · 1 point (0.01) = $1 · $1 move = $100 · wide spread — check it in MT5',ru:'Платина · 1 лот = 100 унций · 1 пункт (0.01) = $1 · движение на $1 = $100 · спред широкий — сверь в MT5',ua:'Платина · 1 лот = 100 унцій · 1 пункт (0.01) = $1 · рух на $1 = $100 · спред широкий — звір у MT5'}},
     // ── Energy ── 1 lot = 1000 barrels
     {cat:'energy',p:'USOIL',lbl:'USOIL / WTI',pip:0.01,c:1000,q:'USD',b:3,unit:'bbl',
       hint:{en:'WTI · 1 lot = 1000 barrels · 1 point (0.01) = $10',ru:'WTI · 1 лот = 1000 баррелей · 1 пункт (0.01) = $10',ua:'WTI · 1 лот = 1000 барелів · 1 пункт (0.01) = $10'}},
@@ -528,8 +530,8 @@
       sym:{SP500:'SPX500',NAS100:'NAS100',DJ30:'US30',US2000:'US2000',DAX40:'GER40',EU50:'EU50',FRA40:'FRA40',FTSE100:'UK100',JP225:'JPN225'}},
     fundednext:{name:'FundedNext',sp:1.3,ipip:1,
       src:'https://help.fundednext.com/en/articles/8020350-what-is-the-contract-size-of-the-instruments',
-      c:{us:10,eu:10,asia:10,XAUUSD:100,XAGUSD:5000,energy:100},
-      v:['us','eu','asia','XAUUSD','XAGUSD','energy'],
+      c:{us:10,eu:10,asia:10,XAUUSD:100,XAGUSD:5000,XPTUSD:100,energy:100},
+      v:['us','eu','asia','XAUUSD','XAGUSD','XPTUSD','energy'],
       comm:{forex:3,cross:3,metal:3},
       lev:{forex:100,cross:100,metal:50,US2000:25,us:20,eu:20,asia:20,energy:20},
       sym:{SP500:'SP500',NAS100:'NAS100',DJ30:'US30',US2000:'US2000',FRA40:'FRA40'}},
@@ -1320,6 +1322,7 @@
     if(i.idx) return [300,200000]
     if(i.p==='XAUUSD') return [200,20000]
     if(i.p==='XAGUSD') return [3,500]
+    if(i.p==='XPTUSD') return [300,5000]
     if(i.cat==='energy') return i.p==='NATGAS'?[0.2,50]:[5,400]
     if(i.q==='JPY') return [20,500]
     return [0.1,5]
