@@ -208,9 +208,11 @@
     <div class="card"><div class="lbl" id="lbl-units">Lots</div><div class="val" id="r-units">—</div></div>
     <div class="card"><div class="lbl" id="lbl-lots">Lots (MT4 / MT5)</div><div class="val" id="r-lots">—</div></div>
     <div class="card"><div class="lbl" id="lbl-riskMoney">Risk $</div><div class="val red" id="r-risk">—</div></div>
-    <div class="card"><div class="lbl" id="lbl-profit">Profit $</div><div class="val green" id="r-profit">—</div></div>
+    <div class="card"><div class="lbl" id="lbl-profit">Profit $</div><div class="val green" id="r-profit">—</div><div id="r-profit-sub" style="font-size:11px;color:var(--text-dim);margin-top:2px"></div></div>
     <div class="card"><div class="lbl" id="lbl-rr">R:R</div><div class="val" id="r-rr">—</div></div>
     <div class="card"><div class="lbl" id="lbl-pips">Pips to Stop</div><div class="val" id="r-pips">—</div></div>
+    <div class="card"><div class="lbl" id="lbl-comm">Commission $</div><div class="val red" id="r-comm">—</div><div id="r-comm-sub" style="font-size:11px;color:var(--text-dim);margin-top:2px"></div></div>
+    <div class="card"><div class="lbl" id="lbl-commrisk">Commission vs risk</div><div class="val" id="r-commrisk">—</div><div id="r-commrisk-sub" style="font-size:11px;color:var(--text-dim);margin-top:2px"></div></div>
   </div>
 
   <div id="mt5-block" style="display:none;background:var(--bg2);border-radius:8px;padding:14px;margin-top:10px;border:1px solid var(--accent)"></div>
@@ -502,7 +504,7 @@
   ]
 
   /* ════════ FX RATES (editable, used for non-USD quote instruments) ════════ */
-  const rates={EURUSD:1.1561,GBPUSD:1.3497,AUDUSD:0.7063,NZDUSD:0.5890,USDJPY:157.767,USDCHF:0.8075,USDCAD:1.3932}
+  const rates={EURUSD:1.1561,GBPUSD:1.3497,AUDUSD:0.7063,NZDUSD:0.5890,USDJPY:157.767,USDCHF:0.8391,USDCAD:1.3932}
   const USD_BASE=['JPY','CHF','CAD']            // USD is the BASE => symbol is USDxxx
   function rateSymbol(q){ return USD_BASE.indexOf(q)>=0 ? 'USD'+q : q+'USD' }
 
@@ -519,35 +521,46 @@
       src:'https://ftmo.com/en/trading-instruments/',
       c:{us:1,eu:1,JP225:100,HK50:1,XAUUSD:100,XAGUSD:5000},
       v:['us','eu','XAUUSD','XAGUSD'],
-      comm:{forex:3,cross:3,metal:3},
+      // ftmo.com trading update 25.09.2025: FX $2.50/lot/side, metals 0.0007%/side; indices commission-free
+      comm:{forex:5,cross:5,metal:{p:0.0014},us:0,eu:0,asia:0,energy:null},
+      commSrc:{forex:'off',cross:'off',metal:'off',us:'off',eu:'off',asia:'off'},
       lev:{forex:100,cross:100,metal:33,us:20,eu:20,asia:20,energy:10},
       sym:{SP500:'US500.cash',NAS100:'US100.cash',DJ30:'US30.cash',DAX40:'GER40.cash',EU50:'EU50.cash',FTSE100:'UK100.cash',JP225:'JP225.cash'}},
     fundingpips:{name:'FundingPips',sp:1.0,ipip:0.1,
       src:'https://fundingpips.com/tools/risk-calculator',
       c:{SP500:50,NAS100:20,DJ30:5,DAX40:25,EU50:10,FTSE100:10,JP225:100,HK50:1,XAUUSD:100,XAGUSD:5000},
       v:['SP500','NAS100','DJ30','DAX40','EU50','FTSE100','XAUUSD','XAGUSD'],
-      comm:{forex:3,cross:3,metal:3},
+      comm:{forex:5,cross:5,metal:5,us:0,eu:0,asia:0,energy:0},
+      commSrc:{forex:'ext',cross:'ext',metal:'ext',us:'ext',eu:'ext',asia:'ext',energy:'ext'},
       lev:{forex:100,cross:100,metal:50,us:20,eu:20,asia:20,energy:20},
       sym:{SP500:'SPX500',NAS100:'NAS100',DJ30:'US30',US2000:'US2000',DAX40:'GER40',EU50:'EU50',FRA40:'FRA40',FTSE100:'UK100',JP225:'JPN225'}},
     fundednext:{name:'FundedNext',sp:1.3,ipip:1,
       src:'https://help.fundednext.com/en/articles/8020350-what-is-the-contract-size-of-the-instruments',
       c:{us:10,eu:10,asia:10,XAUUSD:100,XAGUSD:5000,XPTUSD:100,energy:100},
       v:['us','eu','asia','XAUUSD','XAGUSD','XPTUSD','energy'],
-      comm:{forex:3,cross:3,metal:3},
+      // help.fundednext.com (from 12.01.2026, all models): FX $7/lot, commodities 0.0016% of opening value, indices $0
+      // checked against real MT5 history Nov 2026: FX $7 ✓, XAGUSD % ✓, indices $0 ✓, XAUUSD charged flat $7/lot
+      comm:{forex:7,cross:7,XAUUSD:7,metal:{p:0.0016},energy:{p:0.0016},us:0,eu:0,asia:0},
+      commSrc:{forex:'hist',cross:'hist',XAUUSD:'hist',XAGUSD:'hist',metal:'off',energy:'off',us:'hist',eu:'hist',asia:'hist'},
       lev:{forex:100,cross:100,metal:50,US2000:25,us:20,eu:20,asia:20,energy:20},
       sym:{SP500:'SP500',NAS100:'NAS100',DJ30:'US30',US2000:'US2000',FRA40:'FRA40'}},
     e8:{name:'E8 Markets',sp:1.3,ipip:1,
       src:'https://help.e8markets.com/en/articles/9453488-what-are-the-contract-sizes',
       c:{SP500:20,NAS100:5,DJ30:5,eu:1,JP225:100,HK50:1,XAUUSD:100,XAGUSD:5000},
       v:['SP500','NAS100','DJ30','XAUUSD','XAGUSD'],
-      comm:{forex:5,cross:5,metal:5},
+      // raw-spread account (FXEmpire review); E8 also sells a zero-commission product
+      comm:{forex:5,cross:5,metal:6,us:6,eu:6,asia:6,energy:6},
+      commSrc:{forex:'ext',cross:'ext',metal:'ext',us:'ext',eu:'ext',asia:'ext',energy:'ext'},
+      commNote:{en:'raw-spread account; zero-commission accounts pay 0',ru:'для raw-счёта; на счёте без комиссии — 0',ua:'для raw-рахунку; на рахунку без комісії — 0'},
       lev:{forex:100,cross:100,metal:50,us:20,eu:20,asia:20,energy:20},
       sym:{SP500:'SP500',NAS100:'NAS100',DJ30:'US30'}},
     the5ers:{name:'The5ers',sp:1.2,ipip:1,
       src:'https://the5ers.com/asset-specifications/',
       c:{us:1,eu:1,JP225:100,HK50:1,XAUUSD:100,XAGUSD:5000},
       v:['NAS100','XAUUSD','XAGUSD'],
-      comm:{forex:4,cross:4,metal:4,us:0,eu:0,asia:0,energy:0},
+      // FX $2/side = $4 round turn; metals & energy are %-based, rate not published openly
+      comm:{forex:4,cross:4,metal:null,energy:null,us:0,eu:0,asia:0},
+      commSrc:{forex:'ext',cross:'ext',us:'ext',eu:'ext',asia:'ext'},
       lev:{forex:100,cross:100,metal:20,us:25,eu:25,asia:25,energy:10},
       sym:{SP500:'SP500',NAS100:'NAS100',DJ30:'US30',DAX40:'DAX40',FRA40:'FRA40',FTSE100:'UK100',JP225:'JPN225'}},
     alpha:{name:'Alpha Capital',sp:1.2,ipip:1,
@@ -1434,11 +1447,52 @@
   }
 
   function commKey(){return 'tc_cm_'+activeBroker+'_'+activePair}
+  /* raw commission rule for the active firm: number ($/lot round turn), {p:%} of position value, or null (unknown) */
+  function commRule(i){
+    const br=BROKERS[activeBroker]||{}, m=br.comm||{}, sr=br.commSrc||{}
+    const key=m[i.p]!==undefined?i.p:(m[i.cat]!==undefined?i.cat:null)
+    const rule=key===null?undefined:m[key]
+    const src=sr[i.p]||(key?sr[key]:null)||'unk'
+    return {rule,src}
+  }
+  function commPerLot(rule,entry){
+    if(rule===null||rule===undefined) return 0
+    if(typeof rule==='object') return entry>0?rule.p/100*activeContract*entry*quoteToUSD(entry):0
+    return rule
+  }
   function defaultComm(i){
-    const m=(BROKERS[activeBroker]||{}).comm||{}
-    if(m[i.p]!==undefined) return m[i.p]
-    if(m[i.cat]!==undefined) return m[i.cat]
-    return 0
+    const entry=parseFloat(document.getElementById('entry').value)||0
+    return Math.round(commPerLot(commRule(i).rule,entry)*100)/100
+  }
+  /* commission line in the instrument card: $ per lot round-turn for the active firm */
+  function commInfo(i,l,brName){
+    const T={
+      en:{t:'Commission',rt:'per 1.00 lot, round turn',none:'no commission',pct:'of position value',at:'at price',
+          hist:'✓ matches real trades',off:'✓ firm\'s official site',ext:'≈ third-party review — check in MT5',unk:'not checked — check in MT5',
+          nodata:'no public data — enter it from MT5 (counted as 0 now)',own:'your value',enter:'enter Entry to get $'},
+      ru:{t:'Комиссия',rt:'за 1.00 лот, туда-обратно',none:'без комиссии',pct:'от объёма позиции',at:'при цене',
+          hist:'✓ совпадает с реальными сделками',off:'✓ официальный сайт фирмы',ext:'≈ сторонний обзор — сверь в MT5',unk:'не проверено — сверь в MT5',
+          nodata:'нет открытых данных — впиши из MT5 (сейчас считается 0)',own:'твоё значение',enter:'введи вход, чтобы посчитать $'},
+      ua:{t:'Комісія',rt:'за 1.00 лот, туди-назад',none:'без комісії',pct:'від обсягу позиції',at:'за ціни',
+          hist:'✓ збігається з реальними угодами',off:'✓ офіційний сайт фірми',ext:'≈ сторонній огляд — звір у MT5',unk:'не перевірено — звір у MT5',
+          nodata:'немає відкритих даних — впиши з MT5 (зараз рахується 0)',own:'твоє значення',enter:'введи вхід, щоб порахувати $'}}[l]||{}
+    const br=BROKERS[activeBroker]||{}
+    const own=lsGet(commKey())!==null
+    const {rule,src}=commRule(i)
+    const entry=parseFloat(document.getElementById('entry').value)||0
+    const col={hist:'var(--green)',off:'var(--green)',ext:'var(--yellow)',unk:'var(--yellow)'}
+    let val,tag
+    if(own){ val=`<strong>$${getComm()}</strong> ${T.rt}`; tag=`<span style="color:var(--text-dim)">${T.own}</span>` }
+    else if(rule===null||rule===undefined){ val=''; tag=`<span style="color:var(--yellow)">${T.nodata}</span>` }
+    else {
+      if(typeof rule==='object'){
+        const usd=commPerLot(rule,entry)
+        val=`<strong>${rule.p}%</strong> ${T.pct}`+(entry>0?` = <strong>$${usd.toFixed(2)}</strong> ${T.rt} (${T.at} ${entry})`:` · ${T.enter}`)
+      } else val=rule>0?`<strong>$${rule}</strong> ${T.rt}`:`<strong>${T.none}</strong>`
+      tag=`<span style="color:${col[src]||col.unk}">${T[src]||T.unk}</span>`
+    }
+    const note=br.commNote?` · <span style="color:var(--text-dim)">${br.commNote[l]||br.commNote.en}</span>`:''
+    return `<div style="margin-bottom:4px">💸 ${T.t} ${brName}: ${val}${val?' · ':''}${tag}${note}</div>`
   }
   function getComm(){
     const v=parseFloat(lsGet(commKey()))
@@ -1671,10 +1725,12 @@
     const csTxt=i.idx?`${brName} ${d.csLbl||'Contract Size'}: <strong>${activeContract}</strong> · `:''
     const curTxt=activeQuote!=='USD'?` <span style="color:var(--yellow)">⚠ ${activeQuote}</span>`:' <span style="color:var(--green)">USD</span>'
     const hint=i.hint?`<div style="color:var(--yellow);margin-top:4px">${i.hint[l]||i.hint.en}</div>`:''
+    const commTxt=commInfo(i,l,brName)
     if(!ott&&!i.idx&&!i.hint&&i.cat!=='forex'&&i.cat!=='cross'){info.style.display='none';return}
     info.style.display='block'
     info.innerHTML=`
       <div style="margin-bottom:4px"><strong>${symName(i)}</strong> · ${csTxt}${pvTxt}${curTxt}</div>
+      ${commTxt}
       ${i.tv?`<div style="color:var(--text-dim);font-size:11px;margin-bottom:2px">TradingView: ${i.tv}</div>`:''}
       ${ott?`<div style="color:var(--green)">${ott.tr[l]}</div><div style="color:var(--red)">${ott.av[l]}</div><div style="color:var(--yellow)">${ott.ca[l]}</div>`:''}
       ${hint}
@@ -1729,6 +1785,7 @@
         <div class="buf-line"><span class="buf-l">${d.mt5SL}</span><span class="buf-v">${sV}</span></div>
         <div class="buf-line"><span class="buf-l">${d.mt5TP}</span><span class="buf-v">${tV}</span></div>
         <div class="buf-line"><span class="buf-l">${d.mt5RealRisk||'Risk with this volume'}</span><span class="buf-v" style="color:var(--red)">$${Math.round(realRisk).toLocaleString()}${lotLossPct>15?` <span style="color:var(--yellow);font-size:11px">(${realRiskPct.toFixed(0)}% ${d.mt5OfPlanned||'of planned'})</span>`:''}</span></div>
+        ${(()=>{const c=commBreakdown(safeLot,parseFloat(eV)||0);return `<div class="buf-line"><span class="buf-l">${commTxt().mt5}</span><span class="buf-v" style="color:var(--red)">${c.unknown?'?':(c.usd>0?'−$'+c.usd.toFixed(2):'$0')} <span style="color:var(--text-dim);font-size:11px">${c.how}</span></span></div>`})()}
         <div class="buf-line"><span class="buf-l">${d.marginLbl||'Est. Margin'}</span><span class="buf-v" style="color:var(--text-muted)">$${Math.round(lastMargin).toLocaleString()} · 1:${lastLev}</span></div>
         <div style="font-size:11px;color:var(--text-dim);margin-top:10px;line-height:1.5">${d.mt5Note}${safeLot<=0?'<br>'+(d.mt5MinLot||''):''}${lotLossPct>15&&safeLot>0?'<br><span style="color:var(--yellow)">'+(d.mt5LotCut||'').replace('{s}',fmtStepLot(getStep()))+'</span>':''}</div>
       `
@@ -1748,6 +1805,40 @@
       ${comm>0?`<div class="buf-line"><span class="buf-l">${d.bufComm||'Commission'}</span><span class="buf-v" style="color:var(--red)">−$${(safeLot*comm).toFixed(2)}</span></div>`:''}
       <div style="font-size:11px;color:var(--text-dim);margin-top:10px;line-height:1.5">${d.bufHint}</div>
     `
+  }
+
+  /* commission for THIS trade, shown in the main results */
+  function commTxt(){
+    return {
+      en:{card:'Commission $',risk:'Commission vs risk',lot:'lot',none:'no commission',nodata:'no data — enter in ⚙',ofRisk:'of your risk',mt5:'Commission with this volume',rt:'open + close'},
+      ru:{card:'Комиссия $',risk:'Комиссия от риска',lot:'лот',none:'без комиссии',nodata:'нет данных — впиши в ⚙',ofRisk:'от твоего риска',mt5:'Комиссия с этим объёмом',rt:'открытие + закрытие'},
+      ua:{card:'Комісія $',risk:'Комісія від ризику',lot:'лот',none:'без комісії',nodata:'немає даних — впиши в ⚙',ofRisk:'від твого ризику',mt5:'Комісія з цим обсягом',rt:'відкриття + закриття'}}[currentLang]||{}
+  }
+  function commBreakdown(lot,entry){
+    const i=instr(activePair); const T=commTxt()
+    const own=lsGet(commKey())!==null
+    const {rule}=i?commRule(i):{rule:0}
+    const perLot=getComm()
+    const usd=lot*perLot
+    let how
+    if(!own&&(rule===null||rule===undefined)) how=T.nodata
+    else if(perLot<=0) how=T.none
+    else if(!own&&typeof rule==='object') how=`${fmtStepLot(lot)} ${T.lot} × $${perLot.toFixed(2)} (${rule.p}% · ${T.rt})`
+    else how=`${fmtStepLot(lot)} ${T.lot} × $${perLot} (${T.rt})`
+    return {usd,how,perLot,unknown:!own&&(rule===null||rule===undefined)}
+  }
+  function renderCommCards(lot,riskMoney,entry){
+    const T=commTxt()
+    document.getElementById('lbl-comm').textContent=T.card
+    document.getElementById('lbl-commrisk').textContent=T.risk
+    const c=commBreakdown(lot,entry)
+    document.getElementById('r-comm').textContent=c.unknown?'?':(c.usd>0?'−$'+c.usd.toFixed(2):'$0')
+    document.getElementById('r-comm-sub').textContent=c.how
+    const pct=riskMoney>0?c.usd/riskMoney*100:0
+    const el=document.getElementById('r-commrisk')
+    el.textContent=c.unknown?'?':pct.toFixed(1)+'%'
+    el.style.color=c.unknown?'var(--yellow)':pct<5?'var(--green)':pct<15?'var(--yellow)':'var(--red)'
+    document.getElementById('r-commrisk-sub').textContent=T.ofRisk+(riskMoney>0?' ($'+Math.round(riskMoney)+')':'')
   }
 
   let lastMargin=0,lastLev=100
@@ -1777,6 +1868,16 @@
       document.getElementById("mt5-block").style.display="none"
       return
     }
+    // take profit must be on the opposite side of entry from the stop
+    if((stop-entry)*(tp-entry)>=0){
+      err.textContent=({ru:'⚠ Тейк стоит с той же стороны, что и стоп (или равен входу). Для Sell: стоп выше входа, тейк ниже. Для Buy: наоборот.',
+        ua:'⚠ Тейк стоїть з того ж боку, що й стоп (або дорівнює входу). Для Sell: стоп вище входу, тейк нижче. Для Buy: навпаки.',
+        en:'⚠ Take profit is on the same side as the stop (or equals entry). Sell: stop above entry, TP below. Buy: the opposite.'})[currentLang]
+      results.style.display="none"
+      document.getElementById("buffer-panel").style.display="none"
+      document.getElementById("mt5-block").style.display="none"
+      return
+    }
     err.textContent=''
     const riskMoney=balance*riskPct/100
     const stopPoints=stopDist/activePip
@@ -1796,10 +1897,16 @@
       document.getElementById("r-units").textContent=Math.floor(lots*activeContract).toLocaleString()
     }
     document.getElementById("r-lots").textContent=tradable>0?fmtStepLot(tradable):'< '+fmtStepLot(getStep())
-    document.getElementById("r-risk").textContent="$"+Math.round(riskMoney)
-    document.getElementById("r-profit").textContent="$"+Math.round(profit)
+    document.getElementById("r-risk").textContent="$"+riskMoney.toFixed(2)
+    // profit at the lot you actually enter (0.05), to the cent — like MT5
+    const pLot=tradable>0?tradable:lots
+    const grossP=pLot*tpPoints*ppUSD
+    const netP=grossP-pLot*getComm()
+    document.getElementById("r-profit").textContent="$"+grossP.toFixed(2)
+    document.getElementById("r-profit-sub").textContent=({ru:'чистыми $'+netP.toFixed(2)+' после комиссии',ua:'чистими $'+netP.toFixed(2)+' після комісії',en:'net $'+netP.toFixed(2)+' after commission'})[currentLang]||''
     document.getElementById("r-rr").textContent="1 : "+rr.toFixed(2)
     document.getElementById("r-pips").textContent=fmtPts(stopPoints)
+    renderCommCards(tradable>0?tradable:lots,riskMoney,entry)
     results.style.display="grid"
 
     // estimated margin: notional value of the position ÷ leverage
