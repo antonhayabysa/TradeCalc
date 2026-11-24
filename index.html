@@ -215,6 +215,8 @@
     <div class="card"><div class="lbl" id="lbl-commrisk">Commission vs risk</div><div class="val" id="r-commrisk">—</div><div id="r-commrisk-sub" style="font-size:11px;color:var(--text-dim);margin-top:2px"></div></div>
   </div>
 
+  <div id="risk-warn" style="display:none;border-radius:8px;padding:10px 14px;margin-top:10px;font-size:13px;line-height:1.5"></div>
+
   <div id="mt5-block" style="display:none;background:var(--bg2);border-radius:8px;padding:14px;margin-top:10px;border:1px solid var(--accent)"></div>
 
   <div id="buffer-panel" style="display:none;background:var(--bg2);border-radius:8px;padding:14px;margin-top:10px;border-left:3px solid var(--green)"></div>
@@ -491,6 +493,9 @@
       hint:{en:'⚠ JPY index — check Contract Size in the symbol specification (100 is typical).',ru:'⚠ Индекс в JPY — проверь Contract Size в спецификации символа (обычно 100).',ua:'⚠ Індекс у JPY — перевір Contract Size у специфікації символу (зазвичай 100).'}},
     {cat:'asia',p:'HK50',lbl:'HK50.cash',pip:1,q:'USD',b:8,idx:true,cs:{std:1,fp:1},tv:'HSI1! / HK50',
       hint:{en:'⚠ Check Contract Size / quote currency at your broker.',ru:'⚠ Проверь Contract Size и валюту котировки у брокера.',ua:'⚠ Перевір Contract Size і валюту котирування у брокера.'}}
+    // ── Crypto ── 1 lot = 1 BTC
+    ,{cat:'crypto',p:'BTCUSD',lbl:'BTCUSD ₿',pip:1,c:1,q:'USD',b:30,unit:'BTC',
+      hint:{en:'1 lot = 1 BTC · $1 move = $1 per lot · check spread in the platform',ru:'1 лот = 1 BTC · движение на $1 = $1 на лот · спред сверь в платформе',ua:'1 лот = 1 BTC · рух на $1 = $1 на лот · спред звір у платформі'}}
   ]
 
   const CATS=[
@@ -500,7 +505,8 @@
     {id:'energy',k:'catEnergy'},
     {id:'us',k:'catUS'},
     {id:'eu',k:'catEU'},
-    {id:'asia',k:'catAsia'}
+    {id:'asia',k:'catAsia'},
+    {id:'crypto',k:'catCrypto'}
   ]
 
   /* ════════ FX RATES (editable, used for non-USD quote instruments) ════════ */
@@ -563,6 +569,21 @@
       commSrc:{forex:'ext',cross:'ext',us:'ext',eu:'ext',asia:'ext'},
       lev:{forex:100,cross:100,metal:20,us:25,eu:25,asia:25,energy:10},
       sym:{SP500:'SP500',NAS100:'NAS100',DJ30:'US30',DAX40:'DAX40',FRA40:'FRA40',FTSE100:'UK100',JP225:'JPN225'}},
+    keyfunding:{name:'Key Funding',sp:1.7,ipip:1,platform:'cTrader',
+      src:'cTrader (GooeyTrade) → Информация о символе, 24.11.2026',
+      // from the cTrader symbol info screens: EURUSD/GBPJPY/EURGBP 100 000, XAUUSD 100 oz, WTI 100 bbl,
+      // NAS100 & US30 1 per point, JPN225 100 CFDs (JPY), BTCUSD 1 BTC
+      c:{NAS100:1,DJ30:1,JP225:100,XAUUSD:100,USOIL:100,BTCUSD:1},
+      v:['forex','cross','NAS100','DJ30','JP225','XAUUSD','USOIL','BTCUSD'],
+      // support 24.11.2026: $7 per 1 lot round turn = $3.50 open + $3.50 close
+      comm:{forex:7,cross:7,XAUUSD:7,NAS100:0,DJ30:0,JP225:0,USOIL:0,BTCUSD:0},
+      commSrc:{forex:'sup',cross:'sup',XAUUSD:'sup',NAS100:'plat',DJ30:'plat',JP225:'plat',USOIL:'plat',BTCUSD:'plat'},
+      step:{NAS100:0.1,DJ30:0.1,USOIL:0.1},   // support: min and step 0.1 lot
+      lev:{forex:50,cross:50,metal:15,us:15,eu:15,asia:15,energy:5,crypto:5},
+      riskCap:{all:2.2,one:1.2},
+      hint:{USOIL:{en:'Key Funding WTI · 1 lot = 100 barrels · 1 point (0.01) = $1 · min 0.1 lot',ru:'Key Funding WTI · 1 лот = 100 баррелей · 1 пункт (0.01) = $1 · мин. 0.1 лота',ua:'Key Funding WTI · 1 лот = 100 барелів · 1 пункт (0.01) = $1 · мін. 0.1 лота'},
+            XAUUSD:{en:'1 lot = 100 oz · 1 point (0.01) = $1 · $1 move = $100 · max 10 lots',ru:'1 лот = 100 унций · 1 пункт (0.01) = $1 · движение на $1 = $100 · макс. 10 лотов',ua:'1 лот = 100 унцій · 1 пункт (0.01) = $1 · рух на $1 = $100 · макс. 10 лотів'}},
+      sym:{NAS100:'NAS100',DJ30:'US30',JP225:'JPN225',USOIL:'WTI',BTCUSD:'BTCUSD'}},
     alpha:{name:'Alpha Capital',sp:1.2,ipip:1,
       src:'https://help.alphacapitalgroup.uk/en/articles/8786240-tradeable-assets',
       c:{us:1,eu:1,JP225:100,HK50:1,XAUUSD:100,XAGUSD:5000},
@@ -631,6 +652,13 @@
           ph:{'1':{t:8,d:5,m:8},'2':{t:5,d:5,m:8},'funded':{t:null,d:5,m:8}}},
       e1:{name:'ELEV8 1-Step',split:80,dd:'static',minDays:0,cons:null,consType:null,
           ph:{'1':{t:8,d:4,m:8},'funded':{t:null,d:4,m:8}}}
+    }},
+    keyfunding:{name:'Key Funding',url:'https://keyfunding.com/faq/',programs:{
+      k2:{name:'2-Step',split:80,dd:'static',minDays:5,cons:40,consType:'day',
+          n:{en:'Support 24.11.2026: daily loss 5% from EQUITY at the start of the day, resets 00:00 Estonia time (= Kyiv time). Max drawdown 8% static. Min 5 trading days per phase, no time limit, but 30 days in a row without trades is not allowed. Risk: challenge ≤2.2% per trade and all open, funded ≤1.2% per trade / 2.2% all open, max 3 positions, from the initial balance incl. spread and commission. Funded: news window ±2 min, flat before Friday close, payouts every 14 days, best day ≤40% of profit (45/50/55% after payouts).',
+             ru:'Поддержка 24.11.2026: дневной лимит 5% от ЭКВИТИ на начало дня, обнуляется в 00:00 по Эстонии (= по Киеву). Макс. просадка 8% статичная. Минимум 5 торговых дней на этап, срока нет, но нельзя 30 дней подряд без сделок. Риск: челлендж ≤2.2% на сделку и на все открытые, фанд ≤1.2% на сделку / 2.2% на все, максимум 3 позиции, от начального баланса с учётом спреда и комиссии. Фанд: новости ±2 мин, к закрытию пятницы без позиций, выплаты каждые 14 дней, лучший день ≤40% прибыли (45/50/55% после выплат).',
+             ua:'Підтримка 24.11.2026: денний ліміт 5% від ЕКВІТІ на початок дня, обнуляється о 00:00 за Естонією (= за Києвом). Макс. просадка 8% статична. Мінімум 5 торгових днів на етап, строку немає, але не можна 30 днів поспіль без угод. Ризик: челендж ≤2.2% на угоду і на всі відкриті, фанд ≤1.2% на угоду / 2.2% на всі, максимум 3 позиції, від початкового балансу з урахуванням спреду і комісії. Фанд: новини ±2 хв, до закриття п\'ятниці без позицій, виплати кожні 14 днів, найкращий день ≤40% прибутку (45/50/55% після виплат).'},
+          ph:{'1':{t:8,d:5,m:8},'2':{t:5,d:5,m:8},'funded':{t:null,d:5,m:8}}}
     }},
     alpha:{name:'Alpha Capital',url:'https://help.alphacapitalgroup.uk/',programs:{
       one:{name:'Alpha One 1-Step',split:80,dd:'trailing',minDays:1,cons:40,consType:'day',
@@ -886,7 +914,7 @@
       seo1:"TradeCalc is a free trading position size calculator that helps traders calculate position size, risk percentage, stop distance and potential profit before opening a trade.",
       seo2:"Supports Forex majors and crosses, gold, silver, oil, US, EU and Asian indices on TradingView, MT4 and MT5 — plus rules for FTMO, FundingPips, FundedNext, The5ers and E8.",
       tabScale:"📊 Scale",tabWR:"📈 WinRate",tabHier:"🧩 Risk",tabReport:"📋 Report",tabProp:"🏢 Prop",
-      catForex:"Forex",catCross:"Crosses",catMetals:"🥇 Metals",catEnergy:"🛢 Energy",catUS:"🇺🇸 US Indices",catEU:"🇪🇺 EU Indices",catAsia:"🌏 Asia",brCustom:"Custom CS",
+      catForex:"Forex",catCross:"Crosses",catMetals:"🥇 Metals",catEnergy:"🛢 Energy",catUS:"🇺🇸 US Indices",catEU:"🇪🇺 EU Indices",catAsia:"🌏 Asia",catCrypto:"₿ Crypto",brCustom:"Custom CS",
       brokerLbl:"🏢 Prop firm / broker",
       csRowLbl:"Contract Size — {b} (editable, saved)",
       csHow:"MT5 → Market Watch → right-click the symbol → Specification → Contract Size. Type it once and this browser remembers it for this firm + instrument. ↺ resets to default.",
@@ -961,7 +989,7 @@
       seo1:"TradeCalc — бесплатный калькулятор размера позиции для трейдинга: лот, риск, стоп, R:R и прибыль до входа в сделку.",
       seo2:"Работает с мажорами и кроссами Forex, золотом, серебром, нефтью, индексами США, ЕС и Азии на TradingView, MT4 и MT5 — плюс правила FTMO, FundingPips, FundedNext, The5ers и E8.",
       tabScale:"📊 Масштаб",tabWR:"📈 WinRate",tabHier:"🧩 Риск",tabReport:"📋 Отчёт",tabProp:"🏢 Проп",
-      catForex:"Forex",catCross:"Кроссы",catMetals:"🥇 Металлы",catEnergy:"🛢 Нефть/газ",catUS:"🇺🇸 Индексы США",catEU:"🇪🇺 Индексы ЕС",catAsia:"🌏 Азия",brCustom:"Свой CS",
+      catForex:"Forex",catCross:"Кроссы",catMetals:"🥇 Металлы",catEnergy:"🛢 Нефть/газ",catUS:"🇺🇸 Индексы США",catEU:"🇪🇺 Индексы ЕС",catAsia:"🌏 Азия",catCrypto:"₿ Крипта",brCustom:"Свой CS",
       brokerLbl:"🏢 Проп / брокер",
       csRowLbl:"Размер контракта — {b} (можно менять, сохраняется)",
       csHow:"MT5 → Обзор рынка → правый клик по символу → Спецификация → Contract Size. Впиши один раз — браузер запомнит для этой фирмы и инструмента. ↺ вернёт значение по умолчанию.",
@@ -1036,7 +1064,7 @@
       seo1:"TradeCalc — безкоштовний калькулятор розміру позиції для трейдингу: лот, ризик, стоп, R:R і прибуток до входу.",
       seo2:"Працює з мажорами та кросами Forex, золотом, сріблом, нафтою, індексами США, ЄС та Азії на TradingView, MT4 і MT5 — плюс правила FTMO, FundingPips, FundedNext, The5ers та E8.",
       tabScale:"📊 Масштаб",tabWR:"📈 WinRate",tabHier:"🧩 Ризик",tabReport:"📋 Звіт",tabProp:"🏢 Проп",
-      catForex:"Forex",catCross:"Кроси",catMetals:"🥇 Метали",catEnergy:"🛢 Нафта/газ",catUS:"🇺🇸 Індекси США",catEU:"🇪🇺 Індекси ЄС",catAsia:"🌏 Азія",brCustom:"Свій CS",
+      catForex:"Forex",catCross:"Кроси",catMetals:"🥇 Метали",catEnergy:"🛢 Нафта/газ",catUS:"🇺🇸 Індекси США",catEU:"🇪🇺 Індекси ЄС",catAsia:"🌏 Азія",catCrypto:"₿ Крипта",brCustom:"Свій CS",
       brokerLbl:"🏢 Проп / брокер",
       csRowLbl:"Розмір контракту — {b} (можна змінювати, зберігається)",
       csHow:"MT5 → Огляд ринку → правий клік по символу → Специфікація → Contract Size. Впиши один раз — браузер запам'ятає для цієї фірми та інструмента. ↺ поверне значення за замовчуванням.",
@@ -1338,6 +1366,7 @@
     if(i.p==='XAGUSD') return [3,500]
     if(i.p==='XPTUSD') return [300,5000]
     if(i.cat==='energy') return i.p==='NATGAS'?[0.2,50]:[5,400]
+    if(i.cat==='crypto') return [1000,1000000]
     if(i.q==='JPY') return [20,500]
     return [0.1,5]
   }
@@ -1469,18 +1498,21 @@
     const T={
       en:{t:'Commission',rt:'per 1.00 lot, round turn',none:'no commission',pct:'of position value',at:'at price',
           hist:'✓ matches real trades',off:'✓ firm\'s official site',ext:'≈ third-party review — check in MT5',unk:'not checked — check in MT5',
-          nodata:'no public data — enter it from MT5 (counted as 0 now)',own:'your value',enter:'enter Entry to get $'},
+          nodata:'no public data — enter it from MT5 (counted as 0 now)',own:'your value',enter:'enter Entry to get $',
+          plat:'✓ from cTrader symbol info',sup:'✓ confirmed by firm support ($3.50 open + $3.50 close)',side:'cTrader: $3.50 per lot per side × 2 — confirm with one closed trade'},
       ru:{t:'Комиссия',rt:'за 1.00 лот, туда-обратно',none:'без комиссии',pct:'от объёма позиции',at:'при цене',
           hist:'✓ совпадает с реальными сделками',off:'✓ официальный сайт фирмы',ext:'≈ сторонний обзор — сверь в MT5',unk:'не проверено — сверь в MT5',
-          nodata:'нет открытых данных — впиши из MT5 (сейчас считается 0)',own:'твоё значение',enter:'введи вход, чтобы посчитать $'},
+          nodata:'нет открытых данных — впиши из MT5 (сейчас считается 0)',own:'твоё значение',enter:'введи вход, чтобы посчитать $',
+          plat:'✓ из cTrader, «Информация о символе»',sup:'✓ подтверждено поддержкой ($3.50 открытие + $3.50 закрытие)',side:'cTrader: $3.50 за лот за сторону × 2 — подтверди одной закрытой сделкой'},
       ua:{t:'Комісія',rt:'за 1.00 лот, туди-назад',none:'без комісії',pct:'від обсягу позиції',at:'за ціни',
           hist:'✓ збігається з реальними угодами',off:'✓ офіційний сайт фірми',ext:'≈ сторонній огляд — звір у MT5',unk:'не перевірено — звір у MT5',
-          nodata:'немає відкритих даних — впиши з MT5 (зараз рахується 0)',own:'твоє значення',enter:'введи вхід, щоб порахувати $'}}[l]||{}
+          nodata:'немає відкритих даних — впиши з MT5 (зараз рахується 0)',own:'твоє значення',enter:'введи вхід, щоб порахувати $',
+          plat:'✓ з cTrader, «Інформація про символ»',sup:'✓ підтверджено підтримкою ($3.50 відкриття + $3.50 закриття)',side:'cTrader: $3.50 за лот за сторону × 2 — підтверди однією закритою угодою'}}[l]||{}
     const br=BROKERS[activeBroker]||{}
     const own=lsGet(commKey())!==null
     const {rule,src}=commRule(i)
     const entry=parseFloat(document.getElementById('entry').value)||0
-    const col={hist:'var(--green)',off:'var(--green)',ext:'var(--yellow)',unk:'var(--yellow)'}
+    const col={hist:'var(--green)',off:'var(--green)',plat:'var(--green)',sup:'var(--green)',side:'var(--yellow)',ext:'var(--yellow)',unk:'var(--yellow)'}
     let val,tag
     if(own){ val=`<strong>$${getComm()}</strong> ${T.rt}`; tag=`<span style="color:var(--text-dim)">${T.own}</span>` }
     else if(rule===null||rule===undefined){ val=''; tag=`<span style="color:var(--yellow)">${T.nodata}</span>` }
@@ -1522,7 +1554,10 @@
   function stepKey(){return 'tc_st_'+activeBroker+'_'+activePair}
   function getStep(){
     const v=parseFloat(lsGet(stepKey()))
-    return v>0?v:0.01                      // MT5 default: 0.01 lot increments
+    if(v>0) return v
+    const m=(BROKERS[activeBroker]||{}).step||{}
+    const i=instr(activePair)
+    return (i&&(m[i.p]||m[i.cat]))||0.01   // MT5 default: 0.01 lot increments
   }
   function onStepInput(){
     const v=parseFloat(document.getElementById('step-input').value)
@@ -1583,7 +1618,7 @@
     const saved=parseFloat(lsGet(csKey()))>0
     const link=br.src?` · <a href="${br.src}" target="_blank" rel="noopener" style="color:var(--accent)">${d.csSrc||'firm spec'}</a>`:''
     document.getElementById('cs-hint').innerHTML=(saved?'<span style="color:var(--green)">'+(d.csSaved||'')+'</span><br>':'')+(d.csHow||'')+'<br>'+(d.pvHow||'')+link
-    const unitTxt=i.idx||i.cat==='metal'||i.cat==='energy'?(d.bufUnitPt||'pt'):(d.bufUnitPip||'pip')
+    const unitTxt=i.idx||i.cat==='metal'||i.cat==='energy'||i.cat==='crypto'?(d.bufUnitPt||'pt'):(d.bufUnitPip||'pip')
     document.getElementById('pv-label').textContent=(d.pvLbl||'$ per {u} / 1.00 lot').replace('{u}',unitTxt)
     document.getElementById('pv-input').value=Math.round(pointValueUSD(i)*10000)/10000
     document.getElementById('comm-label').textContent=d.commLbl||'Commission $ / lot (round turn)'
@@ -1724,7 +1759,9 @@
     const brName=(BROKERS[activeBroker]||{}).name||''
     const csTxt=i.idx?`${brName} ${d.csLbl||'Contract Size'}: <strong>${activeContract}</strong> · `:''
     const curTxt=activeQuote!=='USD'?` <span style="color:var(--yellow)">⚠ ${activeQuote}</span>`:' <span style="color:var(--green)">USD</span>'
-    const hint=i.hint?`<div style="color:var(--yellow);margin-top:4px">${i.hint[l]||i.hint.en}</div>`:''
+    const bh=((BROKERS[activeBroker]||{}).hint||{})[i.p]
+    const hsrc=bh||i.hint
+    const hint=hsrc?`<div style="color:var(--yellow);margin-top:4px">${hsrc[l]||hsrc.en}</div>`:''
     const commTxt=commInfo(i,l,brName)
     if(!ott&&!i.idx&&!i.hint&&i.cat!=='forex'&&i.cat!=='cross'){info.style.display='none';return}
     info.style.display='block'
@@ -1779,7 +1816,7 @@
       const tV=document.getElementById('tp').value
       mt5.style.display='block'
       mt5.innerHTML=`
-        <div style="font-weight:600;margin-bottom:10px">${d.mt5Hdr}</div>
+        <div style="font-weight:600;margin-bottom:10px">${(BROKERS[activeBroker]||{}).platform?d.mt5Hdr.replace('MT5',BROKERS[activeBroker].platform):d.mt5Hdr}</div>
         <div class="buf-line"><span class="buf-l">${d.mt5Vol}</span><span class="buf-v"><strong style="color:var(--accent)">${safeLot>0?fmtStepLot(safeLot):'—'}</strong></span></div>
         <div class="buf-line"><span class="buf-l">${d.mt5Price}</span><span class="buf-v">${eV}</span></div>
         <div class="buf-line"><span class="buf-l">${d.mt5SL}</span><span class="buf-v">${sV}</span></div>
@@ -1841,6 +1878,33 @@
     document.getElementById('r-commrisk-sub').textContent=T.ofRisk+(riskMoney>0?' ($'+Math.round(riskMoney)+')':'')
   }
 
+  /* firm-level risk caps (Key Funding: 2.2% all open trades, 1.2% per trade on funded) */
+  function renderRiskCap(riskPct){
+    const el=document.getElementById('risk-warn'); if(!el) return
+    const cap=(BROKERS[activeBroker]||{}).riskCap
+    if(!cap||!(riskPct>0)){ el.style.display='none'; el.textContent=''; return }
+    const nm=BROKERS[activeBroker].name
+    const T={
+      ru:{over:`⛔ ${nm}: риск ${riskPct}% больше ${cap.all}% — нельзя ни на челлендже, ни на фанде.`,
+          funded:`⚠ ${nm}: на челлендже ${riskPct}% можно (до ${cap.all}% на сделку и ${cap.all}% на все открытые вместе). На фанде одна сделка — максимум ${cap.one}%.`,
+          ok:`✓ ${nm}: ${riskPct}% в лимитах (сделка ≤ ${cap.one}% на фанде и ≤ ${cap.all}% на челлендже, все открытые ≤ ${cap.all}%, максимум 3 позиции).`,
+          tail:` Риск считают от НАЧАЛЬНОГО баланса и с учётом спреда и комиссии — в «Счёт» пиши начальный баланс и ставь объём из блока «Впиши в cTrader». Перенос стопа в безубыток лимит не освобождает.`},
+      ua:{over:`⛔ ${nm}: ризик ${riskPct}% більший за ${cap.all}% — не можна ні на челенджі, ні на фанді.`,
+          funded:`⚠ ${nm}: на челенджі ${riskPct}% можна (до ${cap.all}% на угоду і ${cap.all}% на всі відкриті разом). На фанді одна угода — максимум ${cap.one}%.`,
+          ok:`✓ ${nm}: ${riskPct}% у лімітах (угода ≤ ${cap.one}% на фанді і ≤ ${cap.all}% на челенджі, всі відкриті ≤ ${cap.all}%, максимум 3 позиції).`,
+          tail:` Ризик рахують від ПОЧАТКОВОГО балансу з урахуванням спреду і комісії — у «Рахунок» пиши початковий баланс і став обсяг з блоку «Впиши в cTrader». Перенесення стопу в беззбиток ліміт не звільняє.`},
+      en:{over:`⛔ ${nm}: ${riskPct}% is above ${cap.all}% — not allowed in the challenge or funded.`,
+          funded:`⚠ ${nm}: ${riskPct}% is OK in the challenge (up to ${cap.all}% per trade and ${cap.all}% for all open trades). Funded: max ${cap.one}% per trade.`,
+          ok:`✓ ${nm}: ${riskPct}% is within limits (≤ ${cap.one}% per trade funded, ≤ ${cap.all}% challenge, all open ≤ ${cap.all}%, max 3 positions).`,
+          tail:` Risk is measured from the INITIAL balance including spread and commission — enter the initial balance in Account and use the volume from the cTrader block. Moving the stop to breakeven does not free the used risk.`}}[currentLang]||{}
+    let k,bg,bd
+    if(riskPct>cap.all){k='over';bg='rgba(231,76,60,.12)';bd='var(--red)'}
+    else if(riskPct>cap.one){k='funded';bg='rgba(241,196,15,.10)';bd='var(--yellow)'}
+    else {k='ok';bg='rgba(46,204,113,.08)';bd='var(--green)'}
+    el.style.display='block'; el.style.background=bg; el.style.borderLeft='3px solid '+bd
+    el.textContent=T[k]+(T.tail||'')
+  }
+
   let lastMargin=0,lastLev=100
   function calc(){
     const balance=parseFloat(document.getElementById("balance").value)
@@ -1850,6 +1914,7 @@
     const tp=parseFloat(document.getElementById("tp").value)
     const results=document.getElementById("results")
     updateInfo()
+    renderRiskCap(riskPct)
     if(!balance||!riskPct||!entry||!stop||!tp){
       results.style.display="none"
       document.getElementById("buffer-panel").style.display="none"
@@ -1894,7 +1959,7 @@
     if(activeType==='index'){
       document.getElementById("r-units").textContent=fmtLot(lots)+' lots'
     } else {
-      document.getElementById("r-units").textContent=Math.floor(lots*activeContract).toLocaleString()
+      document.getElementById("r-units").textContent=activeContract<10?(Math.floor(lots*activeContract*1000)/1000).toLocaleString():Math.floor(lots*activeContract).toLocaleString()
     }
     document.getElementById("r-lots").textContent=tradable>0?fmtStepLot(tradable):'< '+fmtStepLot(getStep())
     document.getElementById("r-risk").textContent="$"+riskMoney.toFixed(2)
