@@ -522,6 +522,9 @@
   /*  c  = contract size used for the calculation
       v  = which of those numbers the firm actually publishes (everything else is the
            standard CFD default of 1 per point and is flagged as such in the UI)      */
+  /* firm accent colours for the selector buttons — approximate, edit freely */
+  const BRAND_COLORS={ftmo:'#2f6bff',fundingpips:'#16b4e8',fundednext:'#7b4dff',e8:'#21c07a',the5ers:'#f2a33a',
+    keyfunding:'#e8b64c',alpha:'#3d8bfd',maven:'#c158f5',goat:'#9acd32',custom:'#8a8f98'}
   const BROKERS={
     ftmo:{name:'FTMO',sp:1.0,ipip:1,
       src:'https://ftmo.com/en/trading-instruments/',
@@ -1659,9 +1662,15 @@
     row.innerHTML=''
     Object.keys(BROKERS).forEach(k=>{
       const div=document.createElement('div')
-      div.className='pair-btn'+(k===activeBroker?' active':'')
+      const on=k===activeBroker, col=BRAND_COLORS[k]||'#8a8f98'
+      div.className='pair-btn'+(on?' active':'')
       div.id='br-'+k
-      div.textContent=k==='custom'?(lang[currentLang].brCustom||'Custom CS'):BROKERS[k].name
+      div.style.display='inline-flex'; div.style.alignItems='center'; div.style.gap='6px'; div.style.padding='8px 10px'
+      if(on){ div.style.borderColor=col; div.style.boxShadow='inset 0 0 0 1px '+col; div.style.background=col+'22'; div.style.color='var(--text)' }
+      const dot=document.createElement('span')
+      dot.style.cssText='width:8px;height:8px;border-radius:50%;flex:none;background:'+col+(on?';box-shadow:0 0 6px '+col:'')
+      div.appendChild(dot)
+      div.appendChild(document.createTextNode(k==='custom'?(lang[currentLang].brCustom||'Custom CS'):BROKERS[k].name))
       div.onclick=()=>selectBroker(k)
       row.appendChild(div)
     })
