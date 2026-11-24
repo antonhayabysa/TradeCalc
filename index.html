@@ -573,17 +573,20 @@
       src:'cTrader (GooeyTrade) → Информация о символе, 24.11.2026',
       // from the cTrader symbol info screens: EURUSD/GBPJPY/EURGBP 100 000, XAUUSD 100 oz, WTI 100 bbl,
       // NAS100 & US30 1 per point, JPN225 100 CFDs (JPY), BTCUSD 1 BTC
-      c:{NAS100:1,DJ30:1,JP225:100,XAUUSD:100,USOIL:100,BTCUSD:1},
-      v:['forex','cross','NAS100','DJ30','JP225','XAUUSD','USOIL','BTCUSD'],
+      c:{NAS100:1,DJ30:1,SP500:10,DAX40:1,FTSE100:1,JP225:100,XAUUSD:100,XAGUSD:5000,USOIL:100,UKOIL:100,BTCUSD:1},
+      v:['forex','cross','NAS100','DJ30','SP500','DAX40','FTSE100','JP225','XAUUSD','XAGUSD','USOIL','UKOIL','BTCUSD'],
       // support 24.11.2026: $7 per 1 lot round turn = $3.50 open + $3.50 close
-      comm:{forex:7,cross:7,XAUUSD:7,NAS100:0,DJ30:0,JP225:0,USOIL:0,BTCUSD:0},
-      commSrc:{forex:'sup',cross:'sup',XAUUSD:'sup',NAS100:'plat',DJ30:'plat',JP225:'plat',USOIL:'plat',BTCUSD:'plat'},
-      step:{NAS100:0.1,DJ30:0.1,USOIL:0.1},   // support: min and step 0.1 lot
-      lev:{forex:50,cross:50,metal:15,us:15,eu:15,asia:15,energy:5,crypto:5},
+      comm:{forex:7,cross:7,XAUUSD:7,XAGUSD:7,NAS100:0,DJ30:0,SP500:0,DAX40:0,FTSE100:0,JP225:0,USOIL:0,UKOIL:0,BTCUSD:0},
+      commSrc:{forex:'sup',cross:'sup',XAUUSD:'sup',XAGUSD:'side',NAS100:'plat',DJ30:'plat',SP500:'plat',DAX40:'plat',FTSE100:'plat',JP225:'plat',USOIL:'plat',UKOIL:'plat',BTCUSD:'plat'},
+      step:{NAS100:0.1,DJ30:0.1,SP500:0.1,DAX40:0.1,FTSE100:0.1,USOIL:0.1,UKOIL:0.1},   // support: min and step 0.1 lot
+      lev:{forex:50,cross:50,XAGUSD:5,metal:15,us:15,eu:15,asia:15,energy:5,crypto:5},
       riskCap:{all:2.2,one:1.2},
-      hint:{USOIL:{en:'Key Funding WTI · 1 lot = 100 barrels · 1 point (0.01) = $1 · min 0.1 lot',ru:'Key Funding WTI · 1 лот = 100 баррелей · 1 пункт (0.01) = $1 · мин. 0.1 лота',ua:'Key Funding WTI · 1 лот = 100 барелів · 1 пункт (0.01) = $1 · мін. 0.1 лота'},
+      hint:{SP500:{en:'Key Funding SPX500 · 1 lot = 10 CFDs · 1 point = $10 · min 0.1 lot, max 10',ru:'Key Funding SPX500 · 1 лот = 10 CFD · 1 пункт = $10 · мин. 0.1 лота, макс. 10',ua:'Key Funding SPX500 · 1 лот = 10 CFD · 1 пункт = $10 · мін. 0.1 лота, макс. 10'},
+            XAGUSD:{en:'1 lot = 5000 oz · $0.01 move = $50 per lot · max 10 lots · leverage 1:5',ru:'1 лот = 5000 унций · движение на $0.01 = $50 на лот · макс. 10 лотов · плечо 1:5',ua:'1 лот = 5000 унцій · рух на $0.01 = $50 на лот · макс. 10 лотів · плече 1:5'},
+            UKOIL:{en:'Key Funding BRENT · 1 lot = 100 barrels · 1 point (0.01) = $1 · min 0.1 lot',ru:'Key Funding BRENT · 1 лот = 100 баррелей · 1 пункт (0.01) = $1 · мин. 0.1 лота',ua:'Key Funding BRENT · 1 лот = 100 барелів · 1 пункт (0.01) = $1 · мін. 0.1 лота'},
+            USOIL:{en:'Key Funding WTI · 1 lot = 100 barrels · 1 point (0.01) = $1 · min 0.1 lot',ru:'Key Funding WTI · 1 лот = 100 баррелей · 1 пункт (0.01) = $1 · мин. 0.1 лота',ua:'Key Funding WTI · 1 лот = 100 барелів · 1 пункт (0.01) = $1 · мін. 0.1 лота'},
             XAUUSD:{en:'1 lot = 100 oz · 1 point (0.01) = $1 · $1 move = $100 · max 10 lots',ru:'1 лот = 100 унций · 1 пункт (0.01) = $1 · движение на $1 = $100 · макс. 10 лотов',ua:'1 лот = 100 унцій · 1 пункт (0.01) = $1 · рух на $1 = $100 · макс. 10 лотів'}},
-      sym:{NAS100:'NAS100',DJ30:'US30',JP225:'JPN225',USOIL:'WTI',BTCUSD:'BTCUSD'}},
+      sym:{NAS100:'NAS100',DJ30:'US30',SP500:'SPX500',DAX40:'GER40',FTSE100:'UK100',JP225:'JPN225',USOIL:'WTI',UKOIL:'BRENT',BTCUSD:'BTCUSD'}},
     alpha:{name:'Alpha Capital',sp:1.2,ipip:1,
       src:'https://help.alphacapitalgroup.uk/en/articles/8786240-tradeable-assets',
       c:{us:1,eu:1,JP225:100,HK50:1,XAUUSD:100,XAGUSD:5000},
